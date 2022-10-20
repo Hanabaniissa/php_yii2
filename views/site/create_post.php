@@ -1,17 +1,22 @@
 <?php
 
-use yii\helpers\Html;
-use \yii\widgets\ActiveForm;
+use app\models\Category;
+use yii\widgets\ActiveForm;
 
-    /** @var \basic\models\post $post */
+/** @var app\models\post $post */
+/** @var app\models\Category $categories*/
 
+
+
+$this->title = 'Create post';
 ?>
-
 <div class="site-index">
 
-    <h1>create post</h1>
-    <div class="body-content">
-        <?php $form =ActiveForm::begin() ?>
+    <h1>Create post</h1>
+    <br>
+
+    <div class="container body-content">
+        <?php $form = ActiveForm::begin() ?>
         <div class="row">
             <div class="for-control">
                 <div class="col-lg-6">
@@ -19,17 +24,41 @@ use \yii\widgets\ActiveForm;
                 </div>
             </div>
         </div>
-
+        <br>
         <div class="row">
-            <div class="for-control">
+            <div class="form-groub">
                 <div class="col-lg-6">
-                    <?= $form->field($post, 'body')->textarea(); ?>
+                    <label>Category Name</label>
+                    <select class="form-control" name="category_id">
+                        <?php foreach (Category::getCategories() as $category): ?>
+                            <option value="<?= $category->id ?>"><?= $category->label_en ?></option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
             </div>
         </div>
         <br>
-        <?= Html::submitButton("Post") ?>
-        <?php ActiveForm::end(); ?>
 
+        <div class="row">
+            <div class="for-control">
+                <div class="col-lg-6">
+                    <?= $form->field($post, 'description')->textarea(); ?>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="for-control">
+                <div class="col-lg-6">
+                    <?= $form->field($post, 'phone'); ?>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <?= \yii\helpers\Html::submitButton("Post") ?>
+
+        <?php ActiveForm::end(); ?>
     </div>
+
 </div>

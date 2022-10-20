@@ -2,19 +2,43 @@
 
 namespace app\models;
 
+/**
+ * @property int $id
+ * @property string $username
+ * @property string $password
+ * @property string $auth_key
+ * @property string $access_token
+ * @property string $password_hash
+ * @property string|null $password_reset_token
+ * @property int|null $status
+ * @property string|null $created_at
+ * @property string|null $Updated_at
+ */
+
 use yii\db\ActiveRecord;
 
 class User extends ActiveRecord implements \yii\web\IdentityInterface
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
 
+    const STATUS_DELETED = 0;
+    const STATUS_INACTIVE = 9;
+    const STATUS_ACTIVE = 10;
 
-    public static function tablename(){
+    public static function tablename()
+    {
         return 'user';
+    }
+
+
+    public function rules()
+    {
+        return [
+            [['username', 'password', 'auth_key', 'access_token'], 'required'],
+            ['status', 'default', 'value' => self::STATUS_ACTIVE],
+            ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
+            [['username'], 'string', 'min' => 3, 'max' => 25],
+            [['password', 'auth_key', 'access_token'], 'string', 'max' => 255],
+        ];
     }
 
     private static $users = [
@@ -22,17 +46,34 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
             'id' => '100',
             'username' => 'admin',
             'password' => 'admin',
-            'authKey' => 'test100key',
+            'auth_Key' => 'test100key',
             'accessToken' => '100-token',
         ],
         '101' => [
             'id' => '101',
             'username' => 'demo',
             'password' => 'demo',
-            'authKey' => 'test101key',
+            'auth_Key' => 'test101key',
             'accessToken' => '101-token',
         ],
     ];
+
+
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'username' => Yii::t('app', 'Username'),
+            'password' => Yii::t('app', 'Password'),
+            'auth_key' => Yii::t('app', 'Auth Key'),
+            'access_token' => Yii::t('app', 'Access Token'),
+            'password_hash' => Yii::t('app', 'Password Hash'),
+            'password_reset_token' => Yii::t('app', 'Password Reset Token'),
+            'status' => Yii::t('app', 'Status'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'Updated_at' => Yii::t('app', 'Updated At'),
+        ];
+    }
 
 
     /**
@@ -40,7 +81,7 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
      */
     public static function findIdentity($id)
     {
-        return self::findone($id);
+        return self::findone(['id' => $id, 'status' => self::STATUS_ACTIVE]);
 
     }
 
@@ -51,7 +92,7 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
     {
 
 
-      return self::find()-> where(['access_token'=>$token])->one();
+        return self::find()->where(['access_token' => $token])->one();
     }
 
     /**
@@ -62,7 +103,7 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
      */
     public static function findByUsername($username)
     {
-        return self::findOne(['username'=>$username]);
+        return self::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
 
     }
 
@@ -77,9 +118,11 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
     /**
      * {@inheritdoc}
      */
+
+
     public function getAuthKey()
     {
-        return $this->authKey;
+        return $this->auth_key;
     }
 
     /**
@@ -87,7 +130,7 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
      */
     public function validateAuthKey($authKey)
     {
-        return $this->authKey === $authKey;
+        return $this->getAuthKey() === $authKey;
     }
 
     /**
@@ -98,6 +141,11 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        return $this->password === $password;
+        return \Yii::$app->security->validatePassword($password, $this->password);
+    }
+
+    public function generateAuthKey()
+    {
+
     }
 }

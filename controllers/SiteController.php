@@ -2,14 +2,20 @@
 
 namespace app\controllers;
 
-use basic\models\post;
+use app\models\Category;
+use app\models\post;
+use app\models\SignupForm;
 use Yii;
+
 use yii\filters\AccessControl;
+use yii\helpers\Json;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use yii\web\User;
 
 class SiteController extends Controller
 {
@@ -62,7 +68,8 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        return $this->render('index.php');
+        $categoryModels = Category::find()->all();
+        return $this->render('home', ['categories' => $categoryModels]);
     }
 
     /**
@@ -127,13 +134,41 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
-    public function actionCreate(){
+    public function actionPost()
+    {
+
         $post = new post();
-        return $this->render('create_post');
+        if (Yii::$app->request->isPost) {
+            $post->load(yii::$app->request->post());
+            $post->load(yii::$app->request->post(), '');
+            if ($post->validate()) {
+                $post->save();
+
+                return $this->redirect(Url::to(["site/view"]));
+            } else {
+                var_dump($post->errors);
+                die("not valid");
+            }
+
+        }
+
+        return $this->render('create_post', ['post' => $post]);
     }
 
+    public function actionSignUp()
+    {
+        $model = new SignupForm();
+        if ($model->load(yii::$app->request->post()) && $model->signup()) {
+            $this->redirect(Yii::$app->homeUrl);
+        }
+        return $this->render('signup',
+            ['model' => $model]);
+    }
 
-
-
+    public function actionView($id)
+    {
+        $posts= post::findPostByCategoryId($id);
+        return $this->render('category',['posts'=> $posts]);
+    }
 
 }

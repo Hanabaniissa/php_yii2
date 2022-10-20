@@ -65,4 +65,10 @@ class post extends ActiveRecord
             ->all();
     }
 
+    public static function findOnePost($id){
+        return self::find()
+            ->select(['title', 'description', 'phone', 'id'])
+            ->where(['id' => $id])
+            ->one();
+    }
 }

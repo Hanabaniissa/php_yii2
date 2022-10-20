@@ -134,10 +134,13 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
-    public function actionPost()
+    public function actionPost($postId = null)
     {
-
         $post = new post();
+        if (!empty($postId)) {
+            $post = post::find()->one();
+        }
+
         if (Yii::$app->request->isPost) {
             $post->load(yii::$app->request->post());
             $post->load(yii::$app->request->post(), '');
@@ -171,4 +174,8 @@ class SiteController extends Controller
         return $this->render('category',['posts'=> $posts]);
     }
 
+    public function actionViewPost($id){
+        $onePost= post::findOnePost($id);
+        return $this->render('view_post',['onePost'=>$onePost]);
+    }
 }

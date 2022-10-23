@@ -1,6 +1,7 @@
 <?php
 
 /** @var yii\web\View $this */
+
 /** @var string $content */
 
 use app\assets\AppAsset;
@@ -25,8 +26,11 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
 <head>
     <title><?= Html::encode($this->title) ?></title>
     <?php $this->head() ?>
+    <!--Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
 </head>
-<body class="d-flex flex-column h-100">
+
+<body class="d-flex flex-column h-100" style="background-color: #FDFDF6;">
 <?php $this->beginBody() ?>
 
 <header id="header">
@@ -34,26 +38,27 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
     NavBar::begin([
         'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
-        'options' => ['class' => 'navbar-expand-md navbar-dark bg-dark fixed-top']
+        'options' => ['class' => 'navbar-expand-md navbar-dark fixed-top', 'style' => "background-color: #2192FF;"]
     ]);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav'],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
             ['label' => 'About', 'url' => ['/site/about']],
-            ['label' => 'Contact', 'url' => ['/site/contact']],
+            // ['label' => 'Contact', 'url' => ['/site/contact']],
             Yii::$app->user->isGuest
                 ? ['label' => 'Login', 'url' => ['/site/login']]
                 : '<li class="nav-item">'
-                    . Html::beginForm(['/site/logout'])
-                    . Html::submitButton(
-                        'Logout (' . Yii::$app->user->identity->username . ')',
-                        ['class' => 'nav-link btn btn-link logout']
-                    )
-                    . Html::endForm()
-                    . '</li>',
-              Yii::$app->user->isGuest
-            ?['label' => 'Signup', 'url' => ['/site/sign-up']] : ''
+                . Html::beginForm(['/site/logout'])
+                . Html::submitButton(
+                    'Logout (' . Yii::$app->user->identity->username . ')',
+                    ['class' => 'nav-link btn btn-link logout']
+                )
+                . Html::endForm()
+                . '</li>',
+            Yii::$app->user->isGuest
+                ? ['label' => 'Signup', 'url' => ['/site/sign-up']] : '',
+            ['label' => 'English', 'url' => ['/site/about']],
 
         ]
 
@@ -72,14 +77,17 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
     </div>
 </main>
 
-<footer id="footer" class="mt-auto py-3 bg-light">
-    <div class="container">
-        <div class="row text-muted">
-            <div class="col-md-6 text-center text-md-start">&copy; My Company <?= date('Y') ?></div>
-            <div class="col-md-6 text-center text-md-end"><?= Yii::powered() ?></div>
-        </div>
+<fotter id="footer" class="mt-auto py-3" style="background-color: #f5f5f5; text-align: center;">
+    <div class="container-fluid">
+        <h6 style="color: #8f8f8f;">Contact us</h6>
+        <a href="https://ar-ar.facebook.com/"><i class="social-icon fa-brands fa-facebook-f fa-light"  style=" margin: 15px 7px;color: #47555e;"></i></a>
+        <a href="https://www.linkedin.com/"><i class="fa-brands fa-linkedin" style=" margin: 15px 7px;color: #47555e;"></i></a>
+        <a href="https://www.instagram.com/"><i class="fa-brands fa-instagram" style=" margin: 15px 7px;color: #47555e; "></i></a>
+        <a href="https://www.google.com/intl/ar/gmail/about/"> <i class="fa-solid fa-envelope" style=" margin: 15px 7px;color: #47555e"></i></a>
+        <div style="color: #47555e; margin-top: 8px">&copy; My Company <?= date('Y') ?></div>
     </div>
-</footer>
+</fotter>
+
 
 <?php $this->endBody() ?>
 </body>

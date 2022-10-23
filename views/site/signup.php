@@ -2,18 +2,18 @@
 
 /** @var app\models\SignupForm $model */
 /** @var yii\web\View $this */
+
 /** @var yii\bootstrap5\ActiveForm $form */
 
 
 use yii\bootstrap5\ActiveForm;
 use yii\bootstrap5\Html;
 
-$this->title = 'Signup';
+$this->title = 'Sign up';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="site-login">
-    <h1><?= Html::encode($this->title) ?></h1>
-
+<div class="site-login" >
+    <h1 style="margin: 50px auto 20px"><?= Html::encode($this->title) ?></h1>
     <p>Please fill out the following fields to signup:</p>
 
     <?php $form = ActiveForm::begin([
@@ -27,17 +27,17 @@ $this->params['breadcrumbs'][] = $this->title;
         ],
     ]); ?>
 
-        <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
+    <?= $form->field($model, 'username')->textInput(['autofocus' => true]) ?>
 
-        <?= $form->field($model, 'password')->passwordInput() ?>
+    <?= $form->field($model, 'password')->passwordInput() ?>
     <?= $form->field($model, 'password_repeat')->passwordInput() ?>
 
 
-        <div class="form-group">
-            <div class="offset-lg-1 col-lg-11">
-                <?= Html::submitButton('Signup', ['class' => 'btn btn-primary', 'name' => 'login-button']) ?>
-            </div>
+    <div class="form-group">
+        <div style="margin-top: 30px">
+            <?= Html::submitButton('Sign up', ['class' => 'btn btn-lg btn-warning',' style'=>'color: #47555e']) ?>
         </div>
+    </div>
 
     <?php ActiveForm::end(); ?>
 

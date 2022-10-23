@@ -3,18 +3,19 @@
 use yii\db\Migration;
 
 /**
- * Class m221020_081314_update_user_post
+ * Class m221022_111353_update_post_imageCol
  */
-class m221020_081314_update_user_post extends Migration
+class m221022_111353_update_post_imageCol extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        return $this->execute("
-            alter table posts MODIFY column updated_by int ;
-  ");
+        $this->execute(" ALTER TABLE posts ADD COLUMN (
+        post_image varchar(255) not null)
+    
+     ");
 
     }
 
@@ -23,7 +24,7 @@ class m221020_081314_update_user_post extends Migration
      */
     public function safeDown()
     {
-        echo "m221020_081314_update_user_post cannot be reverted.\n";
+        echo "m221022_111353_update_post_imageCol cannot be reverted.\n";
 
         return false;
     }
@@ -37,7 +38,7 @@ class m221020_081314_update_user_post extends Migration
 
     public function down()
     {
-        echo "m221020_081314_update_user_post cannot be reverted.\n";
+        echo "m221022_111353_update_post_imageCol cannot be reverted.\n";
 
         return false;
     }

@@ -16,9 +16,13 @@ use yii\db\ActiveRecord;
  * @property string $updated_at
  * @property integer $created_by
  * @property string $category_id
+ * @property string $post_image
  */
 class post extends ActiveRecord
 {
+
+    public $fileImage;
+
 
     public static function tableName()
     {
@@ -31,8 +35,23 @@ class post extends ActiveRecord
             [['title', 'description', 'phone', 'category_id'], 'required'],
             ['user_id', 'default', 'value' => \Yii::$app->user->id],
             ['phone', 'integer'],
-            [['title', 'description'], 'string', 'max' => 255],
-            ['created_by', 'default', 'value' => \Yii::$app->user->id]
+            [['title', 'description'], 'string', 'max' => 300],
+            ['created_by', 'default', 'value' => \Yii::$app->user->id],
+            ['created_by', 'default', 'value' => \Yii::$app->user->id],
+            ['post_image', 'string','max'=>255],
+            [['fileImage'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg'],
+
+        ];
+    }
+
+    public function behaviors()
+    {
+        return [
+
+            [
+                'class' => yii\behaviors\BlameableBehavior::class,
+
+            ]
 
         ];
     }
@@ -51,6 +70,7 @@ class post extends ActiveRecord
             'updated_at' => 'Updated At',
             'created_by' => 'Created By',
             'updated_by' => 'Updated By',
+            'post_image' => Yii::t('app', 'Image'),
         ];
     }
 
@@ -60,15 +80,34 @@ class post extends ActiveRecord
         // all => []
         // one
         return self::find()
-            ->select(['title', 'description', 'phone', 'id'])
+            ->select(['title', 'description', 'phone', 'id','created_at', 'post_image'])
             ->where(['category_id' => $id])
             ->all();
     }
 
-    public static function findOnePost($id){
+    public static function findOnePost($id)
+    {
         return self::find()
-            ->select(['title', 'description', 'phone', 'id'])
+            ->select(['title', 'description', 'phone', 'id', 'created_at', 'created_by', 'user_id', 'post_image'])
             ->where(['id' => $id])
             ->one();
+    }
+
+
+    public function upload(){
+        if (true) {
+            $path = $this->uploadPath() . $this->id . "." .$this->fileImage->extension;
+            $this->fileImage->saveAs($path);
+            $this->post_image = $this->id . "." .$this->fileImage->extension;
+            $this->save();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function uploadPath() {
+        return yii\helpers\Url::to('@web/upload');
+
     }
 }

@@ -4,12 +4,16 @@
 
 /** @var string $content */
 
+
 use app\assets\AppAsset;
 use app\widgets\Alert;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
 use yii\bootstrap5\Nav;
 use yii\bootstrap5\NavBar;
+use yii\helpers\Url;
+use yii\widgets\ActiveForm;
+
 
 AppAsset::register($this);
 
@@ -38,31 +42,41 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
     NavBar::begin([
         'brandLabel' => Yii::$app->name,
         'brandUrl' => Yii::$app->homeUrl,
-        'options' => ['class' => 'navbar-expand-md navbar-dark fixed-top', 'style' => "background-color: #2192FF;"]
+        'options' => ['class' => 'navbar-expand-md navbar-dark fixed-top bg-primary']
     ]);
     echo Nav::widget([
-        'options' => ['class' => 'navbar-nav'],
+        'options' => ['class' => 'navbar-nav',],
         'items' => [
             ['label' => 'Home', 'url' => ['/site/index']],
             ['label' => 'About', 'url' => ['/site/about']],
-            // ['label' => 'Contact', 'url' => ['/site/contact']],
+
             Yii::$app->user->isGuest
                 ? ['label' => 'Login', 'url' => ['/site/login']]
-                : '<li class="nav-item">'
-                . Html::beginForm(['/site/logout'])
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'nav-link btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>',
+                : '',
             Yii::$app->user->isGuest
                 ? ['label' => 'Signup', 'url' => ['/site/sign-up']] : '',
             ['label' => 'English', 'url' => ['/site/about']],
+            Yii::$app->user->isGuest ? '' : ['label' => 'My Account', 'items' => [
+                ['label' => Yii::$app->user->identity->username, 'url' => '#'],
+                ['label' => 'My posts', 'url' => '/post/view-my-post'],
+                ['label' => 'Favorite posts', 'url' => '/favorite/get'],
+                ['label' => 'contact us', 'url' => '#'],
+                ['label' => 'Logout (' . Yii::$app->user->identity->username . ')', 'url' => Url::to(['site/logout'])],
+            ]],
 
-        ]
 
+        ]]);
+
+    $form = ActiveForm::begin([
+        'options' => ['class' => 'form-inline my-2 my-lg-0', 'style' => 'margin-left: 450px'],
+        'action' => Url::to(['post/search']),
+        'method' => 'GET'
     ]);
+    echo "<div class='d-flex justify-content-center gap-2'>";
+    echo Html::input('search', 'term', '', ['placeholder' => 'Search', 'class' => 'form-control mr-sm-2']);
+    echo Html::submitButton('<i class="fa-solid fa-magnifying-glass"></i>', ['class' => 'btn btn-warning my-2 my-sm-0']);
+    echo "</div>";
+    ActiveForm::end();
     NavBar::end();
     ?>
 </header>
@@ -80,10 +94,14 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
 <fotter id="footer" class="mt-auto py-3" style="background-color: #f5f5f5; text-align: center;">
     <div class="container-fluid">
         <h6 style="color: #8f8f8f;">Contact us</h6>
-        <a href="https://ar-ar.facebook.com/"><i class="social-icon fa-brands fa-facebook-f fa-light"  style=" margin: 15px 7px;color: #47555e;"></i></a>
-        <a href="https://www.linkedin.com/"><i class="fa-brands fa-linkedin" style=" margin: 15px 7px;color: #47555e;"></i></a>
-        <a href="https://www.instagram.com/"><i class="fa-brands fa-instagram" style=" margin: 15px 7px;color: #47555e; "></i></a>
-        <a href="https://www.google.com/intl/ar/gmail/about/"> <i class="fa-solid fa-envelope" style=" margin: 15px 7px;color: #47555e"></i></a>
+        <a href="https://ar-ar.facebook.com/"><i class="social-icon fa-brands fa-facebook-f fa-light"
+                                                 style=" margin: 15px 7px;color: #47555e;"></i></a>
+        <a href="https://www.linkedin.com/"><i class="fa-brands fa-linkedin"
+                                               style=" margin: 15px 7px;color: #47555e;"></i></a>
+        <a href="https://www.instagram.com/"><i class="fa-brands fa-instagram"
+                                                style=" margin: 15px 7px;color: #47555e; "></i></a>
+        <a href="https://www.google.com/intl/ar/gmail/about/"> <i class="fa-solid fa-envelope"
+                                                                  style=" margin: 15px 7px;color: #47555e"></i></a>
         <div style="color: #47555e; margin-top: 8px">&copy; My Company <?= date('Y') ?></div>
     </div>
 </fotter>
@@ -93,3 +111,4 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
 </body>
 </html>
 <?php $this->endPage() ?>
+

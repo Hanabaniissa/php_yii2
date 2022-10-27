@@ -35,6 +35,19 @@ class Category extends ActiveRecord
         ];
     }
 
+    public function attributeLabels()
+    {
+        return [
+            'id' => Yii::t('app', 'ID'),
+            'label_ar' => Yii::t('app', 'Label Ar'),
+            'label_en' => Yii::t('app', 'Label En'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'updated_at' => Yii::t('app', 'Updated At'),
+            'created_by' => Yii::t('app', 'Created By'),
+            'updated_by' => Yii::t('app', 'Updated By'),
+            'status' => Yii::t('app', 'Status'),
+        ];
+    }
 
     const CACHE_KEY = 'categories';
 

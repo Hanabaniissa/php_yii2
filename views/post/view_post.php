@@ -10,8 +10,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 
 <script> function ConfirmDelete() {
-        const confirmed = confirm("Are you sure you want to delete?");;
-        if (!confirmed) return;
+        return confirm("Are you sure you want to delete?");
     }
 </script>
 

@@ -29,7 +29,7 @@ endforeach;*/
                         <h3 class="card-title"><?php echo \yii\helpers\Html::encode($post->title) ?></h3>
                     </a>
                     <p class="card-text" style="padding: 2px;margin-top: 3px;"><?php echo \yii\helpers\StringHelper::truncateWords(\yii\helpers\Html::encode($post->description), 40) ?></p>
-                    <p class="card-text"><small>Created at: <?php echo Yii::$app->formatter->asRelativeTime($post->created_at) ?></small></p>
+                    <p class="card-text"><small>Created at: <?php echo Yii::$app->formatter->asDatetime($post->created_at) ?></small></p>
                 </div>
             </div>
         </div>

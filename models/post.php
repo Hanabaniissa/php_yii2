@@ -17,11 +17,10 @@ use yii\db\ActiveRecord;
  * @property integer $created_by
  * @property string $category_id
  * @property string $post_image
+ * @property int|null $status
  */
 class post extends ActiveRecord
 {
-
-    public $fileImage;
 
 
     public static function tableName()
@@ -38,8 +37,8 @@ class post extends ActiveRecord
             [['title', 'description'], 'string', 'max' => 300],
             ['created_by', 'default', 'value' => \Yii::$app->user->id],
             ['created_by', 'default', 'value' => \Yii::$app->user->id],
-            ['post_image', 'string','max'=>255],
-            [['fileImage'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg'],
+            ['post_image', 'string', 'max' => 255],
+            [['post_image'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg'],
 
         ];
     }
@@ -60,29 +59,29 @@ class post extends ActiveRecord
     public function attributeLabels()
     {
         return [
-            'id' => 'ID',
-            'title' => 'Title',
-            'description' => 'Description',
-            'phone' => 'Phone',
-            'user_id' => 'User ID',
-            'category_id' => 'Category ID',
-            'created_at' => 'Created At',
-            'updated_at' => 'Updated At',
-            'created_by' => 'Created By',
-            'updated_by' => 'Updated By',
+            'id' => Yii::t('app', 'ID'),
+            'title' => Yii::t('app', 'Title'),
+            'description' => Yii::t('app', 'Description'),
+            'phone' => Yii::t('app', 'Phone'),
+            'user_id' => Yii::t('app', 'User ID'),
+            'category_id' => Yii::t('app', 'Category ID'),
+            'created_at' => Yii::t('app', 'Created At'),
+            'updated_at' => Yii::t('app', 'Updated At'),
+            'created_by' => Yii::t('app', 'Created By'),
+            'updated_by' => Yii::t('app', 'Updated By'),
             'post_image' => Yii::t('app', 'Image'),
+            'status' => Yii::t('app', 'Status')
         ];
     }
 
 
-    public static function findPostByCategoryId($id)
+    public static function findPostByCategoryIdQuery($id)
     {
         // all => []
         // one
         return self::find()
-            ->select(['title', 'description', 'phone', 'id','created_at', 'post_image'])
-            ->where(['category_id' => $id])
-            ->all();
+            ->select(['title', 'description', 'phone', 'id', 'created_at', 'post_image'])
+            ->where(['category_id' => $id, 'status' => 10]);
     }
 
     public static function findOnePost($id)
@@ -93,21 +92,26 @@ class post extends ActiveRecord
             ->one();
     }
 
-
-    public function upload(){
-        if (true) {
-            $path = $this->uploadPath() . $this->id . "." .$this->fileImage->extension;
-            $this->fileImage->saveAs($path);
-            $this->post_image = $this->id . "." .$this->fileImage->extension;
-            $this->save();
-            return true;
-        } else {
-            return false;
+    public static function findMyPostQuery()
+    {
+        if (Yii::$app->user->isGuest) {
+            return [];
         }
+        $userid = Yii::$app->user->getId();
+
+        return self::find()
+            ->select(['title', 'description', 'phone', 'id', 'created_at', 'created_by', 'user_id', 'post_image'])
+            ->where(['user_id' => $userid, 'status' => 10]);
     }
 
-    public function uploadPath() {
-        return yii\helpers\Url::to('@web/upload');
+    const ACTIVE = 'active';
+    const DELETED = 'deleted';
 
+    public function delete()
+    {
+        $this->status = self::DELETED;
+        $this->save(false);
     }
+
+
 }

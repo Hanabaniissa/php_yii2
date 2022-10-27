@@ -8,7 +8,6 @@ namespace app\models;
  * @property string $password
  * @property string $auth_key
  * @property string $access_token
- * @property string $password_hash
  * @property string|null $password_reset_token
  * @property int|null $status
  * @property string|null $created_at
@@ -115,6 +114,8 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
         return $this->id;
     }
 
+
+
     /**
      * {@inheritdoc}
      */
@@ -144,8 +145,4 @@ class User extends ActiveRecord implements \yii\web\IdentityInterface
         return \Yii::$app->security->validatePassword($password, $this->password);
     }
 
-    public function generateAuthKey()
-    {
-
-    }
 }

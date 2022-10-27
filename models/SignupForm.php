@@ -27,9 +27,10 @@ class SignupForm extends Model
     {
         {
             return [
-                'username' => 'UserName',
-                'password' => 'Password',
-                'password_repeat' => 'PasswordRepeat',
+
+                'username' =>  Yii::t('app', 'UserName'),
+                'password' => Yii::t('app', 'Password'),
+                'password_repeat' => Yii::t('app', 'PasswordRepeat'),
             ];
         }
     }

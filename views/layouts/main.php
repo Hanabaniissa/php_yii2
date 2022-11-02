@@ -60,7 +60,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
                 ['label' => Yii::$app->user->identity->username, 'url' => '#'],
                 ['label' => 'My posts', 'url' => '/post/view-my-post'],
                 ['label' => 'Favorite posts', 'url' => '/favorite/get'],
-                ['label' => 'contact us', 'url' => '#'],
+                ['label' => 'Recently viewed posts', 'url' => '/post/recently-viewed'],
                 ['label' => 'Logout (' . Yii::$app->user->identity->username . ')', 'url' => Url::to(['site/logout'])],
             ]],
 
@@ -78,6 +78,8 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
     echo "</div>";
     ActiveForm::end();
     NavBar::end();
+
+
     ?>
 </header>
 

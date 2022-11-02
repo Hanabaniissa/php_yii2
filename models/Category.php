@@ -12,6 +12,7 @@ use yii\db\ActiveRecord;
  * @property string|null $updated_at
  * @property int $created_by
  * @property int $updated_by
+ * @property int $status
  */
 class Category extends ActiveRecord
 {
@@ -65,3 +66,5 @@ class Category extends ActiveRecord
 
 
 }
+
+

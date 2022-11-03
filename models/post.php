@@ -36,7 +36,6 @@ class post extends ActiveRecord
             ['phone', 'integer'],
             [['title', 'description'], 'string', 'max' => 300],
             ['created_by', 'default', 'value' => \Yii::$app->user->id],
-            ['created_by', 'default', 'value' => \Yii::$app->user->id],
             ['post_image', 'string', 'max' => 255],
             [['post_image'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg'],
 
@@ -84,7 +83,7 @@ class post extends ActiveRecord
             ->where(['category_id' => $id, 'status' => 10]);
     }
 
-    public static function findOnePost($id)
+    public static function findOne($id)
     {
         return self::find()
             ->select(['title', 'description', 'phone', 'id', 'created_at', 'created_by', 'user_id', 'post_image'])

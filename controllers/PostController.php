@@ -52,7 +52,7 @@ class PostController extends Controller
 
     public function actionViewOne($id)
     {
-        $onePost = post::findOnePost($id);
+        $onePost = post::findOne($id);
         return $this->render('view_post', ['onePost' => $onePost]);
     }
 

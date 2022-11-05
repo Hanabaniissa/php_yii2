@@ -3,10 +3,13 @@
 namespace app\controllers;
 
 use app\models\Category;
+use app\models\Country;
 use app\models\SignupForm;
+use app\models\SubCategories;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
+use yii\web\Cookie;
 use yii\web\Response;
 use app\models\LoginForm;
 use app\models\ContactForm;
@@ -55,10 +58,39 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
+    public function actionIndex($countryId = null)
     {
-        $categoryModels = Category::find()->all();
-        return $this->render('home', ['categories' => $categoryModels]);
+       if (empty($countryId)) {
+            $countryId = $this->getPreferredCountry();
+            if (empty($countryId)) return $this->redirect(['country/get']);
+        } else {
+            $this->setPreferredCountry($countryId);
+        }
+
+       $subCategoriesModels= SubCategories::find()->where(['country_id' => $countryId])->all();
+        $categoryModels = Category::find()->where(['country_id' => $countryId])->all();
+       $countriesModels= Country::find()->where(['id' => $countryId])->one();
+        return $this->render('home', ['categories' => $categoryModels,'subCategories'=> $subCategoriesModels,'country'=>$countriesModels]);
+    }
+
+
+    private function setPreferredCountry($countryId)
+    {
+        $cookies = Yii::$app->response->cookies;
+        $cookies->add(new Cookie([
+            'name' => 'country',
+            'value' => $countryId,
+            'httpOnly' => true,
+            'expire' => time() + 60 * 60 * 24,
+            'sameSite' => Cookie::SAME_SITE_STRICT
+        ]));
+    }
+
+    private function getPreferredCountry()
+    {
+        $currentCookies = Yii::$app->request->cookies;
+        if (!empty($currentCookies['country']->value)) return $currentCookies['country']->value;
+        return null;
     }
 
     /**

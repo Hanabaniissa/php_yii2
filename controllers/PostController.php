@@ -64,8 +64,8 @@ class PostController extends Controller
       //  $userId = \Yii::$app->user->id;
         $cookies = Yii::$app->response->cookies;
         $currentCookies = Yii::$app->request->cookies;
-        $recentlyViewedPosts = $currentCookies[self::RECENTLY_VIEWED_COOKIE]->value;
-        if (!is_array($recentlyViewedPosts)) $recentlyViewedPosts = [$recentlyViewedPosts];
+      $recentlyViewedPosts = $currentCookies[self::RECENTLY_VIEWED_COOKIE]->value;
+     if (!is_array($recentlyViewedPosts)) $recentlyViewedPosts = [$recentlyViewedPosts];
 
         // Remove from Array
         $key = array_search($id, $recentlyViewedPosts);
@@ -76,7 +76,7 @@ class PostController extends Controller
         $recentlyViewedPosts[] = $id;
 //        $recentlyViewedPosts[] = ['id' => $id, 'actionDate' => date('Y-m-d')];
 
-        $recentlyViewedPosts = array_unique($recentlyViewedPosts);
+      $recentlyViewedPosts = array_unique($recentlyViewedPosts);
         $cookies->add(new Cookie([
             'name' => self::RECENTLY_VIEWED_COOKIE,
             'value' => $recentlyViewedPosts,
@@ -91,7 +91,7 @@ class PostController extends Controller
 
     public function actionRecentlyViewed()
     {
-        Html::script('alert("Hello!");');
+
 
 //        if(Yii::$app->user->isGuest) return '';
         $cookies = Yii::$app->request->cookies;

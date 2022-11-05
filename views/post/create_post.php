@@ -1,7 +1,6 @@
 <?php
 
 use app\models\Category;
-use yii\widgets\ActiveForm;
 
 /** @var app\models\post $post */
 /** @var app\models\Category $categories */
@@ -12,11 +11,11 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-index">
     <hr>
-    <h1 style=" margin-top: 50px;">Create post</h1>
+    <h1 style=" margin-top: 30px;">Create post</h1>
     <br>
 
     <div class="container body-content">
-        <?php $form = ActiveForm::begin(
+        <?php $form = \yii\bootstrap5\ActiveForm::begin(
             ['options' => ['enctype' => 'multipart/form-data']]); ?>
         <div class="row">
             <div class="for-control">
@@ -61,7 +60,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <br><br>
         <?= \yii\helpers\Html::submitButton("Post", ['class' => 'btn btn-lg btn-warning', ' style' => 'color: #47555e']) ?>
 
-        <?php ActiveForm::end(); ?>
+        <?php \yii\bootstrap5\ActiveForm::end(); ?>
     </div>
 
 </div>

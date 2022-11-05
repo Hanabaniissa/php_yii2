@@ -52,13 +52,13 @@ class Category extends ActiveRecord
 
     const CACHE_KEY = 'categories';
 
-    static function getCategories($useCache = true): array
+    public static function getCategories($useCache = true): array
     {
         if ($useCache) {
             $categories = Yii::$app->redis->get(self::CACHE_KEY);
             if ($categories) return unserialize($categories);
-
         }
+
         $categories = self::find()->all();
         Yii::$app->redis->set(self::CACHE_KEY, serialize($categories));
         return $categories;

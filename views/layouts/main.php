@@ -40,9 +40,9 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
 <header id="header">
     <?php
     NavBar::begin([
-        'brandLabel' => Yii::$app->name,
+        'brandLabel' => 'Abuyz',
         'brandUrl' => Yii::$app->homeUrl,
-        'options' => ['class' => 'navbar-expand-md navbar-dark fixed-top bg-primary']
+        'options' => ['class' => 'navbar-expand-md navbar-dark fixed-top', 'style'=>'background-color: #000000']
     ]);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav',],
@@ -68,13 +68,13 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
         ]]);
 
     $form = ActiveForm::begin([
-        'options' => ['class' => 'form-inline my-2 my-lg-0', 'style' => 'margin-left: 450px'],
+        'options' => ['class' => 'form-inline my-2 my-lg-0', 'style' => 'margin-left: 590px'],
         'action' => Url::to(['post/search']),
         'method' => 'GET'
     ]);
     echo "<div class='d-flex justify-content-center gap-2'>";
     echo Html::input('search', 'term', '', ['placeholder' => 'Search', 'class' => 'form-control mr-sm-2']);
-    echo Html::submitButton('<i class="fa-solid fa-magnifying-glass"></i>', ['class' => 'btn btn-warning my-2 my-sm-0']);
+    echo Html::submitButton('<i class="fa-solid fa-magnifying-glass"></i>', ['class' => 'btn my-2 my-sm-0', 'style'=>'background-color: #40CCFFFF; color:#ffffff']);
     echo "</div>";
     ActiveForm::end();
     NavBar::end();

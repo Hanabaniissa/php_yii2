@@ -13,7 +13,9 @@ class SubCategoriesController extends Controller
     public function actionGet()
     {
         $subCategories = new SubCategories();
-     $subCategories = $subCategories->getSubCategories();
+// add country ID
+     $subCategories->getSubCategories(3,true);
+
 
 
     }

@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 
 use Yii;
@@ -63,9 +64,15 @@ class Country extends ActiveRecord{
             if ($countries) return unserialize($countries);
 
         }
-        $countries = self::find()->all();
+        $countries = self::find()->where(['status'=>self::STATUS_ACTIVE])->all();
         Yii::$app->redis->set(self::CACHE_KEY_COUNTRY, serialize($countries));
         return $countries;
     }
 
+
+    public static function findCountryId()
+    {
+        return self::$this->id;
+
+    }
 }

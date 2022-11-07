@@ -1,7 +1,5 @@
 <?php
-/** @var app\models\post $myPost */
-/** @var app\models\post $pages */
-
+/** @var \yii\data\ActiveDataProvider  $myPost */
 /** @var yii\web\View $this */
 
 use yii\helpers\Url;
@@ -37,7 +35,7 @@ use yii\helpers\Url;
 
 <div style="margin-top: 100px; margin-left: 200px;  " class="pagination">
     <?= \yii\bootstrap5\LinkPager::widget([
-        'pagination' => $pages,
+        'pagination' =>$myPost->getPagination(),
 
     ]) ?>
 

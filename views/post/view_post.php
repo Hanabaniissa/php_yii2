@@ -38,7 +38,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-lg-6">
                 <?= \yii\helpers\Html::a('Update', \yii\helpers\Url::to(['post/post', 'postId' => $onePost->id]), ['class' => 'btn btn-warning btn-lg', 'style' => 'margin-right: 3px; color: #47555e']) ?>
 
-                <?= \yii\helpers\Html::a('Delete', \yii\helpers\Url::to(['post/delete', 'postId' => $onePost->id]), ['class' => 'btn btn-danger btn-lg', 'onclick' => 'ConfirmDelete()']) ?>
+                <?= \yii\helpers\Html::a('Delete', \yii\helpers\Url::to(['post/delete', 'postId' => $onePost->id,'id'=>$onePost->category_id]), ['class' => 'btn btn-danger btn-lg', 'onclick' => 'ConfirmDelete()']) ?>
             </div>
         </div>
     <?php endif; ?>

@@ -1,5 +1,5 @@
 <?php
-/** @var app\models\post $posts */
+/** @var \yii\data\ActiveDataProvider $posts */
 /** @var Category[] $categories */
 /** @var yii\web\View $this */
 
@@ -44,8 +44,7 @@ endforeach;*/
 
 <div style="margin-top: 100px; margin-left: 200px;  " class="pagination">
     <?= \yii\bootstrap5\LinkPager::widget([
-        'pagination' => $pagesPost,
-
+        'pagination' => $posts->getPagination(),
     ]) ?>
 
 </div>

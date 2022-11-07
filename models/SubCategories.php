@@ -61,14 +61,14 @@ class SubCategories extends ActiveRecord{
 
     const CACHE_KEY_SUBCAT= 'subCategories';
 
-    public static function getSubCategories($useCache=true):array
+    public static function getSubCategories($countryId,$useCache=true):array
     {
         if($useCache){
-            $subCategories=Yii::$app->redis->get(self::CACHE_KEY_SUBCAT);
+            $subCategories=Yii::$app->redis->get(self::CACHE_KEY_SUBCAT.'.'.$countryId,);
             if($subCategories)return unserialize($subCategories);
         }
-            $subCategories= self::find()->all();
-            Yii::$app->redis->set(self::CACHE_KEY_SUBCAT,serialize($subCategories));
+          $subCategories= self::find()->where(['country_id'=>$countryId,'status'=>self::STATUS_ACTIVE])->all();
+            Yii::$app->redis->set(self::CACHE_KEY_SUBCAT.'.'.$countryId,serialize($subCategories));
             return $subCategories;
 
 

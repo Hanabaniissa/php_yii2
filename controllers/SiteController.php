@@ -8,6 +8,7 @@ use app\models\SignupForm;
 use app\models\SubCategories;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\Cookie;
 use yii\web\Response;
@@ -62,14 +63,19 @@ class SiteController extends Controller
     {
        if (empty($countryId)) {
             $countryId = $this->getPreferredCountry();
-            if (empty($countryId)) return $this->redirect(['country/get']);
+            if (empty($countryId))
+                return $this->redirect(Url::to(['country/get']));
         } else {
             $this->setPreferredCountry($countryId);
         }
 
-       $subCategoriesModels= SubCategories::find()->where(['country_id' => $countryId])->all();
-        $categoryModels = Category::find()->where(['country_id' => $countryId])->all();
-       $countriesModels= Country::find()->where(['id' => $countryId])->one();
+     //$subCategoriesModels= SubCategories::find()->where(['country_id' => $countryId])->all();
+        $subCategoriesModels = SubCategories::getSubCategories($countryId,true);
+
+
+      $countriesModels= Country::find()->where(['id' => $countryId])->one();
+        $categoryModels = Category::getCategoriesBy($countryId,true);
+    //   $subCategoriesModels = SubCategories::getSubCategories($countryId,true);
         return $this->render('home', ['categories' => $categoryModels,'subCategories'=> $subCategoriesModels,'country'=>$countriesModels]);
     }
 

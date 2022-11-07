@@ -9,7 +9,7 @@ class ActiveCategoryController extends Controller{
 
     public function actionCategory(){
         $categories= new Category;
-        $categories->getCategories();
+        $categories->getCategories(3,true);
 
     }
 

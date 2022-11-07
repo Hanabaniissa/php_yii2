@@ -18,6 +18,11 @@ use yii\db\ActiveRecord;
  * @property string $category_id
  * @property string $post_image
  * @property int|null $status
+ * @property int $country_id
+ * @property int $city_id
+ * @property int $subCategory_id
+ * @property int $neighborhood_id
+ * @property int|null $price
  */
 class post extends ActiveRecord
 {
@@ -63,13 +68,18 @@ class post extends ActiveRecord
             'description' => Yii::t('app', 'Description'),
             'phone' => Yii::t('app', 'Phone'),
             'user_id' => Yii::t('app', 'User ID'),
-            'category_id' => Yii::t('app', 'Category ID'),
+            'category_id' => Yii::t('app', 'Category '),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
             'created_by' => Yii::t('app', 'Created By'),
             'updated_by' => Yii::t('app', 'Updated By'),
             'post_image' => Yii::t('app', 'Image'),
-            'status' => Yii::t('app', 'Status')
+            'status' => Yii::t('app', 'Status'), 'country_id' => Yii::t('app', 'Country ID'),
+            'city_id' => Yii::t('app', 'City ID'),
+            'subCategory_id' => Yii::t('app', 'Sub Category'),
+            'neighborhood_id' => Yii::t('app', 'Neighborhood ID'),
+            'price' => Yii::t('app', 'Price')
+
         ];
     }
 

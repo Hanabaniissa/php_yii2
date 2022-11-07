@@ -68,7 +68,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
         ]]);
 
     $form = ActiveForm::begin([
-        'options' => ['class' => 'form-inline my-2 my-lg-0', 'style' => 'margin-left: 590px'],
+        'options' => ['class' => 'form-inline my-2 my-lg-0', 'style' => 'margin-left: 550px'],
         'action' => Url::to(['post/search']),
         'method' => 'GET'
     ]);

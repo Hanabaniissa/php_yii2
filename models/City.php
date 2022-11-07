@@ -57,4 +57,19 @@ class City extends ActiveRecord{
     }
 
 
+    const CACHE_KEY_CITY= 'cities';
+
+    public static function getCities($countryId,$useCache=true) :array{
+
+        if ($useCache) {
+            $cities = Yii::$app->redis->get(self::CACHE_KEY_CITY.'.'.$countryId,);
+            if ($cities) return unserialize($cities);
+        }
+
+        $cities= self::find()->where(['country_id'=>$countryId,'status'=>self::STATUS_ACTIVE])->all();
+        Yii::$app->redis->set(self::CACHE_KEY_CITY.'.'.$countryId, serialize($cities));
+        return $cities;
+    }
+
+
 }

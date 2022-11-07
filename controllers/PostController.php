@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\CountryUtils;
 use app\models\post;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -20,12 +21,12 @@ class PostController extends Controller
 
     const RECENTLY_VIEWED_COOKIE = 'recentlyViewed';
 
-
     public function actionPost($postId = null)
     {
         $post = new post();
         if (!empty($postId)) {
             $post = post::find()->where(['id' => $postId])->one();
+
         }
 
         if (Yii::$app->request->isPost) {
@@ -36,36 +37,43 @@ class PostController extends Controller
                 $fileName = time() . "-" . $imageModel->name;
                 $imageModel->saveAs(Yii::$app->basePath . Yii::getAlias('@upload') . "/{$fileName}");
                 $post->post_image = $fileName;
+
+
             }
 
             if ($post->validate()) {
                 $post->save();
-                return $this->redirect(Yii::$app->homeUrl);
+                $categoryId = $post->category_id;
+                return $this->redirect(['post/view-by-category', 'id' => $categoryId]);
+
             } else {
                 var_dump($post->errors);
                 die("not valid");
             }
         }
-        return $this->render('create_post', ['post' => $post]);
+        return $this->render('create_post', ['post' => $post, 'country_id' => CountryUtils::getPreferredCountry()]);
     }
 
 
     public function actionDelete($postId)
     {
         $post = post::find()->where(['id' => $postId])->one();
+        $categoryId = $post->category_id;
         $post->delete();
-        return $this->redirect(['site/index']);
+        return $this->redirect(['post/view-by-category', 'id' => $categoryId]);
     }
 
 
     public function actionViewOne($id)
     {
 
-      //  $userId = \Yii::$app->user->id;
+        //  $userId = \Yii::$app->user->id;
         $cookies = Yii::$app->response->cookies;
         $currentCookies = Yii::$app->request->cookies;
-      $recentlyViewedPosts = $currentCookies[self::RECENTLY_VIEWED_COOKIE]->value;
-     if (!is_array($recentlyViewedPosts)) $recentlyViewedPosts = [$recentlyViewedPosts];
+        $recentlyViewedPosts = [];
+        if (!empty($currentCookies[self::RECENTLY_VIEWED_COOKIE]))
+            $recentlyViewedPosts = $currentCookies[self::RECENTLY_VIEWED_COOKIE]->value;
+        if (!is_array($recentlyViewedPosts)) $recentlyViewedPosts = [$recentlyViewedPosts];
 
         // Remove from Array
         $key = array_search($id, $recentlyViewedPosts);
@@ -74,9 +82,9 @@ class PostController extends Controller
         }
 
         $recentlyViewedPosts[] = $id;
-//        $recentlyViewedPosts[] = ['id' => $id, 'actionDate' => date('Y-m-d')];
+//     $recentlyViewedPosts[] = ['id' => $id, 'actionDate' => date('Y-m-d')];
 
-      $recentlyViewedPosts = array_unique($recentlyViewedPosts);
+        $recentlyViewedPosts = array_unique($recentlyViewedPosts);
         $cookies->add(new Cookie([
             'name' => self::RECENTLY_VIEWED_COOKIE,
             'value' => $recentlyViewedPosts,
@@ -98,6 +106,7 @@ class PostController extends Controller
         if (!$cookies->has(self::RECENTLY_VIEWED_COOKIE)) return '';
         $postsIds = $cookies[self::RECENTLY_VIEWED_COOKIE]->value;
         if (!is_array($postsIds)) $postsIds = [$postsIds];
+
         // [1, 2, 3]
         // 1,2,3 explode(',', $str) => [1, 2, 3]
 //        if(\Yii::$app->user->id) return'';
@@ -133,8 +142,6 @@ class PostController extends Controller
     public function actionViewByCategory($id)
     {
         $query = post::findPostByCategoryIdQuery($id);
-        $countQuery = clone $query;
-        $pagesPost = new Pagination(['totalCount' => $countQuery->count(), 'defaultPageSize' => 4]);
         $posts = new ActiveDataProvider([
                 'query' => $query,
                 'pagination' => [
@@ -143,15 +150,13 @@ class PostController extends Controller
             ]
         );
 
-        return $this->render('category', ['posts' => $posts, 'pagesPost' => $pagesPost]);
+        return $this->render('category', ['posts' => $posts]);
     }
 
 
     public function actionViewMyPost()
     {
         $query = post::findMyPostQuery();
-        $countQuery = clone $query;
-        $pages = new Pagination(['totalCount' => $countQuery->count(), 'defaultPageSize' => 4]);
         $myPost = new ActiveDataProvider([
                 'query' => $query,
                 'pagination' => [
@@ -159,15 +164,13 @@ class PostController extends Controller
                 ]
             ]
         );
-        return $this->render('myPosts', ['myPost' => $myPost, 'pages' => $pages]);
+        return $this->render('myPosts', ['myPost' => $myPost]);
     }
 
 
     public function actionSearch($term = '')
     {
         $query = post::search($term);
-        $countQuery = clone $query;
-        $pagesPost = new Pagination(['totalCount' => $countQuery->count(), 'defaultPageSize' => 4]);
         $posts = new ActiveDataProvider([
                 'query' => $query,
                 'pagination' => [
@@ -175,6 +178,6 @@ class PostController extends Controller
                 ]
             ]
         );
-        return $this->render('category', ['posts' => $posts, 'pagesPost' => $pagesPost]);
+        return $this->render('category', ['posts' => $posts]);
     }
 }

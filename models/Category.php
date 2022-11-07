@@ -50,9 +50,9 @@ class Category extends ActiveRecord
         ];
     }
 
-    const CACHE_KEY = 'categories';
+    const CACHE_KEY_CATEGORY = 'categories';
 
-    public static function getCategories($useCache = true): array
+    /* public static function getCategories($useCache = true): array
     {
         if ($useCache) {
             $categories = Yii::$app->redis->get(self::CACHE_KEY);
@@ -63,8 +63,19 @@ class Category extends ActiveRecord
         Yii::$app->redis->set(self::CACHE_KEY, serialize($categories));
         return $categories;
     }
+*/
+    public static function getCategoriesBy($countryId, $useCache = true): array
+    {
+        if ($useCache) {
+            $categories = Yii::$app->redis->get(self::CACHE_KEY_CATEGORY.'.'.$countryId);
+            if ($categories) return unserialize($categories);
+        }
 
+        $categories = self::find()->where(['country_id' => $countryId, 'status'=>self::STATUS_ACTIVE])->all();
+        Yii::$app->redis->set(self::CACHE_KEY_CATEGORY.'.'.$countryId, serialize($categories));
 
+        return $categories;
+    }
 }
 
 

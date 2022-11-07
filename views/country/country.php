@@ -38,7 +38,7 @@ $this->title = 'AbuyZ: Country';
 <div class="carousel-inner">
     <div class="carousel-item active">
         <img src="<?= '/images/Home.jpg' ?>" class="d-block w-100" alt=".."
-             style=" margin: -175px auto -100px auto;  filter: brightness(80%);">
+             style=" margin: -175px auto -100px auto;  filter: brightness(65%);">
         <div class="carousel-caption " style="  text-align: center">
             <h1 style="margin: auto auto 20px;color: #ffffff">Welcome to <span style="color: #40ccff">AbuyZ</span></h1>
             <h3 style="color:#eaeaea">Your preferred online shopping platform</h3>
@@ -202,10 +202,20 @@ $this->title = 'AbuyZ: Country';
 
     <h3>In <span style="color: #40ccff">AbuyZ</span> you can ...</h3>
 
-    <p></p>
+   <!-- <div>
+        <img>
+        <h6></h6>
+        <p></p>
+    </div>
 
+    <div>
+        <img>
+        <h6></h6>
+        <p></p>
+    </div>
 
-</div>
+</div>-->
+
 
 
 

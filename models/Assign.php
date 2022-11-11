@@ -4,6 +4,7 @@ namespace app\models;
 
 use yii\db\ActiveRecord;
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "assign".
@@ -17,8 +18,12 @@ use Yii;
  * @property int $created_by
  * @property int|null $updated_by
  */
-class Assign extends ActiveRecord{
+class Assign extends ActiveRecord
+{
 
+    const STATUS_DELETED = 0;
+    const STATUS_INACTIVE = 2;
+    const STATUS_ACTIVE = 1;
 
     public static function tableName()
     {
@@ -47,6 +52,18 @@ class Assign extends ActiveRecord{
             'created_by' => Yii::t('app', 'Created By'),
             'updated_by' => Yii::t('app', 'Updated By'),
         ];
+    }
+
+    const CACHE_KEY_ASSIGN = 'assigns';
+
+    public static function getAssignWithField($subCatId)
+    {
+
+        return (new Query())->select('*')
+            ->from(self::tableName())
+            ->innerJoin(Field::tableName(), 'assign.field_id = fields.id')
+            ->where(['assign.status' => self::STATUS_ACTIVE, 'fields.status' => 1, 'assign.subCategory_id' => $subCatId]);
+
     }
 
 

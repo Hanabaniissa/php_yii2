@@ -3,14 +3,12 @@
 namespace app\controllers;
 
 use app\helpers\CountryUtils;
+use app\models\Assign;
 use app\models\post;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\data\Pagination;
-use yii\helpers\ArrayHelper;
-use yii\helpers\Html;
-use yii\helpers\Url;
 use yii\web\Controller;
 use yii\web\Cookie;
 use yii\web\UploadedFile;
@@ -28,10 +26,14 @@ class PostController extends Controller
             $post = post::find()->where(['id' => $postId])->one();
 
         }
+       $assignModels=Assign::getAssignWithField(1)->all();
+
 
         if (Yii::$app->request->isPost) {
             $post->load(yii::$app->request->post());
             $post->load(yii::$app->request->post(), '');
+
+
 
             if ($imageModel = UploadedFile::getInstance($post, 'post_image')) {
                 $fileName = time() . "-" . $imageModel->name;
@@ -51,7 +53,7 @@ class PostController extends Controller
                 die("not valid");
             }
         }
-        return $this->render('create_post', ['post' => $post, 'country_id' => CountryUtils::getPreferredCountry()]);
+        return $this->render('create_post', ['post' => $post, 'country_id' => CountryUtils::getPreferredCountry(),'assigns'=>$assignModels]);
     }
 
 

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\helpers\CountryUtils;
 use app\models\Category;
 use app\models\Country;
 use app\models\SignupForm;
@@ -35,6 +36,7 @@ class SiteController extends Controller
                     ],
                 ],
             ],
+
         ];
     }
 
@@ -61,7 +63,7 @@ class SiteController extends Controller
      */
     public function actionIndex($countryId = null)
     {
-       if (empty($countryId)) {
+        if (empty($countryId)) {
             $countryId = $this->getPreferredCountry();
             if (empty($countryId))
                 return $this->redirect(Url::to(['country/get']));
@@ -69,16 +71,32 @@ class SiteController extends Controller
             $this->setPreferredCountry($countryId);
         }
 
-     //$subCategoriesModels= SubCategories::find()->where(['country_id' => $countryId])->all();
-        $subCategoriesModels = SubCategories::getSubCategories($countryId,true);
+        //$subCategoriesModels= SubCategories::find()->where(['country_id' => $countryId])->all();
+        $subCategoriesModels = SubCategories::getSubCategories($countryId, true);
 
 
-      $countriesModels= Country::find()->where(['id' => $countryId])->one();
-        $categoryModels = Category::getCategoriesBy($countryId,true);
-    //   $subCategoriesModels = SubCategories::getSubCategories($countryId,true);
-        return $this->render('home', ['categories' => $categoryModels,'subCategories'=> $subCategoriesModels,'country'=>$countriesModels]);
+        $countriesModels = Country::find()->where(['id' => $countryId])->one();
+        $categoryModels = Category::getCategoriesBy($countryId, true);
+        //   $subCategoriesModels = SubCategories::getSubCategories($countryId,true);
+        return $this->render('home', ['categories' => $categoryModels, 'country' => $countriesModels]);
     }
 
+    public function actionTest()
+    { $countryId=CountryUtils::getPreferredCountry();
+        Yii::$app->response->format = 'json';
+        return Category::getCategoriesBy($countryId,true);
+    }
+
+    public function actionSub()
+    {$countryId=CountryUtils::getPreferredCountry();
+        Yii::$app->response->format = 'json';
+        if(isset($_GET['category'])) {
+            $categoryId = $_GET['category'];
+
+            return SubCategories::getSubCategories($countryId, $categoryId, true);
+        }
+        return null;
+    }
 
     private function setPreferredCountry($countryId)
     {

@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 
 /** @property integer $id
  * @property string $label_ar
@@ -75,6 +76,18 @@ class Category extends ActiveRecord
         Yii::$app->redis->set(self::CACHE_KEY_CATEGORY.'.'.$countryId, serialize($categories));
 
         return $categories;
+    }
+
+    public static function getsubByCat($countryId){
+        return (new Query())
+            ->select('*')
+            ->from(self::tableName())
+            ->innerJoin(SubCategories::tableName(), 'categories.id = subCategories.category_id')
+            ->where([ 'categories.status' => self::STATUS_ACTIVE,
+                'subCategories.country_id'=>$countryId,
+                'subCategories.status' => 1])
+            ->all();
+
     }
 }
 

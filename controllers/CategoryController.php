@@ -5,7 +5,7 @@ namespace app\controllers;
 use app\models\Category;
 use yii\web\Controller;
 
-class ActiveCategoryController extends Controller{
+class CategoryController extends Controller{
 
     public function actionCategory(){
         $categories= new Category;
@@ -13,6 +13,14 @@ class ActiveCategoryController extends Controller{
 
     }
 
+    public function actionTest(){
+        \Yii::$app->response->format='json';
+        return Category::getCategoriesBy(1,true);
+
+
+
+
+    }
 
 
 

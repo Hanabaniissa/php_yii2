@@ -3,8 +3,10 @@
 namespace app\controllers;
 
 
+use app\helpers\CountryUtils;
 use app\models\Country;
 use app\models\SubCategories;
+use Yii;
 use yii\web\Controller;
 
 class SubCategoriesController extends Controller
@@ -12,12 +14,22 @@ class SubCategoriesController extends Controller
 
     public function actionGet()
     {
-        $subCategories = new SubCategories();
 // add country ID
-     $subCategories->getSubCategories(3,true);
+    return SubCategories::getSubCategories(1,1,true);
 
 
 
+    }
+
+    public function actionTest()
+    {
+        $countryId = CountryUtils::getPreferredCountry();
+        Yii::$app->response->format = 'json';
+        $categoryId = Yii::$app->request->get('category');
+        if ($categoryId) {
+            return SubCategories::getSubCategories($countryId, $categoryId);
+        }
+        return null;
     }
 
 

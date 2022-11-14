@@ -4,6 +4,7 @@ namespace app\models;
 
 use yii\db\ActiveRecord;
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "options".
@@ -11,7 +12,6 @@ use Yii;
  * @property int $id
  * @property string $label_ar
  * @property string $label_en
- * @property string $title
  * @property int $field_id
  * @property int|null $status
  * @property string|null $created_at
@@ -55,6 +55,16 @@ class Option extends ActiveRecord{
             'updated_by' => Yii::t('app', 'Updated By'),
         ];
     }
+    public static function getOptionByFieldQuery($fieldId){
+        return self::find()->where(['field_id'=>$fieldId]);
+
+
+    }
+
+
+
+
+
 
 
 }

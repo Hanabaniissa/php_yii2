@@ -35,7 +35,7 @@ $this->registerJsVar('countryId', Yii::$app->request->get('countryId'));
 
 
 <div style="text-align: center;">
-    <h3 style="margin: 150px auto 60px ;color:#47555e;">Select one of these categories</h3>
+    <h3 style="margin: 120px auto 60px ;color:#47555e;">Select one of these categories</h3>
     <!-- categories -->
 
     <div class="container " style="text-align: center; margin-top: 50px;">
@@ -58,8 +58,9 @@ $this->registerJsVar('countryId', Yii::$app->request->get('countryId'));
     <hr style="border: dotted #38e54d 6px; width: 4%; margin: 40px auto 40px; border-bottom: none;">
     <!-- button -->
     <div class="row">
-        <span style="text-align: center; margin-top: 10px;"><?= Html::a('Create Post', Url::to(['post/post']), ['class' => 'btn btn-warning btn-lg', 'style' => 'color: #47555e']) ?> </span>
+        <span style="text-align: center; margin-top: 10px;"><?= Html::a('Create Post', Url::to(['post/post']), ['class' => 'btn btn-warning btn-lg', 'style' => 'color: #ffffff']) ?> </span>
     </div>
+    <br>
 
     <?php
 
@@ -85,7 +86,6 @@ $('[data-role="category"]').on('click', function () {
             response.forEach((item) => {
                 subCatCont.append(`<a class="dropdown-item" href="#" style="color: #000000; text-decoration: none" class="link-dark">` + item.label_en + `</a>`);
            } )
-        
         }
         
     });

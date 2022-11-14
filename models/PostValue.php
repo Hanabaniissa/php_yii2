@@ -4,6 +4,7 @@ namespace app\models;
 
 use yii\db\ActiveRecord;
 use Yii;
+use yii\db\Query;
 
 /**
  * This is the model class for table "post_value".
@@ -12,17 +13,17 @@ use Yii;
  * @property int $post_id
  * @property int $field_id
  * @property int $option_id
- * @property int|null $integer_val
  * @property string|null $string_val
- * @property int|null $boolean_val
  * @property int|null $status
  * @property string|null $created_at
  * @property string|null $updated_at
  * @property int $created_by
  * @property int|null $updated_by
+ * @property-read Field $field
+ * @property-read Option $option
  */
-
-class PostValue extends ActiveRecord{
+class PostValue extends ActiveRecord
+{
 
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 2;
@@ -33,11 +34,13 @@ class PostValue extends ActiveRecord{
     {
         return 'post_value';
     }
+
     public function rules()
     {
         return [
+            [['created_by'], 'default', 'value' => Yii::$app->user->id],
             [['post_id', 'field_id', 'option_id', 'created_by'], 'required'],
-            [['post_id', 'field_id', 'option_id', 'integer_val', 'boolean_val', 'status', 'created_by', 'updated_by'], 'integer'],
+            [['post_id', 'field_id', 'option_id', 'status', 'created_by', 'updated_by'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['string_val'], 'string', 'max' => 255],
         ];
@@ -60,5 +63,27 @@ class PostValue extends ActiveRecord{
             'updated_by' => Yii::t('app', 'Updated By'),
         ];
     }
+
+    public static function getPostvalueWithIdQuery()
+    {
+
+        return (new Query())->select('*')
+            ->from(self::tableName())
+            ->innerJoin(post::tableName(), 'post_value.post_id = posts.id');
+
+    }
+
+    public function getField(): \yii\db\ActiveQuery
+    {
+        return $this->hasOne(Field::class, ['id' => 'field_id']);
+    }
+
+    public function getOption(): \yii\db\ActiveQuery
+    {
+        return $this->hasOne(Option::class, ['id' => 'option_id']);
+    }
+
+
+
 
 }

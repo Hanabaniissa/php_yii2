@@ -56,7 +56,7 @@ class Assign extends ActiveRecord
 
     const CACHE_KEY_ASSIGN = 'assigns';
 
-    public static function getAssignWithField($subCatId)
+    public static function getAssignWithFieldQuery($subCatId)
     {
 
         return (new Query())->select('*')
@@ -66,5 +66,14 @@ class Assign extends ActiveRecord
 
     }
 
+    public static function getAssignWithOptionQuery($fieldId,$subCategoryID){
+        return (new Query())->select('*')
+            ->from(self::tableName())
+            ->innerJoin(Option::tableName(), 'assign.field_id = options.field_id')
+            ->where(['assign.status' => self::STATUS_ACTIVE, 'options.status' => 1, 'assign.field_id' => $fieldId,
+                'assign.subCategory_id' => $subCategoryID  ]);
+
+
+    }
 
 }

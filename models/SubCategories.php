@@ -64,26 +64,9 @@ class SubCategories extends ActiveRecord{
 
 
 
-   /*public static function getSubCategories($countryId,$useCache=true):array
-    {
-        // TODO: redis key => CAT_COUNTRY
-        if($useCache){
-            $subCategories=Yii::$app->redis->get(self::CACHE_KEY_SUBCAT.'.'.$countryId);
-            if($subCategories)return unserialize($subCategories);
-        }
-        $subCategories= self::find()->where(['country_id'=>$countryId,'status'=>self::STATUS_ACTIVE])->all();
-
-        Yii::$app->redis->set(self::CACHE_KEY_SUBCAT.'.'.$countryId, serialize($subCategories));
-        return $subCategories;
-
-    }*/
-
-
-
-
     public static function getSubCategories($countryId,$categoryId,$useCache=true):array
     {
-        // TODO: redis key => CAT_COUNTRY
+
         if($useCache){
             $subCategories=Yii::$app->redis->get(self::CACHE_KEY_SUBCAT.'.'.$countryId.'.'.$categoryId);
             if($subCategories)return unserialize($subCategories);
@@ -96,18 +79,6 @@ class SubCategories extends ActiveRecord{
 
 
 
-   /* public static function getSubCategories($countryId,$useCache=true):array
-    {
-        // TODO: redis key => CAT_COUNTRY
-        if($useCache){
-            $subCategories=Yii::$app->redis->get(self::CACHE_KEY_SUBCAT.'.'.$countryId);
-            if($subCategories)return unserialize($subCategories);
-        }
-        $subCategories= Category::getsubByCat($countryId)->all();
-        Yii::$app->redis->set(self::CACHE_KEY_SUBCAT.'.'.$countryId, serialize($subCategories));
-        return $subCategories;
-
-    }*/
 
 
 }

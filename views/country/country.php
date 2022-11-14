@@ -1,7 +1,6 @@
 <?php
 /** @var Country[] $countries */
 
-use app\models\Category;
 use yii\bootstrap5\Html;
 use yii\helpers\Url;
 

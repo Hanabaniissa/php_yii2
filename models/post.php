@@ -4,7 +4,9 @@ namespace app\models;
 
 
 use yii;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\Query;
 
 
 /** @property integer $id
@@ -23,6 +25,8 @@ use yii\db\ActiveRecord;
  * @property int $subCategory_id
  * @property int $neighborhood_id
  * @property int|null $price
+ * @property int $updated_by [int]
+ * @property-read PostValue[] $value
  */
 class post extends ActiveRecord
 {
@@ -36,7 +40,7 @@ class post extends ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'description', 'phone', 'category_id'], 'required'],
+            [['title', 'description', 'phone', 'category_id', 'subCategory_id'], 'required'],
             ['user_id', 'default', 'value' => \Yii::$app->user->id],
             ['phone', 'integer'],
             [['title', 'description'], 'string', 'max' => 300],
@@ -67,17 +71,17 @@ class post extends ActiveRecord
             'title' => Yii::t('app', 'Title'),
             'description' => Yii::t('app', 'Description'),
             'phone' => Yii::t('app', 'Phone'),
-            'user_id' => Yii::t('app', 'User ID'),
+            'user_id' => Yii::t('app', 'User'),
             'category_id' => Yii::t('app', 'Category '),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
             'created_by' => Yii::t('app', 'Created By'),
             'updated_by' => Yii::t('app', 'Updated By'),
             'post_image' => Yii::t('app', 'Image'),
-            'status' => Yii::t('app', 'Status'), 'country_id' => Yii::t('app', 'Country ID'),
-            'city_id' => Yii::t('app', 'City ID'),
+            'status' => Yii::t('app', 'Status'), 'country_id' => Yii::t('app', 'Country'),
+            'city_id' => Yii::t('app', 'City'),
             'subCategory_id' => Yii::t('app', 'Sub Category'),
-            'neighborhood_id' => Yii::t('app', 'Neighborhood ID'),
+            'neighborhood_id' => Yii::t('app', 'Neighborhood'),
             'price' => Yii::t('app', 'Price')
 
         ];
@@ -90,7 +94,31 @@ class post extends ActiveRecord
         // one
         return self::find()
             ->select(['title', 'description', 'phone', 'id', 'created_at', 'post_image'])
-            ->where(['category_id' => $id, 'status' => 10]);
+            ->where(['category_id' => $id, 'status' => 10])
+            ->orderBy(['id' => SORT_DESC]);
+    }
+
+
+
+
+    /*public static function findOne($id)
+    {
+
+        return (new Query())->select('*')
+            ->from(self::tableName())
+            ->innerJoin(PostValue::tableName(), 'post_value.post_id = posts.id')
+            ->where(['posts.id'=>$id])
+            ->one();
+
+    }
+*/
+
+    /**
+     * @return ActiveQuery
+     */
+    public function getValue(): yii\db\ActiveQuery
+    {
+        return $this->hasMany(PostValue::class, ['post_id' => 'id']);
     }
 
     public static function findOne($id)
@@ -101,6 +129,8 @@ class post extends ActiveRecord
             ->one();
     }
 
+
+
     public static function findMyPostQuery()
     {
         if (Yii::$app->user->isGuest) {
@@ -110,7 +140,8 @@ class post extends ActiveRecord
 
         return self::find()
             ->select(['title', 'description', 'phone', 'id', 'created_at', 'created_by', 'user_id', 'post_image'])
-            ->where(['user_id' => $userid, 'status' => 10]);
+            ->where(['user_id' => $userid, 'status' => 10])
+            ->orderBy(['id' => SORT_DESC]);
     }
 
     const ACTIVE = 'active';

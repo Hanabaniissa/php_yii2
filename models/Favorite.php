@@ -67,6 +67,7 @@ class Favorite extends ActiveRecord
             ->innerJoin(post::tableName(), 'favorite.post_id = posts.id')
             ->where(['favorite.user_id' => $userId,
                 'favorite.status' => self::ACTIVE_STATUS,
-                'posts.status' => 10]);
+                'posts.status' => 10])
+            ->orderBy(['favorite.id' => SORT_DESC]);
     }
 }

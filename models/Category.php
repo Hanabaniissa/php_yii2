@@ -14,6 +14,8 @@ use yii\db\Query;
  * @property int $created_by
  * @property int $updated_by
  * @property int $status
+ * @property int $country_id
+
  */
 class Category extends ActiveRecord
 {
@@ -31,9 +33,13 @@ class Category extends ActiveRecord
     public function rules()
     {
         return [
+            [['label_ar', 'label_en', 'created_by', 'country_id'], 'required'],
+            [['created_at', 'updated_at'], 'safe'],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => [self::STATUS_ACTIVE, self::STATUS_DELETED]],
-            [['created_by', 'updated_by'], 'integer'],
+            [['created_by', 'updated_by', 'status', 'country_id'], 'integer'],
+            [['label_ar', 'label_en'], 'string', 'max' => 50],
+
         ];
     }
 
@@ -65,6 +71,9 @@ class Category extends ActiveRecord
         return $categories;
     }
 */
+
+    //If you want to update the redis data, set false then true
+
     public static function getCategoriesBy($countryId, $useCache = true): array
     {
         if ($useCache) {
@@ -77,6 +86,7 @@ class Category extends ActiveRecord
 
         return $categories;
     }
+
 
     public static function getsubByCat($countryId){
         return (new Query())

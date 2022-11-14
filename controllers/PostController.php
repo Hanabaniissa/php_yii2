@@ -3,8 +3,9 @@
 namespace app\controllers;
 
 use app\helpers\CountryUtils;
-use app\models\Assign;
 use app\models\post;
+use app\models\PostValue;
+use Psy\Util\Json;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
@@ -24,36 +25,44 @@ class PostController extends Controller
         $post = new post();
         if (!empty($postId)) {
             $post = post::find()->where(['id' => $postId])->one();
-
         }
-       $assignModels=Assign::getAssignWithField(1)->all();
 
+        $post->country_id = CountryUtils::getPreferredCountry();
+        $post->city_id = 1;
+        $post->neighborhood_id = 1;
 
         if (Yii::$app->request->isPost) {
-            $post->load(yii::$app->request->post());
-            $post->load(yii::$app->request->post(), '');
-
-
+            $postFields = Yii::$app->request->post('PostField') ?? [];
+            $post->load(Yii::$app->request->post());
+            $post->load(Yii::$app->request->post(), '');
 
             if ($imageModel = UploadedFile::getInstance($post, 'post_image')) {
                 $fileName = time() . "-" . $imageModel->name;
                 $imageModel->saveAs(Yii::$app->basePath . Yii::getAlias('@upload') . "/{$fileName}");
                 $post->post_image = $fileName;
-
-
             }
 
-            if ($post->validate()) {
-                $post->save();
-                $categoryId = $post->category_id;
-                return $this->redirect(['post/view-by-category', 'id' => $categoryId]);
+            if ($post->validate() && $post->save()) {
+                $postID = $post->id;
+                foreach ($postFields as $field => $option) {
+                    $postValue = new PostValue();
+                    $postValue->post_id = $post->id;
+                    $postValue->field_id = $field;
+                    $postValue->option_id = $option;
+                    if (!$postValue->save()) {
+                        echo Json::encode($postValue->errors);
+                        die;
+                    }
+                }
+
+                return $this->redirect(['post/view-one', 'id' => $postID]);
 
             } else {
                 var_dump($post->errors);
                 die("not valid");
             }
         }
-        return $this->render('create_post', ['post' => $post, 'country_id' => CountryUtils::getPreferredCountry(),'assigns'=>$assignModels]);
+        return $this->render('create_post', ['post' => $post, 'country_id' => CountryUtils::getPreferredCountry()]);
     }
 
 
@@ -95,7 +104,7 @@ class PostController extends Controller
             'sameSite' => Cookie::SAME_SITE_STRICT
         ]));
         $onePost = post::findOne($id);
-        return $this->render('view_post', ['onePost' => $onePost]);
+        return $this->render('view_post', ['onePost' => $onePost, ]);
     }
 
 

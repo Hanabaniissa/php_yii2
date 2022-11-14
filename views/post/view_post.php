@@ -1,12 +1,12 @@
 <?php
 /** @var app\models\post $onePost */
 /** @var app\models\user $user */
-
 /** @var yii\web\View $this */
+
+use yii\helpers\Json;
 
 $this->title = 'Post';
 $this->params['breadcrumbs'][] = $this->title;
-
 ?>
 
 <script> function ConfirmDelete() {
@@ -18,6 +18,17 @@ $this->params['breadcrumbs'][] = $this->title;
 <div style="margin-top: 50px">
     <img src="<?= '/upload/' . $onePost->post_image ?>" style="height: 300px">
     <h2 style="margin-top: 10px;"><?php echo \yii\helpers\Html::encode($onePost->title) ?></h2>
+
+    <div class="row gap-1">
+    <?php foreach ($onePost->value as $postValue) : ?>
+    <div class="col-lg-3 p-2 border">
+        <p class="h3"><?= $postValue->field->label_en ?></p>
+        <hr>
+        <p class="h6"><?= $postValue->option->label_en ?></p>
+    </div>
+    <?php endforeach; ?>
+    </div>
+
     <div>
         <div>
             <p class="text-muted" , style="margin-top: 10px;">
@@ -38,7 +49,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="col-lg-6">
                 <?= \yii\helpers\Html::a('Update', \yii\helpers\Url::to(['post/post', 'postId' => $onePost->id]), ['class' => 'btn btn-warning btn-lg', 'style' => 'margin-right: 3px; color: #47555e']) ?>
 
-                <?= \yii\helpers\Html::a('Delete', \yii\helpers\Url::to(['post/delete', 'postId' => $onePost->id,'id'=>$onePost->category_id]), ['class' => 'btn btn-danger btn-lg', 'onclick' => 'ConfirmDelete()']) ?>
+                <?= \yii\helpers\Html::a('Delete', \yii\helpers\Url::to(['post/delete', 'postId' => $onePost->id, 'id' => $onePost->category_id]), ['class' => 'btn btn-danger btn-lg', 'onclick' => 'ConfirmDelete()']) ?>
             </div>
         </div>
     <?php endif; ?>

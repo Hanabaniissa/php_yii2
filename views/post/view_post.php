@@ -3,7 +3,7 @@
 /** @var app\models\user $user */
 /** @var yii\web\View $this */
 
-use yii\helpers\Json;
+dd($onePost);
 
 $this->title = 'Post';
 $this->params['breadcrumbs'][] = $this->title;
@@ -16,15 +16,44 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
 <div style="margin-top: 50px">
-    <img src="<?= '/upload/' . $onePost->post_image ?>" style="height: 300px">
+    <img src="<?= '/upload/' . $onePost->post_image ?>" style="height: 300px; margin-bottom: 20px">
     <h2 style="margin-top: 10px;"><?php echo \yii\helpers\Html::encode($onePost->title) ?></h2>
 
+    <br>
+
+    <div class="row gap-1">
+        <div class="col-md-1 p-2 border">
+            <h6>Category</h6>
+            <hr>
+            <p><?=\yii\helpers\Html::encode($onePost->city->label_en) ?></p>
+        </div>
+
+        <div class="col-md-1 p-2 border">
+            <h6>SubCategory</h6>
+            <hr>
+            <p><?=\yii\helpers\Html::encode($onePost->neighborhood->label_en) ?></p>
+        </div>
+    </div>
+    <div class="row gap-1">
+    <div class="col-md-1 p-2 border">
+        <h6>Category</h6>
+        <hr>
+        <p><?=\yii\helpers\Html::encode($onePost->category->label_en) ?></p>
+    </div>
+
+    <div class="col-md-1 p-2 border">
+        <h6>SubCategory</h6>
+        <hr>
+        <p><?=\yii\helpers\Html::encode($onePost->subCat->label_en) ?></p>
+    </div>
+    </div>
+    <br>
     <div class="row gap-1">
     <?php foreach ($onePost->value as $postValue) : ?>
-    <div class="col-lg-3 p-2 border">
-        <p class="h3"><?= $postValue->field->label_en ?></p>
+    <div class="col-md-1 p-2 border">
+        <p class="h6"><?= $postValue->field->label_en ?></p>
         <hr>
-        <p class="h6"><?= $postValue->option->label_en ?></p>
+        <p><?= $postValue->option->label_en ?></p>
     </div>
     <?php endforeach; ?>
     </div>

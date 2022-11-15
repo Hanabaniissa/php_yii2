@@ -13,18 +13,7 @@ use app\models\Category;
 $this->title = 'Create post';
 $this->params['breadcrumbs'][] = $this->title;
 
-//$form->field($post, 'subCategory_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\SubCategories::getSubCategories($country_id, 1, true), 'id', 'label_en'), ['class' => 'form-control subCat'])
-
-/*  $form->field($post, 'subCategory_id')->widget(\kartik\depdrop\DepDrop::className(),[
-          'options' => ['id'=>'subcategory' ],
-      'pluginOptions' => [
-              'depends'=>['category'],
-             'placeholder'=>'Select Sub Category...',
-          'url'=>\yii\helpers\Url::to(['sub-categories/get'])
-
-      ]
-  ]);
-*/ ?>
+?>
 
 <style>
     .marg {
@@ -63,11 +52,11 @@ $this->params['breadcrumbs'][] = $this->title;
         <br>
         <div class="row">
             <div class="col-md-3 form-groub">
-                <?= $form->field($post, 'city_id')->dropDownList(\yii\helpers\ArrayHelper::map(Category::getCategoriesBy($country_id, true), 'id', 'label_en'), ['class' => 'form-control', 'id' => 'city', 'prompt' => 'Select City...']); ?>
+                <?= $form->field($post, 'city_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\City::getCities($country_id, true), 'id', 'label_en'), ['class' => 'form-control', 'id' => 'city', 'prompt' => 'Select City...']); ?>
             </div>
 
             <div class="col-md-3 form-groub">
-                <?= $form->field($post, 'neighborhood_id')->dropDownList(['prompt' => 'Select Neighborhood...'], ['class' => 'form-control subCat', 'id' => 'nighbor']); ?>
+                <?= $form->field($post, 'neighborhood_id')->dropDownList(['prompt' => 'Select Neighborhood...'], ['class' => 'form-control', 'id' => 'nighbor']); ?>
             </div>
         </div>
 
@@ -234,21 +223,36 @@ $this->registerJs(<<<JS
 ?>
 
 <?php
-/*
 $this->registerJs(<<<JS
-$(#fieldSub).on('change',function (){
+$('#city').on('change',function (){
+    const cityId=$(this).val();
+    alert(cityId);
+    const neighId=$('#nighbor');
     
-
+    $.ajax({
     
+    url:"http://yii2-basic.local/neighborhood/get",
+    data:{
+        cityId:cityId
+    },
     
-}
-)
+    success:function (resopnse){
+        if (!resopnse){
+            return false;
+        }
+        neighId.html('');
+        neighId.html('<option selected>Select Neighborhood ..</option>');
+        
+        resopnse.forEach((item)=>{
+         neighId.append('<option value=' + item.id + '>'+ item.label_en + '</option>');}
+        )
+    }
+    }) 
+})
 
 JS
-)
-*/
 
+)
 
 ?>
-
 

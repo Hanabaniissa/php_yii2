@@ -10,7 +10,7 @@ class CityController extends Controller
 
     public function actionGet()
     {
-        dd(City::getCities(3, true));
+        dd(City::getCities(1, true));
     }
 
 

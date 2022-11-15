@@ -28,7 +28,7 @@ class SubCategoriesController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         $categoryId = Yii::$app->request->get('category');
         if ($categoryId) {
-            return SubCategories::getSubCategories($countryId, $categoryId,false);
+            return SubCategories::getSubCategories($countryId, $categoryId,true);
         }
         return null;
     }

@@ -55,6 +55,4 @@ class Neighborhood extends ActiveRecord{
     }
 
 
-
-
 }

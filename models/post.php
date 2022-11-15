@@ -27,6 +27,13 @@ use yii\db\Query;
  * @property int|null $price
  * @property int $updated_by [int]
  * @property-read PostValue[] $value
+  * @property-read Category[] $category
+  * @property-read SubCategories[] $subCat
+ * @property-read City[] $city
+ * @property-read Neighborhood[] $neighborhood
+
+
+
  */
 class post extends ActiveRecord
 {
@@ -40,7 +47,7 @@ class post extends ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'description', 'phone', 'category_id', 'subCategory_id'], 'required'],
+            [['title', 'description', 'phone', 'category_id', 'subCategory_id','city_id','neighborhood_id','price'], 'required'],
             ['user_id', 'default', 'value' => \Yii::$app->user->id],
             ['phone', 'integer'],
             [['title', 'description'], 'string', 'max' => 300],
@@ -121,10 +128,25 @@ class post extends ActiveRecord
         return $this->hasMany(PostValue::class, ['post_id' => 'id']);
     }
 
+    public function getCategory():yii\db\ActiveQuery{
+        return $this->hasOne(Category::class,['id'=>'category_id']);
+    }
+
+    public function getSubCat():yii\db\ActiveQuery{
+        return $this->hasOne(SubCategories::class,['id'=>'subCategory_id']);
+    }
+
+    public function getCity():yii\db\ActiveQuery{
+        return $this->hasOne(City::class,['id'=>'city_id']);
+    }
+
+    public function getNeighborhood():yii\db\ActiveQuery{
+        return $this->hasOne(Neighborhood::class,['id'=>'neighborhood_id']);
+    }
+
     public static function findOne($id)
     {
         return self::find()
-            ->select(['title', 'description', 'phone', 'id', 'created_at', 'created_by', 'user_id', 'post_image'])
             ->where(['id' => $id])
             ->one();
     }
@@ -139,7 +161,6 @@ class post extends ActiveRecord
         $userid = Yii::$app->user->getId();
 
         return self::find()
-            ->select(['title', 'description', 'phone', 'id', 'created_at', 'created_by', 'user_id', 'post_image'])
             ->where(['user_id' => $userid, 'status' => 10])
             ->orderBy(['id' => SORT_DESC]);
     }

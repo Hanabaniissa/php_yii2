@@ -28,8 +28,6 @@ class PostController extends Controller
         }
 
         $post->country_id = CountryUtils::getPreferredCountry();
-        $post->city_id = 1;
-        $post->neighborhood_id = 1;
 
         if (Yii::$app->request->isPost) {
             $postFields = Yii::$app->request->post('PostField') ?? [];
@@ -54,7 +52,7 @@ class PostController extends Controller
                         die;
                     }
                 }
-
+                dd($post);
                 return $this->redirect(['post/view-one', 'id' => $postID]);
 
             } else {

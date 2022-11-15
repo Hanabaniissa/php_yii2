@@ -63,7 +63,7 @@ class City extends ActiveRecord{
 
         if ($useCache) {
             $cities = Yii::$app->redis->get(self::CACHE_KEY_CITY.'.'.$countryId);
-            if ($cities !== false) return unserialize($cities);
+            if ($cities) return unserialize($cities);
         }
 
         $cities= self::find()->where(['country_id'=>$countryId,'status'=>self::STATUS_ACTIVE])->all();

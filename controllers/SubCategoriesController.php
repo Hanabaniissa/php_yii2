@@ -24,6 +24,7 @@ class SubCategoriesController extends Controller
 
     public function actionTest()
     {
+
         $countryId = CountryUtils::getPreferredCountry();
         Yii::$app->response->format = Response::FORMAT_JSON;
         $categoryId = Yii::$app->request->get('category');

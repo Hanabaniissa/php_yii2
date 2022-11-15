@@ -52,7 +52,7 @@ class PostController extends Controller
                         die;
                     }
                 }
-                dd($post);
+
                 return $this->redirect(['post/view-one', 'id' => $postID]);
 
             } else {

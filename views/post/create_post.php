@@ -1,6 +1,10 @@
 <?php
 
 use app\models\Category;
+use app\models\City;
+use kartik\depdrop\DepDrop;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
 
 /** @var app\models\post $post */
 /** @var app\models\Category $categories */
@@ -45,19 +49,26 @@ $this->params['breadcrumbs'][] = $this->title;
     <div class="container body-content">
         <?php $form = \yii\bootstrap5\ActiveForm::begin(
             ['options' => ['enctype' => 'multipart/form-data']]); ?>
-
-
         <h3>
             <span class="number">1. </span>Choose section</h3>
         <br>
         <div class="row">
             <div class="col-md-3 form-groub">
-                <?= $form->field($post, 'city_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\City::getCities($country_id, true), 'id', 'label_en'), ['class' => 'form-control', 'id' => 'city', 'prompt' => 'Select City...']); ?>
+                <?= $form->field($post, 'city_id')->dropDownList(ArrayHelper::map(City::getCities($country_id, true), 'id', 'label_en'), ['class' => 'form-control', 'id' => 'city', 'prompt' => 'Select City...']); ?>
             </div>
 
             <div class="col-md-3 form-groub">
-                <?= $form->field($post, 'neighborhood_id')->dropDownList(['prompt' => 'Select Neighborhood...'], ['class' => 'form-control', 'id' => 'nighbor']); ?>
+                <?= $form->field($post, 'neighborhood_id')->widget(DepDrop::class, [
+                    'options' => ['id' => 'neighborhood-id', 'placeholder' => 'Select Neighborhood ..'],
+                    'pluginOptions' => [
+                        'depends' => ['city'],
+                        'placeholder' => 'Select Neighborhood ..',
+                        'url' => Url::to(['dep-drop/get', 'type' => 'neighborhood']),
+                    ]
+                ]);
+                ?>
             </div>
+
         </div>
 
         <hr class="marg">
@@ -65,11 +76,18 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <div class="row">
             <div class="col-md-3 form-groub">
-                <?= $form->field($post, 'category_id')->dropDownList(\yii\helpers\ArrayHelper::map(Category::getCategoriesBy($country_id, true), 'id', 'label_en'), ['class' => 'form-control', 'id' => 'category', 'prompt' => 'Select Category...']); ?>
+                <?= $form->field($post, 'category_id')->dropDownList(ArrayHelper::map(Category::getCategoriesBy($country_id, true), 'id', 'label_en'), ['class' => 'form-control', 'id' => 'category', 'prompt' => 'Select Category...']); ?>
             </div>
-
             <div class="col-md-3 form-groub">
-                <?= $form->field($post, 'subCategory_id')->dropDownList(['prompt' => 'Select Sub Category...'], ['class' => 'form-control subCat', 'id' => 'subCatField']); ?>
+                <?= $form->field($post, 'subCategory_id')->widget(DepDrop::class, [
+                    'options' => ['id' => 'subCatField', 'placeholder' => 'Select SubCategory..'],
+                    'pluginOptions' => [
+                        'depends' => ['category'],
+                        'placeholder' => 'Select SubCategory..',
+                        'url' => Url::to(['dep-drop/get', 'type' => 'subcategory']),
+                    ]
+                ]);
+                ?>
             </div>
         </div>
 
@@ -164,7 +182,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
 $this->registerJs(<<<JS
       
-      $('#category').on('change',function (){
+      $('#categorysa').on('change',function (){
             const categoryId = $(this).val();
             const subCatCont = $(".subCat");
             
@@ -224,7 +242,7 @@ $this->registerJs(<<<JS
 
 <?php
 $this->registerJs(<<<JS
-$('#city').on('change',function (){
+$('#citydddd').on('change',function (){
     const cityId=$(this).val();
     alert(cityId);
     const neighId=$('#nighbor');

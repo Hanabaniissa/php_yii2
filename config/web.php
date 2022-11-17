@@ -16,6 +16,7 @@ $config = [
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
             'cookieValidationKey' => 'aofmaqfomadsofmafomom',
+            'parsers' => \yii\web\JsonParser::class
         ],
         'redis' => [
             'class' => 'yii\redis\Connection',
@@ -49,14 +50,17 @@ $config = [
             ],
         ],
         'db' => $db,
-
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'enableStrictParsing' => false,
         ],
     ],
-
+    'modules' => [
+        'api' => [
+            'class' => 'app\\modules\\api\\Module',
+        ]
+    ],
     'params' => $params,
 ];
 
@@ -70,7 +74,6 @@ if (YII_ENV_DEV) {
     $config['bootstrap'][] = 'gii';
     $config['modules']['gii'] = 'yii\gii\Module';
 }
-
 
 
 return $config;

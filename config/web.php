@@ -49,7 +49,6 @@ $config = [
             ],
         ],
         'db' => $db,
-
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
@@ -63,7 +62,7 @@ $config = [
 if (YII_ENV_DEV) {
     $config['bootstrap'][] = 'debug';
     $config['modules']['debug'] = [
-        'class' => 'yii\debug\Module',
+        'class' =>  'yii\debug\Module',
         'allowedIPs' => ['*']
     ];
 

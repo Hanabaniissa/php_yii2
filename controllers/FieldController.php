@@ -22,6 +22,4 @@ class FieldController extends Controller
     }
 
 
-
-
 }

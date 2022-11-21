@@ -82,15 +82,17 @@ class SiteController extends Controller
     }
 
     public function actionTest()
-    { $countryId=CountryUtils::getPreferredCountry();
+    {
+        $countryId = CountryUtils::getPreferredCountry();
         Yii::$app->response->format = 'json';
-        return Category::getCategoriesBy($countryId,true);
+        return Category::getCategoriesBy($countryId, true);
     }
 
     public function actionSub()
-    {$countryId=CountryUtils::getPreferredCountry();
+    {
+        $countryId = CountryUtils::getPreferredCountry();
         Yii::$app->response->format = 'json';
-        if(isset($_GET['category'])) {
+        if (isset($_GET['category'])) {
             $categoryId = $_GET['category'];
 
             return SubCategories::getSubCategories($countryId, $categoryId, true);

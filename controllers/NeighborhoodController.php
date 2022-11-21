@@ -20,27 +20,27 @@ class NeighborhoodController extends Controller
 
         Yii::$app->response->format = Response::FORMAT_JSON;
 
-         $cityId=\Yii::$app->request->get('cityId');
-         if($cityId){
-             return Neighborhood::find()->where(['city_id'=>$cityId,'status'=>1])->all();
+        $cityId = \Yii::$app->request->get('cityId');
+        if ($cityId) {
+            return Neighborhood::find()->where(['city_id' => $cityId, 'status' => 1])->all();
 
-         }
-         return null;
-
-
-    }
-
-
-   /* public function actionTest()
-    {
-        $countryId = CountryUtils::getPreferredCountry();
-        Yii::$app->response->format = Response::FORMAT_JSON;
-        $categoryId = Yii::$app->request->get('category');
-        if ($categoryId) {
-            return SubCategories::getSubCategories($countryId, $categoryId,true);
         }
         return null;
+
+
     }
-*/
+
+
+    /* public function actionTest()
+     {
+         $countryId = CountryUtils::getPreferredCountry();
+         Yii::$app->response->format = Response::FORMAT_JSON;
+         $categoryId = Yii::$app->request->get('category');
+         if ($categoryId) {
+             return SubCategories::getSubCategories($countryId, $categoryId,true);
+         }
+         return null;
+     }
+ */
 
 }

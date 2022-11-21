@@ -1,6 +1,7 @@
 <?php
 
 namespace app\modules\api;
+
 use Yii;
 
 class Module extends \yii\base\Module
@@ -9,5 +10,6 @@ class Module extends \yii\base\Module
     {
         parent::init();
         Yii::configure($this, require __DIR__ . '/config/api.php');
+        \Yii::$app->user->enableSession=false;
     }
 }

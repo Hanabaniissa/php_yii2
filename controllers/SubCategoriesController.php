@@ -16,8 +16,7 @@ class SubCategoriesController extends Controller
     public function actionGet()
     {
 // add country ID
-  dd( SubCategories::getSubCategories(2,3,true));
-
+        dd(SubCategories::getSubCategories(2, 3, true));
 
 
     }
@@ -28,7 +27,7 @@ class SubCategoriesController extends Controller
         Yii::$app->response->format = Response::FORMAT_JSON;
         $categoryId = Yii::$app->request->get('category');
         if ($categoryId) {
-            return SubCategories::getSubCategories($countryId, $categoryId,true);
+            return SubCategories::getSubCategories($countryId, $categoryId, true);
         }
         return null;
     }

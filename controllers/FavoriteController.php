@@ -25,16 +25,16 @@ class FavoriteController extends Controller
     public function actionGet()
     {
         $query = Favorite::getFavoritePostQuery();
-        $countQuery= clone $query;
-        $pagesFav=new Pagination(['totalCount'=>$countQuery->count(),'defaultPageSize'=>4]);
-        $models= new ActiveDataProvider(
-            [ 'query'=>$query,
+        $countQuery = clone $query;
+        $pagesFav = new Pagination(['totalCount' => $countQuery->count(), 'defaultPageSize' => 4]);
+        $models = new ActiveDataProvider(
+            ['query' => $query,
                 'pagination' => [
                     'pageSize' => 4
                 ]
             ]
         );
-        return $this->render('favorite_post', ['models' => $models, 'pagesFav'=>$pagesFav]);
+        return $this->render('favorite_post', ['models' => $models, 'pagesFav' => $pagesFav]);
     }
 }
 

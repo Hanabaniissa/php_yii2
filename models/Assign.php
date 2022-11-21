@@ -66,12 +66,13 @@ class Assign extends ActiveRecord
 
     }
 
-    public static function getAssignWithOptionQuery($fieldId,$subCategoryID){
+    public static function getAssignWithOptionQuery($fieldId, $subCategoryID)
+    {
         return (new Query())->select('*')
             ->from(self::tableName())
             ->innerJoin(Option::tableName(), 'assign.field_id = options.field_id')
             ->where(['assign.status' => self::STATUS_ACTIVE, 'options.status' => 1, 'assign.field_id' => $fieldId,
-                'assign.subCategory_id' => $subCategoryID  ]);
+                'assign.subCategory_id' => $subCategoryID]);
 
 
     }

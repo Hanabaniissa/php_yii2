@@ -64,7 +64,13 @@ class User extends ActiveRecord implements IdentityInterface
     {
 
 
-        return self::find()->where(['access_token' => $token])->one();
+        return self::find()->where(['access_token' => $token, 'status'=>self::STATUS_ACTIVE])->one();
+    }
+
+    public function generateAccessToken(){
+
+        $this->access_token=Yii::$app->security->generateRandomString();
+
     }
 
     /**

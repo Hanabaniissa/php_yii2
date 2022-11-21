@@ -102,7 +102,7 @@ class PostController extends Controller
             'sameSite' => Cookie::SAME_SITE_STRICT
         ]));
         $onePost = post::findOne($id);
-        return $this->render('view_post', ['onePost' => $onePost, ]);
+        return $this->render('view_post', ['onePost' => $onePost,]);
     }
 
 

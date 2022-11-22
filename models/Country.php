@@ -2,10 +2,13 @@
 
 namespace app\models;
 
+use yii\behaviors\BlameableBehavior;
+use yii\behaviors\TimestampBehavior;
 use yii\data\ActiveDataProvider;
 use yii\db\ActiveRecord;
 
 use Yii;
+use yii\db\BaseActiveRecord;
 
 /**
  * This is the model class for table "country".
@@ -19,12 +22,12 @@ use Yii;
  * @property int $created_by
  * @property int|null $updated_by
  */
-class Country extends ActiveRecord{
+class Country extends ActiveRecord
+{
 
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 2;
     const STATUS_ACTIVE = 1;
-
 
 
     public static function tableName()
@@ -32,15 +35,54 @@ class Country extends ActiveRecord{
         return 'country';
     }
 
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'attributes' => [
+                    BaseActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
+                    BaseActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => date('Y-m-d H:i:s'),
+            ],
+            [
+                'class' => \yii\behaviors\BlameableBehavior::className(),
+                'updatedByAttribute' => null,
+
+            ],
+        ];
+    }
+
+
+//    public function behaviors()
+//    {
+//        return [
+//            [
+//                'class' => \yii\behaviors\BlameableBehavior::className(),
+//                'value' => Yii::$app->user->id,
+//            ],
+//
+//            [
+//                'class' => 'sammaye\audittrail\LoggableBehavior',
+//                'userAttribute' => 'updated_by', //blameable attribute of the current model.
+//                'ignored' => ['updated_by', 'updated_at'], // This ignores fields from a selection of all fields, not needed with allowed
+//            ],
+//
+//        ];
+//    }
+
+
     public function rules()
     {
         return [
-            [['label_ar', 'label_en', 'created_by'], 'required'],
+            [['label_ar', 'label_en'], 'required'],
             [['status', 'created_by', 'updated_by'], 'integer'],
             [['created_at', 'updated_at'], 'safe'],
             [['label_ar', 'label_en'], 'string', 'max' => 50],
         ];
     }
+
     public function attributeLabels()
     {
         return [
@@ -64,7 +106,7 @@ class Country extends ActiveRecord{
             if ($countries) return unserialize($countries);
 
         }
-        $countries = self::find()->where(['status'=>self::STATUS_ACTIVE])->all();
+        $countries = self::find()->where(['status' => self::STATUS_ACTIVE])->all();
         Yii::$app->redis->set(self::CACHE_KEY_COUNTRY, serialize($countries));
         return $countries;
     }

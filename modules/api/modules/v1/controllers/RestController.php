@@ -63,12 +63,6 @@ class RestController extends Controller
         }
     }
 
-//    public function actionData()
-//    {
-//        return $this->asJson([
-//            'success' => true,
-//        ]);
-//    }
 
 
 }

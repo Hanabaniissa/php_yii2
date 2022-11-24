@@ -18,40 +18,35 @@ class ActiveController extends \yii\rest\ActiveController
 //        $jwtObj = \Yii::$app->jwt;
 
         $behaviors = parent::behaviors();
-        $behaviors['authenticator']['only']=['create', 'update', 'delete'];
+        $behaviors['authenticator']['only'] = ['create', 'update', 'delete'];
         $behaviors['authenticator']['authMethods'] = [
             'class' => JwtHttpBearerAuth::class,
-//            'optional' => [
-//                'login',
-//            ]
+
         ];
 
         return $behaviors;
     }
-
-//    /**
-//     * @param AuthInterface $model
-//     * @throws ForbiddenHttpException
-//     */
-//    public function checkAccess($action, $model = null, $params = [])
-//    {
-//        return $model->canAccess($action, $model = null, $params = []);
-//    }
-
-
 
     /**
      * @throws ForbiddenHttpException
      **@property Country|Post $model
      */
 
+//    public function checkAccess($action, $model = null, $params = [])
+//    {
+//
+//        if (in_array($action, ['update', 'delete']) && $model->created_by !== \Yii::$app->user->id) {
+//            throw new ForbiddenHttpException("You don't have permission");
+//
+//        }
+//    }
+
+    /**
+     * @param AuthInterface $model
+     */
     public function checkAccess($action, $model = null, $params = [])
     {
-
-        if (in_array($action, ['update', 'delete']) && $model->created_by !== \Yii::$app->user->id) {
-            throw new ForbiddenHttpException("You don't have permission");
-
-        }
+        return $model->canAccess($action, $model, $params);
     }
 
 

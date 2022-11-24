@@ -35,7 +35,8 @@ use yii\db\Query;
  * @property-read Neighborhood[] $neighborhood
  */
 class post extends ActiveRecord
-{
+{const SCENARIO_UPDATE = 'update';
+
 
 
     public static function tableName()
@@ -58,6 +59,7 @@ class post extends ActiveRecord
         ];
     }
 
+
     public function behaviors()
     {
         return [
@@ -77,6 +79,13 @@ class post extends ActiveRecord
 
         ];
     }
+
+//    public function scenarios()
+//    {
+//        $scenarios = parent::scenarios();
+//        $scenarios['Update'] = ['title', 'description', 'phone', 'category_id', 'country_id', 'subCategory_id', 'city_id', 'neighborhood_id', 'price'];
+//        return $scenarios;
+//    }
 
 
     public function attributeLabels()

@@ -112,6 +112,16 @@ class Country extends ActiveRecord
     }
 
 
+    const ACTIVE = 'active';
+    const DELETED = 'deleted';
+
+    public function delete()
+    {
+        $this->status = self::DELETED;
+        $this->save(false);
+    }
+
+
     public static function findCountryId()
     {
         return self::$this->id;

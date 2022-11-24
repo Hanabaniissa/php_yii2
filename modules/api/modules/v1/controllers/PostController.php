@@ -3,8 +3,6 @@
 namespace app\modules\api\modules\v1\controllers;
 
 use app\modules\api\models\Post;
-use Yii;
-use yii\web\Response;
 
 class PostController extends ActiveController
 {
@@ -13,9 +11,12 @@ class PostController extends ActiveController
     public function actions()
     {
         $actions = parent::actions();
-        unset($actions['create']['checkAccess']);
+        unset($actions['create']['checkAccess'], $actions['index']['checkAccess'], $actions['view']['checkAccess']);
         return $actions;
+
     }
+
+
 
 
 }

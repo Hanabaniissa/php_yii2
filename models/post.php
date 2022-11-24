@@ -4,8 +4,10 @@ namespace app\models;
 
 
 use yii;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
+use yii\db\BaseActiveRecord;
 use yii\db\Query;
 
 
@@ -27,13 +29,10 @@ use yii\db\Query;
  * @property int|null $price
  * @property int $updated_by [int]
  * @property-read PostValue[] $value
-  * @property-read Category[] $category
-  * @property-read SubCategories[] $subCat
+ * @property-read Category[] $category
+ * @property-read SubCategories[] $subCat
  * @property-read City[] $city
  * @property-read Neighborhood[] $neighborhood
-
-
-
  */
 class post extends ActiveRecord
 {
@@ -47,9 +46,10 @@ class post extends ActiveRecord
     public function rules()
     {
         return [
-            [['title', 'description', 'phone', 'category_id', 'subCategory_id','city_id','neighborhood_id','price'], 'required'],
+            [['title', 'description', 'phone', 'category_id', 'country_id', 'subCategory_id', 'city_id', 'neighborhood_id', 'price'], 'required'],
             ['user_id', 'default', 'value' => \Yii::$app->user->id],
-            ['phone', 'integer'],
+            [['status', 'created_by', 'updated_by', 'phone'], 'integer'],
+
             [['title', 'description'], 'string', 'max' => 300],
             ['created_by', 'default', 'value' => \Yii::$app->user->id],
             ['post_image', 'string', 'max' => 255],
@@ -61,11 +61,19 @@ class post extends ActiveRecord
     public function behaviors()
     {
         return [
+            [
+                'class' => TimestampBehavior::class,
+                'attributes' => [
+                    BaseActiveRecord::EVENT_BEFORE_INSERT => ['created_at'],
+                    BaseActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+                'value' => date('Y-m-d H:i:s'),
+            ],
 
             [
                 'class' => yii\behaviors\BlameableBehavior::class,
 
-            ]
+            ],
 
         ];
     }
@@ -107,7 +115,6 @@ class post extends ActiveRecord
 
 
 
-
     /*public static function findOne($id)
     {
 
@@ -128,20 +135,24 @@ class post extends ActiveRecord
         return $this->hasMany(PostValue::class, ['post_id' => 'id']);
     }
 
-    public function getCategory():yii\db\ActiveQuery{
-        return $this->hasOne(Category::class,['id'=>'category_id']);
+    public function getCategory(): yii\db\ActiveQuery
+    {
+        return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
 
-    public function getSubCat():yii\db\ActiveQuery{
-        return $this->hasOne(SubCategories::class,['id'=>'subCategory_id']);
+    public function getSubCat(): yii\db\ActiveQuery
+    {
+        return $this->hasOne(SubCategories::class, ['id' => 'subCategory_id']);
     }
 
-    public function getCity():yii\db\ActiveQuery{
-        return $this->hasOne(City::class,['id'=>'city_id']);
+    public function getCity(): yii\db\ActiveQuery
+    {
+        return $this->hasOne(City::class, ['id' => 'city_id']);
     }
 
-    public function getNeighborhood():yii\db\ActiveQuery{
-        return $this->hasOne(Neighborhood::class,['id'=>'neighborhood_id']);
+    public function getNeighborhood(): yii\db\ActiveQuery
+    {
+        return $this->hasOne(Neighborhood::class, ['id' => 'neighborhood_id']);
     }
 
     public static function findOne($id)
@@ -150,7 +161,6 @@ class post extends ActiveRecord
             ->where(['id' => $id])
             ->one();
     }
-
 
 
     public static function findMyPostQuery()
@@ -175,7 +185,8 @@ class post extends ActiveRecord
     }
 
 
-    public static function search($term){
+    public static function search($term)
+    {
 
 
         return self::find()

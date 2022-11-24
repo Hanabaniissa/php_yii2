@@ -6,7 +6,7 @@ use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
-
+use function Symfony\Component\String\s;
 
 
 /**
@@ -20,13 +20,15 @@ use yii\web\IdentityInterface;
  * @property string $auth_key
  * @property integer $status
  * @property integer $created_at
-
  */
 class User extends ActiveRecord implements IdentityInterface
 {
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
+    /**
+     * @var mixed|null
+     */
 
 
     /**
@@ -63,13 +65,18 @@ class User extends ActiveRecord implements IdentityInterface
     public static function findIdentityByAccessToken($token, $type = null)
     {
 
+        return static::find()
+            ->where(['id' => (string)$token->getClaim('uid')])
+            ->andWhere(['status' => self::STATUS_ACTIVE])  //adapt this to your needs
+            ->one();
 
-        return self::find()->where(['access_token' => $token, 'status'=>self::STATUS_ACTIVE])->one();
+//        return self::find()->where(['access_token' => $token, 'status'=>self::STATUS_ACTIVE])->one();
     }
 
-    public function generateAccessToken(){
+    public function generateAccessToken()
+    {
 
-        $this->access_token=Yii::$app->security->generateRandomString();
+        $this->access_token = Yii::$app->security->generateRandomString();
 
     }
 
@@ -83,7 +90,6 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return static::findOne(['username' => $username, 'status' => self::STATUS_ACTIVE]);
     }
-
 
 
     /**
@@ -120,7 +126,6 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return Yii::$app->security->validatePassword($password, $this->password);
     }
-
 
 
 }

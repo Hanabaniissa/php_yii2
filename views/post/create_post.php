@@ -226,7 +226,6 @@ $this->registerJs(<<<JS
 $this->registerJs(<<<JS
 $('#city').on('change',function (){
     const cityId=$(this).val();
-    alert(cityId);
     const neighId=$('#nighbor');
     
     $.ajax({

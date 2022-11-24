@@ -1,5 +1,7 @@
 <?php
 
+use app\components\JwtValidationData;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
@@ -15,6 +17,12 @@ $config = [
     'components' => [
         'request' => [
             'cookieValidationKey' => 'aofmaqfomadsofmafomom',
+        ],
+        'jwt' => [
+            'class' => \sizeg\jwt\Jwt::class,
+            'key'   => 'HANA',
+            'jwtValidationData' => JwtValidationData::class,
+
         ],
         'redis' => [
             'class' => 'yii\redis\Connection',

@@ -29,7 +29,7 @@ class SignupForm extends Model
         {
             return [
 
-                'username' =>  Yii::t('app', 'UserName'),
+                'username' => Yii::t('app', 'UserName'),
                 'password' => Yii::t('app', 'Password'),
                 'password_repeat' => Yii::t('app', 'PasswordRepeat'),
             ];
@@ -42,6 +42,7 @@ class SignupForm extends Model
         $user->username = $this->username;
         $user->password = \yii::$app->security->generatePasswordHash($this->password);
         $user->access_token = \yii::$app->security->generateRandomString();
+//        $user->access_token = \yii::$app->user->findIdentityByAccessToken();
         $user->auth_key = \yii::$app->security->generateRandomString();
         if ($user->save()) {
             return true;

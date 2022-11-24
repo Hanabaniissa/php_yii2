@@ -22,7 +22,8 @@ class Yii {
  * @property yii\rbac\DbManager $authManager 
  * @property \yii\web\User|__WebUser $user
  * @property \yii\redis\Connection $redis
- * 
+ * @property \sizeg\jwt\Jwt $jwt
+ *
  */
 class __Application {
 }

@@ -30,7 +30,6 @@ $this->title = 'AbuyZ: Country';
 </script>
 
 
-
 <!-- Top Image -->
 
 
@@ -47,7 +46,6 @@ $this->title = 'AbuyZ: Country';
         </div>
     </div>
 </div>
-
 
 
 <!-- Countries Icon-->
@@ -73,7 +71,6 @@ $this->title = 'AbuyZ: Country';
     </div>
 
 </div>
-
 
 
 <!-- Map -->
@@ -156,8 +153,6 @@ $this->title = 'AbuyZ: Country';
 </div>
 
 
-
-
 <!-- People cards -->
 
 
@@ -192,44 +187,39 @@ $this->title = 'AbuyZ: Country';
 </div>
 
 
-
-
 <!-- Categories -->
 
-
+<!--
 <div style="text-align: center; align-items: center; margin: 120px 20px 150px">
 
     <h3>In <span style="color: #40ccff">AbuyZ</span> you can ...</h3>
+-->
+    <!-- <div>
+         <img>
+         <h6></h6>
+         <p></p>
+     </div>
 
-   <!-- <div>
-        <img>
-        <h6></h6>
-        <p></p>
+     <div>
+         <img>
+         <h6></h6>
+         <p></p>
+     </div>
+
+ </div>-->
+
+
+    <!-- Buttons -->
+
+    <div class="bottom-container"
+         style="background-color: #40ccff; padding-top: 50px;text-align: center; align-items: center; padding-bottom: 60px">
+        <h3 style="margin:10px auto 45px; color: #ffffff">What are you waiting on? </h3>
+        <span style=" text-align: center; margin:10px; width: 30px"><?= Html::a('Post Now', Url::to(['country/get']), ['class' => 'btn btn-light btn-lg', 'style' => 'color: #40ccff; padding:10px 30px', 'onclick' => 'SelectCountry()']) ?> </span>
+        <span style="text-align: center; margin:10px;"><?= Html::a('Search Now', Url::to(['country/get']), ['class' => 'btn btn-outline-primary btn-lg', 'style' => 'color: #ffffff; padding:10px 25px', 'onclick' => 'SelectCountry()']) ?> </span>
+
+        <h5 style="margin-top: 26px; color: #ffffff">Just start already!</h5>
+
     </div>
-
-    <div>
-        <img>
-        <h6></h6>
-        <p></p>
-    </div>
-
-</div>-->
-
-
-
-
-
-<!-- Buttons -->
-
-<div class="bottom-container"
-     style="background-color: #40ccff; padding-top: 50px;text-align: center; align-items: center; padding-bottom: 60px">
-    <h3 style="margin:10px auto 45px; color: #ffffff">What are you waiting on? </h3>
-    <span style=" text-align: center; margin:10px; width: 30px"><?= Html::a('Post Now', Url::to(['country/get']), ['class' => 'btn btn-light btn-lg', 'style' => 'color: #40ccff; padding:10px 30px', 'onclick' => 'SelectCountry()']) ?> </span>
-    <span style="text-align: center; margin:10px;"><?= Html::a('Search Now', Url::to(['country/get']), ['class' => 'btn btn-outline-primary btn-lg', 'style' => 'color: #ffffff; padding:10px 25px', 'onclick' => 'SelectCountry()']) ?> </span>
-
-    <h5 style="margin-top: 26px; color: #ffffff">Just start already!</h5>
-
-</div>
 
 
 

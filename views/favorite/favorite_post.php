@@ -1,16 +1,17 @@
 <?php
 /** @var app\models\favorite $models */
 /** @var app\models\Favorite $pagesFav */
+
 /** @var yii\web\View $this */
 
 use yii\helpers\Url;
+
 ?>
 
 
 <div style="margin-top: 50px;"></div>
 <?php foreach ($models->models as $post):
     $post = (object)$post;
-//    dd($post instanceof stdClass);
     ?>
     <div class="card-mb-3" style="max-width: 540px;">
         <div class="row g-0">

@@ -40,7 +40,10 @@ class PostController extends Controller
                 $post->post_image = $fileName;
             }
 
+//            var_dump($postFields);die;
+
             if ($post->validate() && $post->save()) {
+
                 $postID = $post->id;
                 foreach ($postFields as $field => $option) {
                     $postValue = new PostValue();
@@ -52,7 +55,6 @@ class PostController extends Controller
                         die;
                     }
                 }
-//                dd($post);
                 return $this->redirect(['post/view-one', 'id' => $postID]);
 
             } else {
@@ -67,8 +69,46 @@ class PostController extends Controller
     public function actionDelete($postId)
     {
         $post = post::find()->where(['id' => $postId])->one();
+
         $categoryId = $post->category_id;
         $post->delete();
+
+//        $temp_post=[
+//            'id_i'=>$post->id,
+//            'status_i'=>$post->status
+//        ];
+//        $posts_json = \yii\helpers\Json::encode($temp_post);
+//
+//        $url = "http://localhost:8983/solr/dynamic_field/update/json/docs?commit=true";
+//        $ch = curl_init();
+//        $header = array('Content-Type: application/json');
+//
+//        curl_setopt($ch, CURLOPT_URL, $url);
+//
+//        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+//
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//
+//        curl_setopt($ch, CURLOPT_POST, 1);
+//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+//
+//        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+
+//        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
+//
+//        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+//
+//        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+//
+//        $data = curl_exec($ch);
+//        $return = 0;
+//        if (!curl_errno($ch)) {
+//            $return = $data;
+//        }
+//        curl_close($ch);
+
+
         return $this->redirect(['post/view-by-category', 'id' => $categoryId]);
     }
 
@@ -102,9 +142,26 @@ class PostController extends Controller
             'sameSite' => Cookie::SAME_SITE_STRICT
         ]));
         $onePost = post::findOne($id);
+//        $values = $onePost->value;
+
+//        $solrAttributes = [];
+//        foreach ($values as $value) {
+//            $field = $value->field;
+//            $option = $value->option;
+//            $key = str_replace(' ', '_', strtolower($field->label_en));
+//            $key .= "_" . $this->getFiledTypeForSolr($field);
+//            $solrAttributes[$key] = $option->label_en;
+//        }
+//        echo Json::encode($solrAttributes); die;
         return $this->render('view_post', ['onePost' => $onePost,]);
     }
 
+//    private function getFiledTypeForSolr(Field $field) {
+//        switch ($field->type) {
+//            case 'Int': return 'i';
+//            case 'String': return 's';
+//        }
+//    }
 
     public function actionRecentlyViewed()
     {
@@ -189,4 +246,44 @@ class PostController extends Controller
         );
         return $this->render('category', ['posts' => $posts]);
     }
+
+
+    public function actionPostKeys(){
+//        $posts= new \app\modules\api\models\Post();
+        $posts=\app\modules\api\models\Post::find()->where(['id'=>'108'])->one();
+        foreach($posts as $post=>$value){
+            $key=$post;
+            $key_value=$value;
+            $hh='hh';
+//            $type=gettype($hh);
+            $type=gettype($value);
+
+
+//            echo Json::encode($type);die;
+
+
+            $field=str_replace('','_',strtolower($key));
+
+
+            $field.="_".$this->getPostFieldTypeForSolr($type);
+            $attributes[$field]=$key_value;
+
+        }
+        echo Json::encode($attributes);
+
+
+    }
+
+//    private function getPostFieldTypeForSolr($field){
+//        switch($field){
+//            case 'integer': return 'i';
+//            break;
+//            case 'string': return 's';
+//            break;
+//            default: return 'null';
+//        }
+//
+//
+//    }
+
 }

@@ -3,7 +3,6 @@
 /** @var app\models\user $user */
 /** @var yii\web\View $this */
 
-dd($onePost);
 
 $this->title = 'Post';
 $this->params['breadcrumbs'][] = $this->title;

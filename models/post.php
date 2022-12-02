@@ -9,6 +9,7 @@ use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\BaseActiveRecord;
 use yii\db\Query;
+use yii\helpers\Json;
 
 
 /** @property integer $id
@@ -59,6 +60,101 @@ class post extends ActiveRecord
         ];
     }
 
+//    public static function getPostKeys($id){
+//        $attributes['id']=$id;
+//
+//        $posts=self::find()->where(['id'=>$id])->one();
+//        foreach($posts as $post=>$value){
+//            $key=$post;
+//            $key_value=$value;;
+//            $type=gettype($value);
+//            $field=str_replace('','_',strtolower($key));
+//            $field.="_".self::getPostFieldTypeForSolr($type);
+//
+//            $attributes[$field]=$key_value;
+//            echo Json::encode($attributes);die;
+//
+//
+//        }
+//
+//        return $attributes;
+//    }
+
+
+
+//    private static function getPostFieldTypeForSolr($field): string
+//    {
+//        switch($field){
+//            case 'integer': return 'i';
+//                break;
+//            case 'string': return 's';
+//                break;
+//            default: return 'null';
+//        }}
+
+    public function afterSave($insert, $changedAttributes)
+    {
+       $post= $this;
+       $id=$post->id;
+       echo '<pre>';
+
+
+//        $temp_post= [
+//                'id_i' => $post->id,
+//                'title_s' => $post->title,
+//                'desc_s' => $post->description,
+//                'phone_i'=>$post->phone,
+//                'user_id_i'=>$post->user_id,
+//                'category_id_i'=>$post->category_id,
+//                'created_at_s'=>$post->created_at,
+//                'created_by_i'=>$post->created_by,
+//                'updated_at_s'=>$post->updated_at,
+//                'updated_by_i'=>$post->updated_by,
+//                'post_image_s'=>$post->post_image,
+//                'status_i'=>$post->status,
+//                'city_id_i'=>$post->city_id,
+//                'subCategory_id_i'=>$post->subCategory_id,
+//                'neighborhood_id_i'=>$post->neighborhood_id,
+//                'price_i'=>$post->price,
+//            ];
+
+
+        $temp_post[]=Solr::getPostKeys($id);
+        $posts_json = Json::encode($temp_post);
+
+        $url = "http://localhost:8983/solr/test_dynamic/update/json/docs?commit=true";
+        $ch = curl_init();
+        $header = array('Content-Type: application/json');
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        curl_setopt($ch, CURLOPT_POST, 1);
+
+//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+//        curl_setopt($ch, CURLOPT_USERPWD, ”$username:$password”);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
+
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+
+        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+
+        $data = curl_exec($ch);
+        $return = 0;
+        if (!curl_errno($ch)) {
+            $return = $data;
+        }
+        curl_close($ch);
+        return $return;
+
+    }
 
     public function behaviors()
     {
@@ -121,7 +217,6 @@ class post extends ActiveRecord
             ->where(['category_id' => $id, 'status' => 10])
             ->orderBy(['id' => SORT_DESC]);
     }
-
 
 
     /*public static function findOne($id)
@@ -191,6 +286,43 @@ class post extends ActiveRecord
     {
         $this->status = self::DELETED;
         $this->save(false);
+        $post=$this;
+        $temp_post=[
+            'id_i'=>$post->id,
+            'status_s'=>$post->status
+        ];
+
+        $posts_json = \yii\helpers\Json::encode($temp_post);
+
+        $url = "http://localhost:8983/solr/can/update/json/docs?commit=true";
+        $ch = curl_init();
+        $header = array('Content-Type: application/json');
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+        curl_setopt($ch, CURLOPT_POST, 1);
+
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
+
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+
+        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+
+        $data = curl_exec($ch);
+        $return = 0;
+        if (!curl_errno($ch)) {
+            $return = $data;
+        }
+        curl_close($ch);
+        return $return;
+
     }
 
 

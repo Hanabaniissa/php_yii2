@@ -22,7 +22,6 @@ class Solr extends Model
         $categoryId = $post->category_id;
         $subCategoryId = $post->subCategory_id;
 
-
         foreach ($post as $postKeys => $value) {
             $key = $postKeys;
             $key_value = $value;

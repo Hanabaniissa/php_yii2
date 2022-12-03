@@ -3,6 +3,7 @@
 namespace app\models;
 
 
+use app\components\solr\Documents;
 use yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -36,8 +37,8 @@ use yii\helpers\Json;
  * @property-read Neighborhood[] $neighborhood
  */
 class post extends ActiveRecord
-{const SCENARIO_UPDATE = 'update';
-
+{
+    const SCENARIO_UPDATE = 'update';
 
 
     public static function tableName()
@@ -95,31 +96,53 @@ class post extends ActiveRecord
     public function afterSave($insert, $changedAttributes)
     {
        $post= $this;
-       $id=$post->id;
+//       $id=$post->id;
+       $core='test_dynamic';
        echo '<pre>';
 
+       $id=$post->id;
 
-//        $temp_post= [
-//                'id_i' => $post->id,
-//                'title_s' => $post->title,
-//                'desc_s' => $post->description,
-//                'phone_i'=>$post->phone,
-//                'user_id_i'=>$post->user_id,
-//                'category_id_i'=>$post->category_id,
-//                'created_at_s'=>$post->created_at,
-//                'created_by_i'=>$post->created_by,
-//                'updated_at_s'=>$post->updated_at,
-//                'updated_by_i'=>$post->updated_by,
-//                'post_image_s'=>$post->post_image,
-//                'status_i'=>$post->status,
-//                'city_id_i'=>$post->city_id,
-//                'subCategory_id_i'=>$post->subCategory_id,
-//                'neighborhood_id_i'=>$post->neighborhood_id,
-//                'price_i'=>$post->price,
-//            ];
+//        $attributes['id'] = $id;
+// create a function to do it this
+        $postFields = [
+            self::class => $id,
+            'app\models\Country' => $post->country_id,
+            'app\models\City' => $post->city_id,
+            'app\models\Neighborhood' => $post->neighborhood_id,
+            'app\models\Category' => $post->category_id,
+            'app\models\SubCategories' => $post->subCategory_id,
+
+        ];
+
+//        $temp_post=Solr::getPostKeys($id);
+        $temp_post['id']=$id;
+
+        foreach ($postFields as $model=>$id_model){
+            $modelName = str_replace('app\models\\', '', strtolower($model));
+
+            $temp_post[$modelName]=Solr::getPostKeys($model,$id_model,$modelName);
+        }
+
+        var_dump($temp_post);die;
 
 
-        $temp_post[]=Solr::getPostKeys($id);
+//        $modelName = str_replace('app\models\\', '', strtolower($model));
+
+//       $dataConfigParams=[
+//           'id'=>$id,
+//           'model'=>self::class,
+//           'core'=>$core,
+//           'modelName'=>$modelName,
+//
+//       ];
+
+//       $data=Documents::create($dataConfigParam);
+//        die;
+////           return 'true';
+//           return $data; die;
+
+
+
         $posts_json = Json::encode($temp_post);
 
         $url = "http://localhost:8983/solr/test_dynamic/update/json/docs?commit=true";

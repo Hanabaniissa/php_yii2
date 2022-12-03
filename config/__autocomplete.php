@@ -23,6 +23,7 @@ class Yii {
  * @property \yii\web\User|__WebUser $user
  * @property \yii\redis\Connection $redis
  * @property \sizeg\jwt\Jwt $jwt
+ * @property \app\components\solr\Solr $solr
  *
  */
 class __Application {

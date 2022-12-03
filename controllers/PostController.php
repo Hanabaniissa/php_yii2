@@ -6,10 +6,12 @@ use app\helpers\CountryUtils;
 use app\models\post;
 use app\models\PostValue;
 use Psy\Util\Json;
+use Throwable;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\data\Pagination;
+use yii\db\StaleObjectException;
 use yii\web\Controller;
 use yii\web\Cookie;
 use yii\web\UploadedFile;
@@ -40,8 +42,6 @@ class PostController extends Controller
                 $post->post_image = $fileName;
             }
 
-//            var_dump($postFields);die;
-
             if ($post->validate() && $post->save()) {
 
                 $postID = $post->id;
@@ -64,6 +64,8 @@ class PostController extends Controller
         }
         return $this->render('create_post', ['post' => $post, 'country_id' => CountryUtils::getPreferredCountry()]);
     }
+
+
 
 
     public function actionDelete($postId)
@@ -94,7 +96,6 @@ class PostController extends Controller
 //
 //        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
-
 //        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
 //
 //        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
@@ -108,7 +109,6 @@ class PostController extends Controller
 //        }
 //        curl_close($ch);
 
-
         return $this->redirect(['post/view-by-category', 'id' => $categoryId]);
     }
 
@@ -116,7 +116,18 @@ class PostController extends Controller
     public function actionViewOne($id)
     {
 
-        //  $userId = \Yii::$app->user->id;
+//        $DocConfig=[
+//            'method'=>'post',
+//            'core'=>'h',
+//            'process'=>'update/json/docs?commit=true',
+//            'data'=>['h'=>'h'],
+//        ];
+//        var_dump($DocConfig);die();
+//        $core="dynamic";
+//        $process='update/json/docs?commit=true';
+//        $url=Yii::$app->solr->getUrl($core,$process);
+//            print_r($url);die;
+
         $cookies = Yii::$app->response->cookies;
         $currentCookies = Yii::$app->request->cookies;
         $recentlyViewedPosts = [];

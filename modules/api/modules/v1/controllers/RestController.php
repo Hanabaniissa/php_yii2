@@ -33,7 +33,7 @@ class RestController extends Controller
         $time = time();
 
         $jwtParams = Yii::$app->params['jwt'];
-        $tokenObject =  $jwt->getBuilder()
+        $tokenObject = $jwt->getBuilder()
             ->issuedBy($jwtParams['issuer'])
             ->permittedFor($jwtParams['audience'])
             ->identifiedBy($jwtParams['id'], true)
@@ -62,7 +62,6 @@ class RestController extends Controller
             return $model->getFirstErrors();
         }
     }
-
 
 
 }

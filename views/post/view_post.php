@@ -21,26 +21,26 @@ $this->params['breadcrumbs'][] = $this->title;
     <br>
 
     <div class="row gap-1">
-        <div class="col-md-1 p-2 border">
-            <h6>Category</h6>
+        <div class="col-md-1 p-3 border">
+            <h6>City</h6>
             <hr>
             <p><?=\yii\helpers\Html::encode($onePost->city->label_en) ?></p>
         </div>
 
-        <div class="col-md-1 p-2 border">
-            <h6>SubCategory</h6>
+        <div class="col-md-2 p-3 border">
+            <h6>Neighborhood</h6>
             <hr>
             <p><?=\yii\helpers\Html::encode($onePost->neighborhood->label_en) ?></p>
         </div>
     </div>
     <div class="row gap-1">
-    <div class="col-md-1 p-2 border">
+    <div class="col-md-1 p-3 border">
         <h6>Category</h6>
         <hr>
         <p><?=\yii\helpers\Html::encode($onePost->category->label_en) ?></p>
     </div>
 
-    <div class="col-md-1 p-2 border">
+    <div class="col-md-2 p-3 border">
         <h6>SubCategory</h6>
         <hr>
         <p><?=\yii\helpers\Html::encode($onePost->subCat->label_en) ?></p>

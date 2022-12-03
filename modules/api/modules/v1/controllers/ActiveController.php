@@ -13,24 +13,19 @@ class ActiveController extends \yii\rest\ActiveController
 
     public function behaviors()
     {
-//        $headers = \Yii::$app->request->headers;
-//        $jwtToken = $headers['x-api-key'];
-//        $jwtObj = \Yii::$app->jwt;
-
         $behaviors = parent::behaviors();
         $behaviors['authenticator']['only'] = ['create', 'update', 'delete'];
         $behaviors['authenticator']['authMethods'] = [
             'class' => JwtHttpBearerAuth::class,
-
         ];
 
         return $behaviors;
     }
 
-    /**
-     * @throws ForbiddenHttpException
-     **@property Country|Post $model
-     */
+//    /**
+//     * @throws ForbiddenHttpException
+//     **@property Country|Post $model
+//     */
 
 //    public function checkAccess($action, $model = null, $params = [])
 //    {

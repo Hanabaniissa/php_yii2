@@ -17,14 +17,5 @@ class PostController extends ActiveController
 
     }
 
-    public function getSolr(){
-        $data=Post::find()->all();
-
-
-
-    }
-
-
-
 
 }

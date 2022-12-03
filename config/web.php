@@ -20,16 +20,27 @@ $config = [
         ],
         'jwt' => [
             'class' => \sizeg\jwt\Jwt::class,
-            'key'   => 'HANA',
+            'key' => 'HANA',
             'jwtValidationData' => JwtValidationData::class,
 
         ],
+
+        'solr' => [
+            'class' => \app\components\solr\Solr::class,
+            'protocol' => 'http',
+            'host' => 'localhost',
+            'port' => '8983',
+            'path' => '/solr/',
+
+        ],
+
         'redis' => [
             'class' => 'yii\redis\Connection',
             'hostname' => 'localhost',
             'port' => 6379,
             'database' => 0,
         ],
+
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],

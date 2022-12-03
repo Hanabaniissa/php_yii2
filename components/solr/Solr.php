@@ -28,16 +28,14 @@ class Solr extends Component
         return $protocol . "://" . $host . ":" . $port . $path . $core . "/" . $process;
     }
 
-
     public function configWithCurl($configParams)
     {
-        $url = self::getUrl($configParams['core'], $configParams['process']);
 
+        $url = self::getUrl($configParams['core'], $configParams['process']);
 
         $data_json = Json::encode($configParams['data']);
 
         $ch = curl_init();
-
         $header = array('Content-Type: application/json');
 
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -49,7 +47,6 @@ class Solr extends Component
             case 'post':
                 curl_setopt($ch, CURLOPT_POST, 1);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_json);
-
                 break;
 
             case 'get':
@@ -60,21 +57,18 @@ class Solr extends Component
                 return die('null');
         }
 
+        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $data_json);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
 
         $data = curl_exec($ch);
-
         $return = 0;
         if (!curl_errno($ch)) {
             $return = $data;
-
         }
         curl_close($ch);
         return $return;
-
     }
 
 

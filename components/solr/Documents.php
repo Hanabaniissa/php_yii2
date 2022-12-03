@@ -5,7 +5,6 @@ namespace app\components\solr;
 
 use app\models\Solr;
 use app\modules\api\models\Post;
-use yii\helpers\Json;
 
 class Documents extends Solr
 {
@@ -21,51 +20,21 @@ class Documents extends Solr
     public static function create($dataConfigParams)
     {
 
-        $data[] = self::getFields($dataConfigParams['id'], $dataConfigParams['model'], $dataConfigParams['modelName']);
+        $data[] = self::getFields($dataConfigParams['model'], $dataConfigParams['id'], $dataConfigParams['modelName']);
 
-        $docConfigParam = [
+        $docConfigParams = [
             'method' => 'post',
             'core' => $dataConfigParams['core'],
             'process' => 'update/json/docs?commit=true',
-            'data' =>
-                Json::encode($data),
+            'data' => $data,
         ];
+        return \Yii::$app->solr->configWithCurl($docConfigParams);
 
-        return \Yii::$app->solr->configWithCurl($docConfigParam);
-
-//        $dataCreate=\Yii::$app->solr->configWithCurl($docConfigParam);
-//        return 'true';
     }
-
-    /**
-     **@property Post $model
-     */
-
-//    protected static function getFields($id, $model)
-//    {
-//
-////        $data_id = $id;
-//        $attributes['id'] = $id;
-//        $data = $model::find()->where(['id' => $id])->one();
-//
-//        foreach ($data as $postKeys => $value) {
-//            $key = $postKeys;
-//            $key_value = $value;
-//            $type = gettype($value);
-//            $field = str_replace('', '_', strtolower($key));
-//            $field .= "_post_" . self::getFieldType($type);
-//            $attributes[$field] = $key_value;
-//        }
-//
-//        return $attributes;
-//
-//    }
 
 
     protected static function getFields($model, $id_model, $modelName): array
     {
-
-//        $data_id = $id;
         $attributes['id'] = $id_model;
         $data = $model::find()->where(['id' => $id_model])->one();
 
@@ -90,7 +59,6 @@ class Documents extends Solr
 
     private static function getFieldType($fieldTypeParams): string
     {
-
         $type = gettype($fieldTypeParams['value']);
         $field = str_replace($fieldTypeParams['search'], $fieldTypeParams['replace'], strtolower($fieldTypeParams['key']));
 
@@ -128,27 +96,5 @@ class Documents extends Solr
 
     }
 
-
-
-
-
-
-
-
-//    private static function getFieldType($field): string
-//    {
-//        switch ($field) {
-//            case 'Int':
-//            case 'integer':
-//                return 'i';
-//
-//            case 'String':
-//            case 'string':
-//                return 's';
-//
-//            default:
-//                return 'null';
-//        }
-//    }
 
 }

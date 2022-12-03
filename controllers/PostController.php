@@ -2,16 +2,15 @@
 
 namespace app\controllers;
 
+use app\components\solr\Documents;
 use app\helpers\CountryUtils;
 use app\models\post;
 use app\models\PostValue;
 use Psy\Util\Json;
-use Throwable;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\data\Pagination;
-use yii\db\StaleObjectException;
 use yii\web\Controller;
 use yii\web\Cookie;
 use yii\web\UploadedFile;
@@ -55,6 +54,19 @@ class PostController extends Controller
                         die;
                     }
                 }
+
+                $id = $post->id;
+                $model = 'app\models\post';
+                $modelName = str_replace('app\models\\', '', strtolower($model));
+
+                $dataConfigParams = [
+                    'id' => $id,
+                    'model' => $model,
+                    'core' => 'test_dynamic',
+                    'modelName' => $modelName,
+                ];
+
+                Documents::create($dataConfigParams);
                 return $this->redirect(['post/view-one', 'id' => $postID]);
 
             } else {
@@ -64,8 +76,6 @@ class PostController extends Controller
         }
         return $this->render('create_post', ['post' => $post, 'country_id' => CountryUtils::getPreferredCountry()]);
     }
-
-
 
 
     public function actionDelete($postId)
@@ -116,17 +126,6 @@ class PostController extends Controller
     public function actionViewOne($id)
     {
 
-//        $DocConfig=[
-//            'method'=>'post',
-//            'core'=>'h',
-//            'process'=>'update/json/docs?commit=true',
-//            'data'=>['h'=>'h'],
-//        ];
-//        var_dump($DocConfig);die();
-//        $core="dynamic";
-//        $process='update/json/docs?commit=true';
-//        $url=Yii::$app->solr->getUrl($core,$process);
-//            print_r($url);die;
 
         $cookies = Yii::$app->response->cookies;
         $currentCookies = Yii::$app->request->cookies;
@@ -259,25 +258,26 @@ class PostController extends Controller
     }
 
 
-    public function actionPostKeys(){
+    public function actionPostKeys()
+    {
 //        $posts= new \app\modules\api\models\Post();
-        $posts=\app\modules\api\models\Post::find()->where(['id'=>'108'])->one();
-        foreach($posts as $post=>$value){
-            $key=$post;
-            $key_value=$value;
-            $hh='hh';
+        $posts = \app\modules\api\models\Post::find()->where(['id' => '108'])->one();
+        foreach ($posts as $post => $value) {
+            $key = $post;
+            $key_value = $value;
+            $hh = 'hh';
 //            $type=gettype($hh);
-            $type=gettype($value);
+            $type = gettype($value);
 
 
 //            echo Json::encode($type);die;
 
 
-            $field=str_replace('','_',strtolower($key));
+            $field = str_replace('', '_', strtolower($key));
 
 
-            $field.="_".$this->getPostFieldTypeForSolr($type);
-            $attributes[$field]=$key_value;
+            $field .= "_" . $this->getPostFieldTypeForSolr($type);
+            $attributes[$field] = $key_value;
 
         }
         echo Json::encode($attributes);

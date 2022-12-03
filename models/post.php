@@ -3,13 +3,11 @@
 namespace app\models;
 
 
-use app\components\solr\Documents;
 use yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\BaseActiveRecord;
-use yii\db\Query;
 use yii\helpers\Json;
 
 
@@ -38,8 +36,6 @@ use yii\helpers\Json;
  */
 class post extends ActiveRecord
 {
-    const SCENARIO_UPDATE = 'update';
-
 
     public static function tableName()
     {
@@ -61,123 +57,80 @@ class post extends ActiveRecord
         ];
     }
 
-//    public static function getPostKeys($id){
-//        $attributes['id']=$id;
+
+
+
+//    public function afterSave($insert, $changedAttributes)
+//    {
+//       $post= $this;
+//       $id=$post->id;
 //
-//        $posts=self::find()->where(['id'=>$id])->one();
-//        foreach($posts as $post=>$value){
-//            $key=$post;
-//            $key_value=$value;;
-//            $type=gettype($value);
-//            $field=str_replace('','_',strtolower($key));
-//            $field.="_".self::getPostFieldTypeForSolr($type);
+////        $attributes['id'] = $id;
+//        $postFields = [
+//            self::class => $id,
+//            'app\models\Country' => $post->country_id,
+//            'app\models\City' => $post->city_id,
+//            'app\models\Neighborhood' => $post->neighborhood_id,
+//            'app\models\Category' => $post->category_id,
+//            'app\models\SubCategories' => $post->subCategory_id,
 //
-//            $attributes[$field]=$key_value;
-//            echo Json::encode($attributes);die;
+//        ];
 //
+//        $temp_post['id']=$id;
 //
+//        foreach ($postFields as $model=>$id_model){
+//            $modelName = str_replace('app\models\\', '', strtolower($model));
+//
+//            $temp_post[$modelName]=Solr::getPostKeys($model,$id_model,$modelName);
 //        }
 //
-//        return $attributes;
+////        $modelName = str_replace('app\models\\', '', strtolower(self::class));
+////
+////        $dataConfigParams = [
+////            'id' => $id,
+////            'model' => self::class,
+////            'core' => $core,
+////            'modelName' => $modelName,
+////        ];
+////         Documents::create($dataConfigParams);
+//
+//
+//
+//        $posts_json = Json::encode($temp_post);
+//
+//        $url = "http://localhost:8983/solr/test_dynamic/update/json/docs?commit=true";
+//        $ch = curl_init();
+//        $header = array('Content-Type: application/json');
+//
+//        curl_setopt($ch, CURLOPT_URL, $url);
+//
+//        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+//
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//
+//        curl_setopt($ch, CURLOPT_POST, 1);
+//
+//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+//
+//        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+//
+//
+//        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
+//
+//        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+//
+//        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+//
+//        $data = curl_exec($ch);
+//        $return = 0;
+//        if (!curl_errno($ch)) {
+//            $return = $data;
+//        }
+//        curl_close($ch);
+//        return $return;
+//
 //    }
 
-
-
-//    private static function getPostFieldTypeForSolr($field): string
-//    {
-//        switch($field){
-//            case 'integer': return 'i';
-//                break;
-//            case 'string': return 's';
-//                break;
-//            default: return 'null';
-//        }}
-
-    public function afterSave($insert, $changedAttributes)
-    {
-       $post= $this;
-//       $id=$post->id;
-       $core='test_dynamic';
-       echo '<pre>';
-
-       $id=$post->id;
-
-//        $attributes['id'] = $id;
-// create a function to do it this
-        $postFields = [
-            self::class => $id,
-            'app\models\Country' => $post->country_id,
-            'app\models\City' => $post->city_id,
-            'app\models\Neighborhood' => $post->neighborhood_id,
-            'app\models\Category' => $post->category_id,
-            'app\models\SubCategories' => $post->subCategory_id,
-
-        ];
-
-//        $temp_post=Solr::getPostKeys($id);
-        $temp_post['id']=$id;
-
-        foreach ($postFields as $model=>$id_model){
-            $modelName = str_replace('app\models\\', '', strtolower($model));
-
-            $temp_post[$modelName]=Solr::getPostKeys($model,$id_model,$modelName);
-        }
-
-        var_dump($temp_post);die;
-
-
-//        $modelName = str_replace('app\models\\', '', strtolower($model));
-
-//       $dataConfigParams=[
-//           'id'=>$id,
-//           'model'=>self::class,
-//           'core'=>$core,
-//           'modelName'=>$modelName,
-//
-//       ];
-
-//       $data=Documents::create($dataConfigParam);
-//        die;
-////           return 'true';
-//           return $data; die;
-
-
-
-        $posts_json = Json::encode($temp_post);
-
-        $url = "http://localhost:8983/solr/test_dynamic/update/json/docs?commit=true";
-        $ch = curl_init();
-        $header = array('Content-Type: application/json');
-
-        curl_setopt($ch, CURLOPT_URL, $url);
-
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        curl_setopt($ch, CURLOPT_POST, 1);
-
-//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-//        curl_setopt($ch, CURLOPT_USERPWD, ”$username:$password”);
-
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
-
-        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-
-        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
-
-        $data = curl_exec($ch);
-        $return = 0;
-        if (!curl_errno($ch)) {
-            $return = $data;
-        }
-        curl_close($ch);
-        return $return;
-
-    }
 
     public function behaviors()
     {
@@ -198,13 +151,6 @@ class post extends ActiveRecord
 
         ];
     }
-
-//    public function scenarios()
-//    {
-//        $scenarios = parent::scenarios();
-//        $scenarios['Update'] = ['title', 'description', 'phone', 'category_id', 'country_id', 'subCategory_id', 'city_id', 'neighborhood_id', 'price'];
-//        return $scenarios;
-//    }
 
 
     public function attributeLabels()
@@ -233,8 +179,6 @@ class post extends ActiveRecord
 
     public static function findPostByCategoryIdQuery($id)
     {
-        // all => []
-        // one
         return self::find()
             ->select(['title', 'description', 'phone', 'id', 'created_at', 'post_image'])
             ->where(['category_id' => $id, 'status' => 10])
@@ -254,9 +198,11 @@ class post extends ActiveRecord
     }
 */
 
+
     /**
      * @return ActiveQuery
      */
+
     public function getValue(): yii\db\ActiveQuery
     {
         return $this->hasMany(PostValue::class, ['post_id' => 'id']);
@@ -309,10 +255,10 @@ class post extends ActiveRecord
     {
         $this->status = self::DELETED;
         $this->save(false);
-        $post=$this;
-        $temp_post=[
-            'id_i'=>$post->id,
-            'status_s'=>$post->status
+        $post = $this;
+        $temp_post = [
+            'id_i' => $post->id,
+            'status_s' => $post->status
         ];
 
         $posts_json = \yii\helpers\Json::encode($temp_post);
@@ -345,7 +291,6 @@ class post extends ActiveRecord
         }
         curl_close($ch);
         return $return;
-
     }
 
 

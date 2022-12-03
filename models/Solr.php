@@ -2,19 +2,16 @@
 
 namespace app\models;
 
-use Yii;
 use yii\base\Model;
-use yii\helpers\Json;
 
 class Solr extends Model
 {
 
-    public static function getPostKeys($model, $id_model,$modelName)
+    public static function getPostKeys($model, $id_model, $modelName): array
     {
         if (post::class == $model) {
+
             $model_object = post::find()->where(['id' => $id_model])->one();
-//            $posts=\app\modules\api\models\Post::find()->where(['id'=>'108'])->one();
-//            echo \Psy\Util\Json::encode($model_object);die;
 
             foreach ($model_object as $field_key => $value) {
 
@@ -31,7 +28,6 @@ class Solr extends Model
             }
 
             $values = $model_object->value;
-            var_dump($values);die;
 
             foreach ($values as $value) {
 
@@ -43,21 +39,14 @@ class Solr extends Model
                     'key' => $field->label_en,
                     'search' => ' ',
                     'replace' => '_',
-                    'model'=>'Field',
+                    'model' => 'Field',
                 ];
 
                 $field = self::getFieldType($fieldTypeParamsValue);
 
                 $attributes[$field] = $option->label_en;
-
-//                $type = $field->type;
-//                $field = str_replace(' ', '_', strtolower($field->label_en));
-//                $field .= "_field_" . self::getFieldTypeForSolr($type);
-//                $attributes[$field] = $option->label_en;
             }
 
-
-            return $attributes;
         } else {
 
             $model_object = $model::find()->where(['id' => $id_model])->one();
@@ -67,28 +56,73 @@ class Solr extends Model
                 $type = gettype($value);
                 $field = str_replace('', '_', strtolower($key));
                 $modelName = str_replace('app\models\\', '_', strtolower($model));
-                $field .= $modelName . "_" . self::getFieldTypeForSolr($type);
+                $field .= $modelName . "_" . self::getFieldType($type);
                 $attributes[$field] = $key_value;
             }
 
-            return $attributes;
         }
+        return $attributes;
     }
 
-    private function getWithRelation($model, $id_model, $attributes)
+    public function getWithoutRelation($model, $id_model, $modelName): array
     {
+        $model_object = self::getObjectFromModel($model, $id_model);
+
+        foreach ($model_object as $field_key => $value) {
+
+//            $attributes=[];
+            $fieldTypeParams = [
+                'value' => $value,
+                'key' => $field_key,
+                'search' => ' ',
+                'replace' => '_',
+                'model' => $modelName,
+            ];
+
+            $field = self::getFieldType($fieldTypeParams);
+            $attributes[$field] = $value;
+        }
+
         return $attributes;
 
     }
 
-    private function getWithoutRelation($model, $id_model, $attributes)
+    public function getWithRelation($model, $id_model, $relationField): array
     {
-        return $attributes;
+        $model_object = self::getObjectFromModel($model, $id_model);
 
+        $values = $model_object->value;
+
+        foreach ($values as $value) {
+
+            $field = $value->field;
+            $option = $value->option;
+
+            $fieldTypeParamsValue = [
+                'value' => $option->label_en,
+                'key' => $field->label_en,
+                'search' => ' ',
+                'replace' => '_',
+                'model' => $relationField,
+            ];
+
+            $field = self::getFieldType($fieldTypeParamsValue);
+
+            $attributes[$field] = $option->label_en;
+        }
+
+        return $attributes;
 
     }
 
-// or create relation for country with post
+    public static function getObjectFromModel($model, $id)
+    {
+        if ($model == null or $id == null) {
+            return die('null');
+        }
+        return $model::find()->where(['id' => $id])->one();
+
+    }
 
     private static function getFieldType($fieldTypeParams): string
     {
@@ -96,18 +130,12 @@ class Solr extends Model
         $type = gettype($fieldTypeParams['value']);
         $field = str_replace($fieldTypeParams['search'], $fieldTypeParams['replace'], strtolower($fieldTypeParams['key']));
 
-//        if (!$fieldTypeParams['model'] == null) {
-//            $modelName = str_replace('app\models\\', '_', strtolower($fieldTypeParams['model']));
-//        } else {
-//            $modelName='_';
-//        }
-
         switch ($type) {
             case 'Int':
             case 'integer':
                 $charType = 'i';
 
-            break;
+                break;
             case 'string':
             case 'String':
                 $charType = 's';
@@ -117,30 +145,12 @@ class Solr extends Model
                 return die('null');
         }
 
-        $field .= "_".$fieldTypeParams['model'] . "_".$charType;
+        $field .= "_" . $fieldTypeParams['model'] . "_" . $charType;
 
         return $field;
 
     }
 
-private static function getFieldTypeForSolr($field): string
-{
-    switch ($field) {
-        case 'integer':
-            return 'i';
-            break;
-        case 'string':
-            return 's';
-            break;
-        case 'Int':
-            return 'i';
-            break;
-        case 'String':
-            return 's';
-        default:
-            return 'null';
-    }
-}
 
 
 }

@@ -15,7 +15,6 @@ class SolrController extends Controller
 
         $id=$post->id;
 //        $temp_post[]= \app\models\post::getPostKeys($id);
-        $temp_post[]= Solr::getPostKeys($id);
 
 
 //        $temp_post[]= Solr::getPostKeys($id);
@@ -41,6 +40,7 @@ class SolrController extends Controller
                 'neighborhood_id_i'=>$post->neighborhood_id,
                 'price_i'=>$post->price
             ];
+        echo Json::encode($temp_post); die;
 
         $posts_json = Json::encode($temp_post);
 

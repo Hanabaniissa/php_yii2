@@ -3,12 +3,12 @@
 namespace app\models;
 
 
+use app\components\solr\Documents;
 use yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\BaseActiveRecord;
-use yii\helpers\Json;
 
 
 /** @property integer $id
@@ -256,47 +256,50 @@ class post extends ActiveRecord
         $this->status = self::DELETED;
         $this->save(false);
         $post = $this;
-        $temp_post = [
-            'id_i' => $post->id,
-            'status_s' => $post->status
+
+        $data = [
+            'id' => $post->id,
+            'status_post_i' => 0,
         ];
 
-        $posts_json = \yii\helpers\Json::encode($temp_post);
+        $core='test_dynamic';
+        Documents::delete($data,$core);
 
-        $url = "http://localhost:8983/solr/can/update/json/docs?commit=true";
-        $ch = curl_init();
-        $header = array('Content-Type: application/json');
-        curl_setopt($ch, CURLOPT_URL, $url);
+//        $posts_json = \yii\helpers\Json::encode($temp_post);
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+//        $url = "http://localhost:8983/solr/can/update/json/docs?commit=true";
+//        $ch = curl_init();
+//        $header = array('Content-Type: application/json');
+//        curl_setopt($ch, CURLOPT_URL, $url);
+//
+//        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+//
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+//
+//        curl_setopt($ch, CURLOPT_POST, 1);
+//
+//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-        curl_setopt($ch, CURLOPT_POST, 1);
-
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
-
-        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-
-        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
-
-        $data = curl_exec($ch);
-        $return = 0;
-        if (!curl_errno($ch)) {
-            $return = $data;
-        }
-        curl_close($ch);
-        return $return;
+//        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+//
+//        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
+//
+//        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+//
+//        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+//
+//        $data = curl_exec($ch);
+//        $return = 0;
+//        if (!curl_errno($ch)) {
+//            $return = $data;
+//        }
+//        curl_close($ch);
+//        return $return;
     }
 
 
     public static function search($term)
     {
-
 
         return self::find()
             ->select(['title', 'description', 'phone', 'id', 'created_at', 'post_image'])

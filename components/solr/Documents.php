@@ -90,9 +90,15 @@ class Documents extends Solr
 
     }
 
-    public function delete()
+    public static function delete($data,$core)
     {
-
+        $docConfigParams = [
+            'method' => 'post',
+            'core' => $core,
+            'process' => 'update/json/docs?commit=true',
+            'data' => $data,
+        ];
+        return \Yii::$app->solr->configWithCurl($docConfigParams);
 
     }
 

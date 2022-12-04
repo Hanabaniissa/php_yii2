@@ -6,6 +6,7 @@ use app\components\solr\Documents;
 use app\helpers\CountryUtils;
 use app\models\post;
 use app\models\PostValue;
+use app\models\Solr;
 use Psy\Util\Json;
 use Yii;
 use yii\data\ActiveDataProvider;
@@ -66,6 +67,7 @@ class PostController extends Controller
                     'modelName' => $modelName,
                 ];
 
+                \app\components\solr\Solr::core('test_dynamic')->limit();
                 Documents::create($dataConfigParams);
                 return $this->redirect(['post/view-one', 'id' => $postID]);
 
@@ -84,41 +86,6 @@ class PostController extends Controller
 
         $categoryId = $post->category_id;
         $post->delete();
-
-//        $temp_post=[
-//            'id_i'=>$post->id,
-//            'status_i'=>$post->status
-//        ];
-//        $posts_json = \yii\helpers\Json::encode($temp_post);
-//
-//        $url = "http://localhost:8983/solr/dynamic_field/update/json/docs?commit=true";
-//        $ch = curl_init();
-//        $header = array('Content-Type: application/json');
-//
-//        curl_setopt($ch, CURLOPT_URL, $url);
-//
-//        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-//
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//
-//        curl_setopt($ch, CURLOPT_POST, 1);
-//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-//
-//        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
-//
-//        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-//
-//        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
-//
-//        $data = curl_exec($ch);
-//        $return = 0;
-//        if (!curl_errno($ch)) {
-//            $return = $data;
-//        }
-//        curl_close($ch);
-
         return $this->redirect(['post/view-by-category', 'id' => $categoryId]);
     }
 

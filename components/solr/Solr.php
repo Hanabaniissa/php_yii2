@@ -2,8 +2,13 @@
 
 namespace app\components\solr;
 
+use Yii;
 use yii\base\Component;
+use yii\db\Exception;
 use yii\helpers\Json;
+/**
+ * @property Query $query
+ */
 
 class Solr extends Component
 {
@@ -16,25 +21,36 @@ class Solr extends Component
 
     public string $path;
 
+    public string $core;
 
-    public function getUrl($core, $process): string
+
+//    public function getUrl($core, $process): string
+//    {
+//
+//        $protocol = $this->protocol;
+//        $host = $this->host;
+//        $port = $this->port;
+//        $path = $this->path;
+//
+//        return $protocol . "://" . $host . ":" . $port . $path . $core . "/" . $process;
+//    }
+
+
+    public function getUrl ($process): string
     {
 
         $protocol = $this->protocol;
         $host = $this->host;
         $port = $this->port;
         $path = $this->path;
+        $core= Yii::$app->solr->core;
 
         return $protocol . "://" . $host . ":" . $port . $path . $core . "/" . $process;
     }
 
     public function configWithCurl($configParams)
     {
-
         $url = self::getUrl($configParams['core'], $configParams['process']);
-
-        $data_json = Json::encode($configParams['data']);
-
         $ch = curl_init();
         $header = array('Content-Type: application/json');
 
@@ -46,25 +62,25 @@ class Solr extends Component
 
             case 'post':
                 curl_setopt($ch, CURLOPT_POST, 1);
+                $data_json = Json::encode($configParams['data']);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_json);
                 break;
 
             case 'get':
-                $method = '';
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
                 break;
 
             default:
                 return die('null');
         }
-
-        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
 
         $data = curl_exec($ch);
         $return = 0;
         if (!curl_errno($ch)) {
+
             $return = $data;
         }
         curl_close($ch);
@@ -72,4 +88,27 @@ class Solr extends Component
     }
 
 
+//    public static function setCore($core){
+//        if($core == null){
+//            return die("null");
+//        }
+//        else{
+//            \Yii::$app->solr->core=$core;
+//        }
+//    }
+
+    /**
+     * @throws Exception
+     */
+    public static function core($core): Query
+    {
+        if(!$core){
+            throw new Exception("Null");
+        }
+
+        Yii::$app->solr->core=$core;
+        return new Query();
+    }
+
+//curl http://localhost:8983/solr/test_dynamic/schema?wt=json
 }

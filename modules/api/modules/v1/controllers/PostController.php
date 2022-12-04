@@ -14,7 +14,6 @@ class PostController extends ActiveController
         unset($actions['create']['checkAccess'], $actions['index']['checkAccess'], $actions['view']['checkAccess']);
         return $actions;
 
-
     }
 
 

@@ -114,7 +114,7 @@ class Solr extends Model
             case 'string':
                 return 's';
             default:
-                return 'null';
+                return 'str';
         }
     }
 

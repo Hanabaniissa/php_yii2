@@ -24,10 +24,11 @@ class Documents extends Solr
 
         $docConfigParams = [
             'method' => 'post',
-            'core' => $dataConfigParams['core'],
+//            'core' => $dataConfigParams['core'],
             'process' => 'update/json/docs?commit=true',
             'data' => $data,
         ];
+
         return \Yii::$app->solr->configWithCurl($docConfigParams);
 
     }
@@ -52,7 +53,6 @@ class Documents extends Solr
 
             $attributes[$field] = $value;
         }
-
         return $attributes;
 
     }

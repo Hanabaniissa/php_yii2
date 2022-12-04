@@ -43,14 +43,14 @@ class Solr extends Component
         $host = $this->host;
         $port = $this->port;
         $path = $this->path;
-        $core= Yii::$app->solr->core;
+        $core= $this->core;
 
         return $protocol . "://" . $host . ":" . $port . $path . $core . "/" . $process;
     }
 
     public function configWithCurl($configParams)
     {
-        $url = self::getUrl($configParams['core'], $configParams['process']);
+        $url = self::getUrl($configParams['process']);
         $ch = curl_init();
         $header = array('Content-Type: application/json');
 
@@ -68,14 +68,17 @@ class Solr extends Component
 
             case 'get':
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
                 break;
 
             default:
                 return die('null');
         }
+
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+//        var_dump($ch);die;
 
         $data = curl_exec($ch);
         $return = 0;

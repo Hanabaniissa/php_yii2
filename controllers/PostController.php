@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\components\solr\Documents;
+use app\components\solr\Query;
 use app\helpers\CountryUtils;
 use app\models\post;
 use app\models\PostValue;
@@ -12,6 +13,7 @@ use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\data\Pagination;
+use yii\db\Exception;
 use yii\web\Controller;
 use yii\web\Cookie;
 use yii\web\UploadedFile;
@@ -63,11 +65,12 @@ class PostController extends Controller
                 $dataConfigParams = [
                     'id' => $id,
                     'model' => $model,
-                    'core' => 'test_dynamic',
+//                    'core' => 'test_dynamic',
                     'modelName' => $modelName,
                 ];
 
-                \app\components\solr\Solr::core('test_dynamic')->limit();
+                \app\components\solr\Solr::core('test_dynamic')->get();
+
                 Documents::create($dataConfigParams);
                 return $this->redirect(['post/view-one', 'id' => $postID]);
 
@@ -251,6 +254,16 @@ class PostController extends Controller
 
 
     }
+
+    /**
+     * @throws Exception
+     */
+    public function actionGetDoc()
+    {
+
+        $docs = \app\components\solr\Solr::core('test_dynamic')->get();
+    }
+
 
 //    private function getPostFieldTypeForSolr($field){
 //        switch($field){

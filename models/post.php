@@ -36,9 +36,7 @@ use yii\helpers\Json;
  * @property-read Neighborhood[] $neighborhood
  */
 class post extends ActiveRecord
-{const SCENARIO_UPDATE = 'update';
-
-
+{
 
     public static function tableName()
     {
@@ -81,7 +79,6 @@ class post extends ActiveRecord
 //    }
 
 
-
 //    private static function getPostFieldTypeForSolr($field): string
 //    {
 //        switch($field){
@@ -94,10 +91,9 @@ class post extends ActiveRecord
 
     public function afterSave($insert, $changedAttributes)
     {
-       $post= $this;
-       $id=$post->id;
-       echo '<pre>';
-
+        $post = $this;
+        $id = $post->id;
+        echo '<pre>';
 
 //        $temp_post= [
 //                'id_i' => $post->id,
@@ -118,8 +114,7 @@ class post extends ActiveRecord
 //                'price_i'=>$post->price,
 //            ];
 
-
-        $temp_post[]=Solr::getPostKeys($id);
+        $temp_post[] = Solr::getPostKeys($id);
         $posts_json = Json::encode($temp_post);
 
         $url = "http://localhost:8983/solr/test_dynamic/update/json/docs?commit=true";
@@ -133,12 +128,6 @@ class post extends ActiveRecord
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         curl_setopt($ch, CURLOPT_POST, 1);
-
-//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-//        curl_setopt($ch, CURLOPT_USERPWD, ”$username:$password”);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
 
@@ -175,14 +164,6 @@ class post extends ActiveRecord
 
         ];
     }
-
-//    public function scenarios()
-//    {
-//        $scenarios = parent::scenarios();
-//        $scenarios['Update'] = ['title', 'description', 'phone', 'category_id', 'country_id', 'subCategory_id', 'city_id', 'neighborhood_id', 'price'];
-//        return $scenarios;
-//    }
-
 
     public function attributeLabels()
     {
@@ -227,7 +208,6 @@ class post extends ActiveRecord
             ->innerJoin(PostValue::tableName(), 'post_value.post_id = posts.id')
             ->where(['posts.id'=>$id])
             ->one();
-
     }
 */
 
@@ -286,15 +266,13 @@ class post extends ActiveRecord
     {
         $this->status = self::DELETED;
         $this->save(false);
-        $post=$this;
-        $temp_post=[
-            'id_i'=>$post->id,
-            'status_s'=>$post->status
+        $post = $this;
+        $temp_post = [
+            'id_i' => $post->id,
+            'status_s' => $post->status
         ];
-
         $posts_json = \yii\helpers\Json::encode($temp_post);
-
-        $url = "http://localhost:8983/solr/can/update/json/docs?commit=true";
+        $url = "http://localhost:8983/solr/test_dynamic/update/json/docs?commit=true";
         $ch = curl_init();
         $header = array('Content-Type: application/json');
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -306,8 +284,6 @@ class post extends ActiveRecord
         curl_setopt($ch, CURLOPT_POST, 1);
 
         curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
 

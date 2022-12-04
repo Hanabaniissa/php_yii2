@@ -9,8 +9,6 @@ use yii\helpers\Json;
 class Solr extends Model
 {
 
-
-
     public static function getPostKeys($id)
     {
         $post_id = $id;
@@ -109,26 +107,17 @@ class Solr extends Model
     private static function getFieldTypeForSolr($field): string
     {
         switch ($field) {
+            case 'Int':
             case 'integer':
                 return 'i';
-                break;
-            case 'string':
-                return 's';
-                break;
-            case 'Int':
-                return 'i';
-                break;
             case 'String':
+            case 'string':
                 return 's';
             default:
                 return 'null';
         }
     }
 
-
-    public static function set(){
-
-    }
 
 
 }

@@ -142,7 +142,7 @@ class Solr extends Model
                 break;
 
             default:
-                return die('null');
+                return 'str';
         }
 
         $field .= "_" . $fieldTypeParams['model'] . "_" . $charType;

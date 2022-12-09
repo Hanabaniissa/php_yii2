@@ -3,7 +3,6 @@
 namespace app\models;
 
 
-use app\components\solr\Documents;
 use yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -37,12 +36,12 @@ use yii\db\BaseActiveRecord;
 class post extends ActiveRecord
 {
 
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'posts';
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['title', 'description', 'phone', 'category_id', 'country_id', 'subCategory_id', 'city_id', 'neighborhood_id', 'price'], 'required'],
@@ -59,14 +58,10 @@ class post extends ActiveRecord
 
 
 
-
 //    public function afterSave($insert, $changedAttributes)
 //    {
-//       $post= $this;
-//       $id=$post->id;
-//
-////        $attributes['id'] = $id;
-//        $postFields = [
+
+//$postFields = [
 //            self::class => $id,
 //            'app\models\Country' => $post->country_id,
 //            'app\models\City' => $post->city_id,
@@ -75,8 +70,7 @@ class post extends ActiveRecord
 //            'app\models\SubCategories' => $post->subCategory_id,
 //
 //        ];
-//
-//        $temp_post['id']=$id;
+//$temp_post['id']=$id;
 //
 //        foreach ($postFields as $model=>$id_model){
 //            $modelName = str_replace('app\models\\', '', strtolower($model));
@@ -94,45 +88,11 @@ class post extends ActiveRecord
 ////        ];
 ////         Documents::create($dataConfigParams);
 //
-//
-//
-//        $posts_json = Json::encode($temp_post);
-//
-//        $url = "http://localhost:8983/solr/test_dynamic/update/json/docs?commit=true";
-//        $ch = curl_init();
-//        $header = array('Content-Type: application/json');
-//
-//        curl_setopt($ch, CURLOPT_URL, $url);
-//
-//        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-//
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//
-//        curl_setopt($ch, CURLOPT_POST, 1);
-//
-//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-//
-//        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-//
-//
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
-//
-//        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-//
-//        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
-//
-//        $data = curl_exec($ch);
-//        $return = 0;
-//        if (!curl_errno($ch)) {
-//            $return = $data;
-//        }
-//        curl_close($ch);
-//        return $return;
-//
+//       $post= $this;
 //    }
 
 
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             [
@@ -153,7 +113,7 @@ class post extends ActiveRecord
     }
 
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -177,7 +137,7 @@ class post extends ActiveRecord
     }
 
 
-    public static function findPostByCategoryIdQuery($id)
+    public static function findPostByCategoryIdQuery($id): ActiveQuery
     {
         return self::find()
             ->select(['title', 'description', 'phone', 'id', 'created_at', 'post_image'])
@@ -185,48 +145,39 @@ class post extends ActiveRecord
             ->orderBy(['id' => SORT_DESC]);
     }
 
-
-    /*public static function findOne($id)
-    {
-
-        return (new Query())->select('*')
-            ->from(self::tableName())
-            ->innerJoin(PostValue::tableName(), 'post_value.post_id = posts.id')
-            ->where(['posts.id'=>$id])
-            ->one();
-
-    }
-*/
-
-
     /**
      * @return ActiveQuery
      */
 
-    public function getValue(): yii\db\ActiveQuery
+    public function getValue(): ActiveQuery
     {
         return $this->hasMany(PostValue::class, ['post_id' => 'id']);
     }
 
-    public function getCategory(): yii\db\ActiveQuery
+
+    public function getCategory(): ActiveQuery
     {
         return $this->hasOne(Category::class, ['id' => 'category_id']);
     }
 
-    public function getSubCat(): yii\db\ActiveQuery
+
+    public function getSubCat(): ActiveQuery
     {
         return $this->hasOne(SubCategories::class, ['id' => 'subCategory_id']);
     }
 
-    public function getCity(): yii\db\ActiveQuery
+
+    public function getCity(): ActiveQuery
     {
         return $this->hasOne(City::class, ['id' => 'city_id']);
     }
 
-    public function getNeighborhood(): yii\db\ActiveQuery
+
+    public function getNeighborhood(): ActiveQuery
     {
         return $this->hasOne(Neighborhood::class, ['id' => 'neighborhood_id']);
     }
+
 
     public static function findOne($id)
     {
@@ -253,52 +204,22 @@ class post extends ActiveRecord
 
     public function delete()
     {
+
         $this->status = self::DELETED;
         $this->save(false);
-        $post = $this;
+//        \app\components\solr\Solr::coreDocument('test_dynamic')->from($postId)->update();
 
-        $data = [
-            'id' => $post->id,
-            'status_post_i' => 0,
-        ];
-
-        $core='test_dynamic';
-        Documents::delete($data,$core);
-
-//        $posts_json = \yii\helpers\Json::encode($temp_post);
-
-//        $url = "http://localhost:8983/solr/can/update/json/docs?commit=true";
-//        $ch = curl_init();
-//        $header = array('Content-Type: application/json');
-//        curl_setopt($ch, CURLOPT_URL, $url);
+//        $post = $this;
+//        $data = [
+//            'id' => $post->id,
+//            'status_post_i' => 0,
+//        ];
 //
-//        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-//
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//
-//        curl_setopt($ch, CURLOPT_POST, 1);
-//
-//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-
-//        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-//
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
-//
-//        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-//
-//        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
-//
-//        $data = curl_exec($ch);
-//        $return = 0;
-//        if (!curl_errno($ch)) {
-//            $return = $data;
-//        }
-//        curl_close($ch);
-//        return $return;
+//        $core = 'test_dynamic';
     }
 
 
-    public static function search($term)
+    public static function search($term): ActiveQuery
     {
 
         return self::find()

@@ -4,194 +4,189 @@ namespace app\components\solr;
 
 
 use Exception;
+use Yii;
 
 class Query extends Solr
 {
-    public string $qt = '/select?';
+    /** requestHandler (qt) */
+    public string $requestHandler = '/select?';
 
-    public string $q = '*:*';
+    public string $query = '*:*';
 
-    public string $q_op = 'OR';
+    /** queryOperation(q.op) */
+    public string $queryOperation = 'OR';
 
-    public bool $indent = true;
+    public string $indent = 'true';
 
-    public string $fq ='';
+    /** filterQuery(fq) */
+    public string $filterQuery = '';
 
-    public string $sort = 'score desc';
+    public string $debugQuery = 'false';
 
-    public int $start = 0;
+    /** fieldList(fl) */
+    public string $fieldList = '*';
+
+    /** defType(df) */
+    public string $defType = 'lucene';
+
+    /** responseWriter(wt) */
+    public string $responseWriter = 'json';
+
+    public string $sort = 'score%20desc';
 
     public int $rows = 10;
 
-    public string $debugQuery = "false";
+    public string $defaultField = '';
 
-    //field list
-    public string $fl = '*';
-
-    public string $df='';
-
-    public string $wt = 'json';
-
-    public string $defType = 'lucene';
-
-    public int $limit = 30;
-
+    public int $page = 1;
+    private int $start=0;
 
     public function get()
     {
-
-//        $qt = '/select?';
-
-        $process = $this->qt . "q=" . $this->q . "&q.op=" . $this->q_op . "&wt=" . $this->wt
-            . "&indent=" . $this->indent . "&rows=" . $this->rows . "&start=" . $this->start
-            . "&sort=" . $this->sort . "&fl=" . $this->fl . "&defType=" . $this->defType . "&fq=" . $this->fq . "&df=" . $this->df ;
-
-        $docConfigParams = [
-            'method' => 'get',
-            'core' => 'test_dynamic',
-            'process' => $process,
+        $QueryUrl = [
+            'q' => $this->query,
+            'q.op' => $this->queryOperation,
+            'rows' => $this->rows,
+            'start' => $this->getStart(),
+            'indent' => $this->indent,
+            'wt' => $this->responseWriter,
+            'debugQuery' => $this->debugQuery,
+            'fq' => $this->filterQuery,
+            'sort' => $this->sort,
+            'fl' => $this->fieldList,
+            'defType' => $this->defType,
         ];
-        $data=[];
 
-//        for ($i = 0; $i >= $this->limit; $i++) {
-//
-//         $data=  \Yii::$app->solr->configWithCurl($docConfigParams);
-//        }
-//
-//        return $data;
+        $subUrl = $this->requestHandler;
+        foreach ($QueryUrl as $item => $value) {
+            $subUrl .= $item . '=' . $value . '&';
+        }
 
-//        $process = $this->qt . "q=" . $this->q;
-
-
-        return \Yii::$app->solr->configWithCurl($docConfigParams);
+        return Yii::$app->solr->configWithCurl('get', $subUrl);
     }
 
-    public function rows($start, $rows)
+    public function page($page)
     {
-        $this->start = $start;
-        $this->rows = $rows;
-        return $this->$this;
+        $this->page = $page;
+        return $this;
     }
 
-    public function limit(int $limit): int
-    {
-        return $this->limit = $limit;
+    public function getStart(){
+
+        return $this->page*$this->rows+1;
+
     }
 
-    public function one()
+
+    public function one(): Query
     {
-        \Yii::$app->solr->query->rows = 1;
+        $this->rows = 1;
+        return $this;
     }
 
     /**
      * @throws Exception
      */
-
-    public function from($core)
+    public function query(array $fields = []): Query
     {
-        if (!$core) {
-            throw new Exception("Null");
+        $q = '';
+        foreach ($fields as $field => $value) {
+            $q .= $field . "%20:%20" . $value . "%20";
         }
 
-        \Yii::$app->solr->core = $core;
-
-
-    }
-
-    public function query($q)
-    {
-        return $this->q = $q;
+        $this->query = $q;
+        return $this;
 
     }
 
-//    public function query($field='',$value='',$condition=''){
-//        return $this->q=$field.":".$value.$condition;
-//    }
-
-    public function ResponseWriter($wt)
+    public function ResponseWriter(string $wt): Query
     {
-        return $this->wt = $wt;
+        $this->responseWriter = $wt;
+        return $this;
     }
 
 
-//    public function fieldList($field = [])
-//    {
-//        return $this->fl = $field;
-//    }
-
-    public function queryOperation($q_op)
+    public function queryOperation(string $q_op): Query
     {
-        return $this->q_op = $q_op;
+        $this->queryOperation = $q_op;
+        return $this;
     }
 
-    public function sort($field, $sort)
+    public function sort(array $fields): Query
     {
-        return $this->sort = $field . " " . $sort;
-    }
+        $sort = '';
+        $count = 1;
 
-    public function select($fl): string
-    {
-        if (!$this->fl == '*') {
-            return $this->fl = $fl;
+        foreach ($fields as $field => $sortOperation) {
+            $sort .= $field . "%20" . $sortOperation;
+            if ($count != count($fields)) {
+                $sort .= ',%20';
+                $count++;
+            }
         }
-        $this->qt = '/select?';
-        return $this->$this;
+
+        $this->sort = $sort;
+        return $this;
     }
 
-    public function filterQuery($field, $value = '')
+    public function select(array $fieldList): Query
     {
-        if (!$this->fl == '*') {
-            return $this->fq = $field . ":" . $value;
+        if (!$fieldList[0] == ('*' || '*,dv_field_name' || '* score')) {
+            $field = '';
+            foreach ($fieldList as $item) {
+                $field .= $item . '%20';
+            }
+
+            $this->fieldList = $field;
+
+            return $this;
         }
-        return $this->$this;
+
+        $this->fieldList = str_replace(' ', '%20', $fieldList [0]);
+
+        return $this;
     }
 
-
-    public function debugQuery($debugQuery)
+    public function filterQuery(array $fl): Query
     {
-        return $this->debugQuery = $debugQuery;
+        $q = '';
+        foreach ($fl as $item => $value) {
+            $q .= $item . "%20:%20" . $value . "%20";
+        }
+
+        $this->filterQuery = $q;
+        return $this;
     }
 
-
-    public function indent($indent)
+    public function debugQuery(bool $boolean): Query
     {
-        return $this->indent = $indent;
+        $this->debugQuery = !$boolean == 1 ? 'true' : 'false';
+        return $this;
     }
 
-
-    public function search()
+    public function indent(bool $boolean): Query
     {
-//        $this->qt = '/query?';
-////        $fl = \Yii::$app->solr->query->fl;
-//        return $this->$this;
+        $this->debugQuery = !$boolean == 0 ? 'true' : 'false';
+        return $this;
     }
 
-    //    public static function where()
+    //TODO
+    public function defType($defType): Query
+    {
+        $this->defType = $defType;
+        return $this;
+    }
+
+//    public function getWithLimit(): array
 //    {
-//
+//        $data = [];
+//        for ($i = 0; $i <= $this->limit; $i++) {
+//            $data[] = $this->get();
+//            $this->start = $this->rows + $this->start;
+//        }
+//        return $data;
 //    }
 
-//    public function all()
-//    {
-//        //count doc
-////        $doc =
-//        \Yii::$app->solr->query->rows = count('');
-//
-//    }
-
-
-//
-//        $param = [
-//            'qt' => '/select?',
-//
-//        ];
-//        $queryParams = [
-//            'q' => 'h',
-//            'q_op' => 'AND',
-//            'fq' => '',
-//            'wt' => 'json',
-//            'indent' =>'',
-//        ];
 
 //curl http://localhost:8983/solr/test_dynamic/  schema?wt=json
 //     http://www.somesite.com/solr/collection1/  select?q=Motorbike&wt=json&indent=true&defType=edismax&stopwords=true&lowercaseOperators=true

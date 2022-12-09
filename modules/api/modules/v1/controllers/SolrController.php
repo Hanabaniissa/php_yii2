@@ -2,7 +2,6 @@
 
 namespace app\modules\api\modules\v1\controllers;
 
-use app\models\Solr;
 use app\modules\api\models\Post;
 use yii\helpers\Json;
 use yii\rest\Controller;
@@ -14,10 +13,8 @@ class SolrController extends Controller
         $post = Post::find()->where(['id'=>87])->one();
 
         $id=$post->id;
-//        $temp_post[]= \app\models\post::getPostKeys($id);
 
 
-//        $temp_post[]= Solr::getPostKeys($id);
 
         $posts = Post::find()->all();
 
@@ -56,11 +53,7 @@ class SolrController extends Controller
 
         curl_setopt($ch, CURLOPT_POST, 1);
 
-//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-//        curl_setopt($ch, CURLOPT_USERPWD, ”$username:$password”);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
 
@@ -78,78 +71,35 @@ class SolrController extends Controller
     }
 
 
-//    public function actionTestGet()
-//    {
-//        $posts = Post::find()->all();
-//        $posts_json = Json::encode($posts);
-//
-//        /**
-//         * $protocol: https
-//         * $port: 8983
-//         * $host:
-//         * $path:
-//         */
-//
-//        $url = "http://localhost:8983/solr/new/update?wt=json";
-//        $ch = curl_init($url);
-////        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-////        curl_setopt($ch, CURLOPT_POST, TRUE);
-////        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
-////        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
-//
-////  $header = array(“Content - type:text / xml; charset = utf - 8″);
-//
-//        curl_setopt($ch, CURLOPT_URL, $url);
-//
-//        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-//
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//
-//        curl_setopt($ch, CURLOPT_POST, 1);
-//
-//        curl_setopt($ch, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-//
-//        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-//
-//        //curl_setopt($ch, CURLOPT_USERPWD, ”$username:$password”);
-//
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
-//
-//        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-//
-//        curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
-//
-//        $data = curl_exec($ch);
-//        $return = 0;
-//        if (!curl_errno($ch)) {
-//            $return = $data;
-//        }
-//        curl_close($ch);
-//        return $return;
-//    }
 
 
-//    public function actionGet()
-//    {
-//        $posts = Post::find()->all();
-//        $posts_json = Json::encode($posts);
-//        $url = "http://localhost:8983/solr/test/update/json/docs";
-//        $ch = curl_init();
-//        $header = array('Content-Type: application/json');
-////        curl_setopt($ch, CURLOPT_URL, $url);
-//        curl_setopt($ch, CURLOPT_POST, 1);
-//        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-//        curl_setopt($ch, CURLOPT_URL, $url);
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//        curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-////        curl_setopt($ch, CURLOPT_BINARYTRANSFER, 1);
-//        curl_setopt($ch, CURLOPT_POSTFIELDS, $posts_json);
-//        $response = curl_exec($ch);
-//        curl_close($ch);
-//
-//        return $response;
-//
-//    }
 
+
+
+
+     public function actionGet(){
+
+         $url = "http://localhost:8983/solr/test_dynamic/query?q=*:*&q.op=OR&indent=true&rows=1000";
+         $ch = curl_init();
+         $header = array('Content-Type: application/json');
+
+         curl_setopt($ch, CURLOPT_URL, $url);
+         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+         curl_setopt($ch, CURLOPT_HEADER, 0);
+         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+         $data = curl_exec($ch);
+         $return = 0;
+         if (!curl_errno($ch)) {
+var_dump($data);die;
+             $return = $data;
+         }
+         curl_close($ch);
+         return $return;
+
+     }
 }
 

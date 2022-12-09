@@ -71,7 +71,6 @@ class SiteController extends Controller
             $this->setPreferredCountry($countryId);
         }
 
-        //$subCategoriesModels= SubCategories::find()->where(['country_id' => $countryId])->all();
         $subCategoriesModels = SubCategories::getSubCategories($countryId, true);
 
 

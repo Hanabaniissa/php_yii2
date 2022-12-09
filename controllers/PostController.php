@@ -2,20 +2,24 @@
 
 namespace app\controllers;
 
-use app\components\solr\Documents;
-use app\components\solr\Query;
+use app\components\solr\Document;
+use app\components\solr\Field;
+use app\components\solr\Solr;
 use app\helpers\CountryUtils;
 use app\models\post;
 use app\models\PostValue;
-use app\models\Solr;
 use Psy\Util\Json;
+use Throwable;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\data\Pagination;
 use yii\db\Exception;
+use yii\db\StaleObjectException;
 use yii\web\Controller;
 use yii\web\Cookie;
+use yii\web\Response;
 use yii\web\UploadedFile;
 
 
@@ -23,6 +27,11 @@ class PostController extends Controller
 {
 
     const RECENTLY_VIEWED_COOKIE = 'recentlyViewed';
+
+    /**
+     * @throws Exception
+     * @throws InvalidConfigException
+     */
 
     public function actionPost($postId = null)
     {
@@ -58,20 +67,25 @@ class PostController extends Controller
                     }
                 }
 
-                $id = $post->id;
-                $model = 'app\models\post';
-                $modelName = str_replace('app\models\\', '', strtolower($model));
+//                $id = $post->id;
+//                $model = 'app\models\post';
+//                $modelName = str_replace('app\models\\', '', strtolower($model));
 
-                $dataConfigParams = [
-                    'id' => $id,
-                    'model' => $model,
-//                    'core' => 'test_dynamic',
-                    'modelName' => $modelName,
+
+                $models = [
+                    'app\models\post' => $post->id,
+                    'app\models\Country' => $post->country_id,
+                    'app\models\City' => $post->city_id,
+                    'app\models\Neighborhood' => $post->neighborhood_id,
+                    'app\models\Category' => $post->category_id,
+                    'app\models\SubCategories' => $post->subCategory_id,
                 ];
 
-                \app\components\solr\Solr::core('test_dynamic')->get();
 
-                Documents::create($dataConfigParams);
+                $temp_model['id'] = $post->id;
+//                Solr::coreDocument('test_dynamic')->create($temp_model);
+
+                Solr::find('test_dynamic')->useDocument()->save($models, $temp_model);
                 return $this->redirect(['post/view-one', 'id' => $postID]);
 
             } else {
@@ -83,20 +97,25 @@ class PostController extends Controller
     }
 
 
-    public function actionDelete($postId)
+    /**
+     * @throws Throwable
+     * @throws StaleObjectException
+     */
+
+    public function actionDelete($postId): Response
     {
         $post = post::find()->where(['id' => $postId])->one();
 
         $categoryId = $post->category_id;
         $post->delete();
+        \app\components\solr\Solr::coreDocument('test_dynamic')->from($postId)->update();
+
         return $this->redirect(['post/view-by-category', 'id' => $categoryId]);
     }
 
 
     public function actionViewOne($id)
     {
-
-
         $cookies = Yii::$app->response->cookies;
         $currentCookies = Yii::$app->request->cookies;
         $recentlyViewedPosts = [];
@@ -122,40 +141,17 @@ class PostController extends Controller
             'sameSite' => Cookie::SAME_SITE_STRICT
         ]));
         $onePost = post::findOne($id);
-//        $values = $onePost->value;
 
-//        $solrAttributes = [];
-//        foreach ($values as $value) {
-//            $field = $value->field;
-//            $option = $value->option;
-//            $key = str_replace(' ', '_', strtolower($field->label_en));
-//            $key .= "_" . $this->getFiledTypeForSolr($field);
-//            $solrAttributes[$key] = $option->label_en;
-//        }
-//        echo Json::encode($solrAttributes); die;
         return $this->render('view_post', ['onePost' => $onePost,]);
     }
 
-//    private function getFiledTypeForSolr(Field $field) {
-//        switch ($field->type) {
-//            case 'Int': return 'i';
-//            case 'String': return 's';
-//        }
-//    }
 
-    public function actionRecentlyViewed()
+    public function actionRecentlyViewed(): string
     {
-
-
-//        if(Yii::$app->user->isGuest) return '';
         $cookies = Yii::$app->request->cookies;
         if (!$cookies->has(self::RECENTLY_VIEWED_COOKIE)) return '';
         $postsIds = $cookies[self::RECENTLY_VIEWED_COOKIE]->value;
         if (!is_array($postsIds)) $postsIds = [$postsIds];
-
-        // [1, 2, 3]
-        // 1,2,3 explode(',', $str) => [1, 2, 3]
-//        if(\Yii::$app->user->id) return'';
         $query = post::find()->where(['id' => $postsIds])->andWhere(['status' => 10]);
         $posts = [];
         $postsIds = array_reverse($postsIds);
@@ -163,17 +159,8 @@ class PostController extends Controller
             $posts[] = post::findOne($postsId);
         }
 
-        // DaraProvider
-        // ActiveDataProvider
-        // ArrayDataProvider
         $countQuery = clone $query;
         $recentlyPages = new Pagination(['totalCount' => $countQuery->count(), 'defaultPageSize' => 4]);
-//        $posts = new ActiveDataProvider([
-//            'query' => $query,
-//            'pagination' => [
-//                'pageSize' => 4
-//            ],
-//        ]);
 
         $result = new ArrayDataProvider([
             'allModels' => $posts,
@@ -185,7 +172,7 @@ class PostController extends Controller
     }
 
 
-    public function actionViewByCategory($id)
+    public function actionViewByCategory($id): string
     {
         $query = post::findPostByCategoryIdQuery($id);
         $posts = new ActiveDataProvider([
@@ -200,7 +187,7 @@ class PostController extends Controller
     }
 
 
-    public function actionViewMyPost()
+    public function actionViewMyPost(): string
     {
         $query = post::findMyPostQuery();
         $myPost = new ActiveDataProvider([
@@ -214,7 +201,7 @@ class PostController extends Controller
     }
 
 
-    public function actionSearch($term = '')
+    public function actionSearch($term = ''): string
     {
         $query = post::search($term);
         $posts = new ActiveDataProvider([
@@ -228,53 +215,46 @@ class PostController extends Controller
     }
 
 
-    public function actionPostKeys()
-    {
-//        $posts= new \app\modules\api\models\Post();
-        $posts = \app\modules\api\models\Post::find()->where(['id' => '108'])->one();
-        foreach ($posts as $post => $value) {
-            $key = $post;
-            $key_value = $value;
-            $hh = 'hh';
-//            $type=gettype($hh);
-            $type = gettype($value);
-
-
-//            echo Json::encode($type);die;
-
-
-            $field = str_replace('', '_', strtolower($key));
-
-
-            $field .= "_" . $this->getPostFieldTypeForSolr($type);
-            $attributes[$field] = $key_value;
-
-        }
-        echo Json::encode($attributes);
-
-
-    }
-
     /**
      * @throws Exception
+     * @throws \Exception
      */
+
     public function actionGetDoc()
     {
+//        $fields = [
+//            "author_s" => "hello",
+//            "ggg" => "fff"
+//        ];
+//        $data = [
+//            "id" => "book1",
+//            "ggg" => "fff"
+//        ];
 
-        $docs = \app\components\solr\Solr::core('test_dynamic')->get();
+        // {"id"         : "book1",
+//  "author_s"   : {"set":"Neal Stephenson"},
+//  "copies_i"   : {"inc":3},
+//  "cat_ss"     : {"add":"Cyberpunk"}
+// }
+//        $doc = Solr::find('core_docs')->useDocument()->from(1)->set(['author_s' => 'NealLn', 'cat_ss' => 'hello'])->update();
+//        var_dump($doc);
+//        die;
+//        $data = [
+//            "id" => 410,
+//            "title_post_s" => "Hello world!",
+//        ];
+
+        $docs = Solr::find('test_dynamic')->useQuery()->page(3)->getStart();
+        var_dump($docs);
+        die;
+
+//        Document::delete($data);
+//        $docs = Solr::core('test_dynamic')->get();
+
+        var_dump($docs);
+        die;
+
     }
 
-
-//    private function getPostFieldTypeForSolr($field){
-//        switch($field){
-//            case 'integer': return 'i';
-//            break;
-//            case 'string': return 's';
-//            break;
-//            default: return 'null';
-//        }
-//
-//
-//    }
 
 }

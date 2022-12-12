@@ -30,12 +30,12 @@ class Country extends ActiveRecord
     const STATUS_ACTIVE = 1;
 
 
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'country';
     }
 
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             [
@@ -54,26 +54,7 @@ class Country extends ActiveRecord
         ];
     }
 
-
-//    public function behaviors()
-//    {
-//        return [
-//            [
-//                'class' => \yii\behaviors\BlameableBehavior::className(),
-//                'value' => Yii::$app->user->id,
-//            ],
-//
-//            [
-//                'class' => 'sammaye\audittrail\LoggableBehavior',
-//                'userAttribute' => 'updated_by', //blameable attribute of the current model.
-//                'ignored' => ['updated_by', 'updated_at'], // This ignores fields from a selection of all fields, not needed with allowed
-//            ],
-//
-//        ];
-//    }
-
-
-    public function rules()
+    public function rules(): array
     {
         return [
             [['label_ar', 'label_en'], 'required'],
@@ -83,7 +64,7 @@ class Country extends ActiveRecord
         ];
     }
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -111,7 +92,6 @@ class Country extends ActiveRecord
         return $countries;
     }
 
-
     const ACTIVE = 'active';
     const DELETED = 'deleted';
 
@@ -121,10 +101,4 @@ class Country extends ActiveRecord
         $this->save(false);
     }
 
-
-    public static function findCountryId()
-    {
-        return self::$this->id;
-
-    }
 }

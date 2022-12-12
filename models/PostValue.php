@@ -30,12 +30,12 @@ class PostValue extends ActiveRecord
     const STATUS_ACTIVE = 1;
 
 
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'post_value';
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['created_by'], 'default', 'value' => Yii::$app->user->id],
@@ -46,7 +46,7 @@ class PostValue extends ActiveRecord
         ];
     }
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -64,7 +64,7 @@ class PostValue extends ActiveRecord
         ];
     }
 
-    public static function getPostvalueWithIdQuery()
+    public static function getPostvalueWithIdQuery(): Query
     {
 
         return (new Query())->select('*')
@@ -83,7 +83,10 @@ class PostValue extends ActiveRecord
         return $this->hasOne(Option::class, ['id' => 'option_id']);
     }
 
-
+    public function delete(){
+        $this->status = self::STATUS_DELETED;
+        $this->save(false);
+    }
 
 
 }

@@ -22,10 +22,10 @@ class Document extends Field
     {
         $this->prepare($models, $temp_model);
 
-        $subUrl = '/update/' . $this->documentType . '/docs?commitWithin=';
-        $subUrl = $this->subUrl($subUrl);
+        $action = '/update/' . $this->documentType . '/docs';
+        $action = $this->getAction($action);
 
-        return Yii::$app->solr->configWithCurl('post', $subUrl, $this->documents);
+        return Yii::$app->solr->configWithCurl('post', $action, $this->documents);
     }
 
     /**
@@ -38,6 +38,7 @@ class Document extends Field
         foreach ($models as $model => $id_model) {
             $reflect = new ReflectionClass(Yii::createObject($model));
             $modelName = $reflect->getShortName();
+            $modelName = strtolower($modelName);
 
             $this->documents[$modelName] = Field::getFieldsWithoutRelationModel($model, $id_model, $modelName);
             if ($modelName === 'post') {
@@ -46,28 +47,17 @@ class Document extends Field
         }
     }
 
-    public function createOne($temp_post)
-    {
-        $this->documents = $temp_post;
-        $subUrl = '/update/' . $this->documentType . '/docs?commitWithin=';
-        $subUrl = $this->subUrl($subUrl);
-
-        return Yii::$app->solr->configWithCurl('post', $subUrl, $this->documents);
-    }
-
     public function update()
     {
-        $subUrl = '/update?commitWithin=';
-        $subUrl = $this->subUrl($subUrl);
+        $url = '/update/' . $this->documentType;
+        $action = $this->getAction($url);
         $documents[] = $this->documents;
-        return Yii::$app->solr->configWithCurl('post', $subUrl, $documents);
-
+        return Yii::$app->solr->configWithCurl('post', $action, $documents);
     }
 
-    private function subUrl($subUrl): string
+    private function getAction($url): string
     {
-        return $subUrl . $this->commitWithin .
-            '&overwrite=' . $this->overwrite;
+        return $url . '?commitWithin=' . $this->commitWithin . '&overwrite=' . $this->overwrite;
     }
 
     public function from(int $docID): Document
@@ -76,31 +66,64 @@ class Document extends Field
         return $this;
     }
 
-
     public function add($fields): Document
     {
         foreach ($fields as $item => $value) {
-            $this->documents[$item] = array("add" => $value);
+            $this->documents[$item] = ["add" => $value];
         }
         return $this;
     }
-
 
     public function set(array $fields): Document
     {
         foreach ($fields as $item => $value) {
-            $this->documents[$item] = array("set" => $value);
+            $this->documents[$item] = ["set" => $value];
         }
         return $this;
     }
 
-//TODO
 
+//TODO :: Create Schema Class
+    public function copyingFields(array $source, string $dest)
+    {
+        $this->addField($dest);
+        $action = '/schema?CommitWithin=' . $this->commitWithin;
+        foreach ($source as $item) {
+            $this->documents = [
+                "add-copy-field" => [
+                    "source" => $item,
+                    "dest" => [$dest]
+                ]
+            ];
+        }
+        return Yii::$app->solr->configWithCurl('post', $action, $this->documents);
+    }
+
+    protected function addField(string $name)
+    {
+        $action = '/schema?CommitWithin=' . $this->commitWithin;
+        $this->documents = [
+            "add-field" => [
+                "name" => $name,
+                "type" => "text_en",
+                "indexed" => "true",
+                "stored" => "false",
+                "multiValued" => "true"
+            ]];
+        return Yii::$app->solr->configWithCurl('post', $action, $this->documents);
+    }
+
+//curl -X POST -H 'Content-Type: application/json' 'http://localhost:8983/solr/core_docs/schema?CommitWithin=1000' --data-binary '{
+//            "add-field":{"name":"catch_all","type":"text_en","indexed":true,"stored":false,"multiValued":true}}'
+
+
+//TODO
     public function delete($da)
     {
         $data = ['delete' => $da];
-        $subUrl = '/update/docs?commitWithin=' . $this->commitWithin;
-        return Yii::$app->solr->configWithCurl('post', $subUrl, $data);
+        $action = '/update/' . $this->documentType;
+        $action = $this->getAction($action);
+        return Yii::$app->solr->configWithCurl('post', $action, $data);
     }
 
     public function overwrite($trueOrFalse): Document
@@ -108,4 +131,5 @@ class Document extends Field
         $this->overwrite = $trueOrFalse;
         return $this;
     }
+
 }

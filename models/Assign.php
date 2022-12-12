@@ -25,12 +25,12 @@ class Assign extends ActiveRecord
     const STATUS_INACTIVE = 2;
     const STATUS_ACTIVE = 1;
 
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'assign';
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['field_id', 'subCategory_id', 'created_by'], 'required'],
@@ -40,7 +40,7 @@ class Assign extends ActiveRecord
     }
 
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -56,25 +56,13 @@ class Assign extends ActiveRecord
 
     const CACHE_KEY_ASSIGN = 'assigns';
 
-    public static function getAssignWithFieldQuery($subCatId)
+    public static function getAssignWithFieldQuery($subCatId): Query
     {
-
         return (new Query())->select('*')
             ->from(self::tableName())
             ->innerJoin(Field::tableName(), 'assign.field_id = fields.id')
             ->where(['assign.status' => self::STATUS_ACTIVE, 'fields.status' => 1, 'assign.subCategory_id' => $subCatId]);
-
     }
 
-    public static function getAssignWithOptionQuery($fieldId, $subCategoryID)
-    {
-        return (new Query())->select('*')
-            ->from(self::tableName())
-            ->innerJoin(Option::tableName(), 'assign.field_id = options.field_id')
-            ->where(['assign.status' => self::STATUS_ACTIVE, 'options.status' => 1, 'assign.field_id' => $fieldId,
-                'assign.subCategory_id' => $subCategoryID]);
-
-
-    }
 
 }

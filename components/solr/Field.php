@@ -76,7 +76,6 @@ class Field extends Solr
 
     }
 
-
     private static function getDynamicFieldType($fieldTypeParams): string
     {
         $type = gettype($fieldTypeParams['value']);
@@ -104,56 +103,6 @@ class Field extends Solr
 
 // TODO::THIS FUNCTION
 
-    protected function copyingFields()
-    {
-
-    }
-
-
-
-
-
-
-
-
-
-
-    //    public array $documentUpdated = [];
-
-
-//    public function add($fields)
-//    {
-//        $doc = [];
-//        foreach ($fields as $item => $value) {
-//
-//            $doc[$item] = array("set" => $value);
-//        }
-//        $this->documentUpdated = $doc;
-//
-//        return $this;
-//    }
-
-//
-//    public function set(array $fields)
-//    {
-//        $doc = [];
-//        foreach ($fields as $item => $value) {
-//
-//            $doc[$item] = array("set" => $value);
-//        }
-//        $this->documentUpdated = $doc;
-////        echo Json::encode($doc);die;
-//        return $this;
-//    }
-
-
-//curl -X POST -H 'Content-Type: application/json' 'http://localhost:8983/solr/core_docs/update?commitWithin=1000' --data-binary '[
-// {"id"         : "book1",
-//  "author_s"   : {"set":"Neal Stephenson"},
-//  "copies_i"   : {"inc":3},
-//  "cat_ss"     : {"add":"Cyberpunk"}
-// }
-//]'
 
 
 }

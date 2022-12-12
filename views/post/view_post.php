@@ -24,37 +24,38 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="col-md-1 p-3 border">
             <h6>City</h6>
             <hr>
-            <p><?=\yii\helpers\Html::encode($onePost->city->label_en) ?></p>
+            <p><?= \yii\helpers\Html::encode($onePost->city->label_en) ?></p>
         </div>
 
         <div class="col-md-2 p-3 border">
             <h6>Neighborhood</h6>
             <hr>
-            <p><?=\yii\helpers\Html::encode($onePost->neighborhood->label_en) ?></p>
+            <p><?= \yii\helpers\Html::encode($onePost->neighborhood->label_en) ?></p>
         </div>
     </div>
     <div class="row gap-1">
-    <div class="col-md-1 p-3 border">
-        <h6>Category</h6>
-        <hr>
-        <p><?=\yii\helpers\Html::encode($onePost->category->label_en) ?></p>
-    </div>
+        <div class="col-md-1 p-3 border">
+            <h6>Category</h6>
+            <hr>
+            <p><?= \yii\helpers\Html::encode($onePost->category->label_en) ?></p>
+        </div>
 
-    <div class="col-md-2 p-3 border">
-        <h6>SubCategory</h6>
-        <hr>
-        <p><?=\yii\helpers\Html::encode($onePost->subCat->label_en) ?></p>
-    </div>
+        <div class="col-md-2 p-3 border">
+            <h6>SubCategory</h6>
+            <hr>
+            <p><?= \yii\helpers\Html::encode($onePost->subCat->label_en) ?></p>
+        </div>
     </div>
     <br>
     <div class="row gap-1">
-    <?php foreach ($onePost->value as $postValue) : ?>
-    <div class="col-md-1 p-2 border">
-        <p class="h6"><?= $postValue->field->label_en ?></p>
-        <hr>
-        <p><?= $postValue->option->label_en ?></p>
-    </div>
-    <?php endforeach; ?>
+
+        <?php foreach ($onePost->value as $postValue) : ?>
+            <div class="col-md-1 p-2 border">
+                <p class="h6"><?= $postValue->field->label_en ?></p>
+                <hr>
+                <p><?= $postValue->option->label_en ?></p>
+            </div>
+        <?php endforeach; ?>
     </div>
 
     <div>

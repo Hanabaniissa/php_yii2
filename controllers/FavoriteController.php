@@ -5,7 +5,6 @@ namespace app\controllers;
 
 use app\models\Favorite;
 use yii\data\ActiveDataProvider;
-use yii\data\Pagination;
 use yii\web\Controller;
 
 class FavoriteController extends Controller
@@ -25,8 +24,6 @@ class FavoriteController extends Controller
     public function actionGet()
     {
         $query = Favorite::getFavoritePostQuery();
-        $countQuery = clone $query;
-        $pagesFav = new Pagination(['totalCount' => $countQuery->count(), 'defaultPageSize' => 4]);
         $models = new ActiveDataProvider(
             ['query' => $query,
                 'pagination' => [
@@ -34,7 +31,7 @@ class FavoriteController extends Controller
                 ]
             ]
         );
-        return $this->render('favorite_post', ['models' => $models, 'pagesFav' => $pagesFav]);
+        return $this->render('favorite_post', ['models' => $models]);
     }
 }
 

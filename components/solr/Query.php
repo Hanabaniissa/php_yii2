@@ -2,7 +2,6 @@
 
 namespace app\components\solr;
 
-
 use Exception;
 use Yii;
 
@@ -26,7 +25,7 @@ class Query extends Solr
     /** fieldList(fl) */
     public string $fieldList = '*';
 
-    /** defType(df) */
+    /** defType() */
     public string $defType = 'lucene';
 
     /** responseWriter(wt) */
@@ -36,18 +35,45 @@ class Query extends Solr
 
     public int $rows = 10;
 
+    /** defaultField(df) */
     public string $defaultField = '';
 
     public int $page = 1;
-    private int $start=0;
+
+    private int $start = 0;
+
+    private array $queryUrl = [];
 
     public function get()
     {
-        $QueryUrl = [
+        $action = $this->getAction();
+        return $this->prepareDocs($action);
+    }
+
+    public function prepareDocs($action)
+    {
+        $data = json_decode(Yii::$app->solr->configWithCurl('get', $action));
+//        dd($data);
+        return $data->response->docs;
+    }
+
+    public function getAction(): string
+    {
+        $this->setQueryUrl();
+        $action = $this->requestHandler;
+        foreach ($this->queryUrl as $item => $value) {
+            $action .= $item . '=' . $value . '&';
+        }
+        return $action;
+    }
+
+    public function setQueryUrl(): array
+    {
+        $this->queryUrl = [
             'q' => $this->query,
             'q.op' => $this->queryOperation,
             'rows' => $this->rows,
-            'start' => $this->getStart(),
+            'start' => $this->start,
             'indent' => $this->indent,
             'wt' => $this->responseWriter,
             'debugQuery' => $this->debugQuery,
@@ -55,28 +81,21 @@ class Query extends Solr
             'sort' => $this->sort,
             'fl' => $this->fieldList,
             'defType' => $this->defType,
+//            'df' => $this->defaultField,
         ];
-
-        $subUrl = $this->requestHandler;
-        foreach ($QueryUrl as $item => $value) {
-            $subUrl .= $item . '=' . $value . '&';
-        }
-
-        return Yii::$app->solr->configWithCurl('get', $subUrl);
+        return $this->queryUrl;
     }
 
-    public function page($page)
+    public function page(int $page): Query
     {
         $this->page = $page;
         return $this;
     }
 
-    public function getStart(){
-
-        return $this->page*$this->rows+1;
-
+    public function getStart()
+    {
+        return $this->start = $this->page * $this->rows + 1;
     }
-
 
     public function one(): Query
     {
@@ -89,22 +108,24 @@ class Query extends Solr
      */
     public function query(array $fields = []): Query
     {
-        $q = '';
+     $q = '';
         foreach ($fields as $field => $value) {
             $q .= $field . "%20:%20" . $value . "%20";
         }
-
         $this->query = $q;
         return $this;
-
     }
 
-    public function ResponseWriter(string $wt): Query
+//    public function defaultField(string $df)
+//    {
+//
+//    }
+
+    public function responseWriter(string $wt): Query
     {
         $this->responseWriter = $wt;
         return $this;
     }
-
 
     public function queryOperation(string $q_op): Query
     {
@@ -141,7 +162,6 @@ class Query extends Solr
 
             return $this;
         }
-
         $this->fieldList = str_replace(' ', '%20', $fieldList [0]);
 
         return $this;
@@ -170,27 +190,10 @@ class Query extends Solr
         return $this;
     }
 
-    //TODO
     public function defType($defType): Query
     {
         $this->defType = $defType;
         return $this;
     }
-
-//    public function getWithLimit(): array
-//    {
-//        $data = [];
-//        for ($i = 0; $i <= $this->limit; $i++) {
-//            $data[] = $this->get();
-//            $this->start = $this->rows + $this->start;
-//        }
-//        return $data;
-//    }
-
-
-//curl http://localhost:8983/solr/test_dynamic/  schema?wt=json
-//     http://www.somesite.com/solr/collection1/  select?q=Motorbike&wt=json&indent=true&defType=edismax&stopwords=true&lowercaseOperators=true
-//curl http://localhost:8983/solr/test_dynamic/query?q=*:*&q.op=OR&indent=true&rows=1000
-
 
 }

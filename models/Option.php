@@ -19,7 +19,8 @@ use yii\db\Query;
  * @property int $created_by
  * @property int|null $updated_by
  */
-class Option extends ActiveRecord{
+class Option extends ActiveRecord
+{
 
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 2;
@@ -30,6 +31,7 @@ class Option extends ActiveRecord{
     {
         return 'options';
     }
+
     public function rules()
     {
         return [
@@ -55,16 +57,10 @@ class Option extends ActiveRecord{
             'updated_by' => Yii::t('app', 'Updated By'),
         ];
     }
-    public static function getOptionByFieldQuery($fieldId){
-        return self::find()->where(['field_id'=>$fieldId]);
 
-
+    public static function getOptionByFieldQuery($fieldId)
+    {
+        return self::find()->where(['field_id' => $fieldId]);
     }
-
-
-
-
-
-
 
 }

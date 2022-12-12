@@ -1,6 +1,5 @@
 <?php
 /** @var app\models\post[] $posts */
-/** @var app\models\post $recentlyPages */
 
 
 
@@ -43,7 +42,7 @@ use yii\helpers\Url;
 
 <div style="margin-top: 100px; margin-left: 200px;  " class="pagination">
     <?= \yii\bootstrap5\LinkPager::widget([
-        'pagination' => $recentlyPages,
+        'pagination' => $posts->getPagination(),
 
     ]) ?>
 

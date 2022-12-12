@@ -2,8 +2,6 @@
 
 namespace app\controllers;
 
-use app\components\solr\Document;
-use app\components\solr\Field;
 use app\components\solr\Solr;
 use app\helpers\CountryUtils;
 use app\models\post;
@@ -14,7 +12,6 @@ use Yii;
 use yii\base\InvalidConfigException;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
-use yii\data\Pagination;
 use yii\db\Exception;
 use yii\db\StaleObjectException;
 use yii\web\Controller;
@@ -31,15 +28,17 @@ class PostController extends Controller
     /**
      * @throws Exception
      * @throws InvalidConfigException
+     * @throws Throwable
      */
-
     public function actionPost($postId = null)
     {
         $post = new post();
-        if (!empty($postId)) {
+        if (!(empty($postId) && empty($post->value))) {
             $post = post::find()->where(['id' => $postId])->one();
+            foreach ($post->value as $item) {
+                $item->delete();
+            }
         }
-
         $post->country_id = CountryUtils::getPreferredCountry();
 
         if (Yii::$app->request->isPost) {
@@ -52,9 +51,7 @@ class PostController extends Controller
                 $imageModel->saveAs(Yii::$app->basePath . Yii::getAlias('@upload') . "/{$fileName}");
                 $post->post_image = $fileName;
             }
-
             if ($post->validate() && $post->save()) {
-
                 $postID = $post->id;
                 foreach ($postFields as $field => $option) {
                     $postValue = new PostValue();
@@ -66,12 +63,6 @@ class PostController extends Controller
                         die;
                     }
                 }
-
-//                $id = $post->id;
-//                $model = 'app\models\post';
-//                $modelName = str_replace('app\models\\', '', strtolower($model));
-
-
                 $models = [
                     'app\models\post' => $post->id,
                     'app\models\Country' => $post->country_id,
@@ -80,14 +71,9 @@ class PostController extends Controller
                     'app\models\Category' => $post->category_id,
                     'app\models\SubCategories' => $post->subCategory_id,
                 ];
-
-
                 $temp_model['id'] = $post->id;
-//                Solr::coreDocument('test_dynamic')->create($temp_model);
-
-                Solr::find('test_dynamic')->useDocument()->save($models, $temp_model);
+                Solr::find('posts_core')->useDocument()->save($models, $temp_model);
                 return $this->redirect(['post/view-one', 'id' => $postID]);
-
             } else {
                 var_dump($post->errors);
                 die("not valid");
@@ -96,23 +82,18 @@ class PostController extends Controller
         return $this->render('create_post', ['post' => $post, 'country_id' => CountryUtils::getPreferredCountry()]);
     }
 
-
     /**
      * @throws Throwable
      * @throws StaleObjectException
      */
-
     public function actionDelete($postId): Response
     {
         $post = post::find()->where(['id' => $postId])->one();
-
         $categoryId = $post->category_id;
         $post->delete();
-        \app\components\solr\Solr::coreDocument('test_dynamic')->from($postId)->update();
-
+        Solr::find('test_dynamic')->useDocument()->from($postId)->update();
         return $this->redirect(['post/view-by-category', 'id' => $categoryId]);
     }
-
 
     public function actionViewOne($id)
     {
@@ -128,10 +109,7 @@ class PostController extends Controller
         if (false !== $key) {
             unset($recentlyViewedPosts[$key]);
         }
-
         $recentlyViewedPosts[] = $id;
-//     $recentlyViewedPosts[] = ['id' => $id, 'actionDate' => date('Y-m-d')];
-
         $recentlyViewedPosts = array_unique($recentlyViewedPosts);
         $cookies->add(new Cookie([
             'name' => self::RECENTLY_VIEWED_COOKIE,
@@ -141,16 +119,15 @@ class PostController extends Controller
             'sameSite' => Cookie::SAME_SITE_STRICT
         ]));
         $onePost = post::findOne($id);
-
         return $this->render('view_post', ['onePost' => $onePost,]);
     }
-
 
     public function actionRecentlyViewed(): string
     {
         $cookies = Yii::$app->request->cookies;
         if (!$cookies->has(self::RECENTLY_VIEWED_COOKIE)) return '';
         $postsIds = $cookies[self::RECENTLY_VIEWED_COOKIE]->value;
+
         if (!is_array($postsIds)) $postsIds = [$postsIds];
         $query = post::find()->where(['id' => $postsIds])->andWhere(['status' => 10]);
         $posts = [];
@@ -158,9 +135,7 @@ class PostController extends Controller
         foreach ($postsIds as $postsId) {
             $posts[] = post::findOne($postsId);
         }
-
-        $countQuery = clone $query;
-        $recentlyPages = new Pagination(['totalCount' => $countQuery->count(), 'defaultPageSize' => 4]);
+        dd($posts);
 
         $result = new ArrayDataProvider([
             'allModels' => $posts,
@@ -168,9 +143,8 @@ class PostController extends Controller
                 'pageSize' => 4
             ],
         ]);
-        return $this->render('recent', ['posts' => $result, 'recentlyPages' => $recentlyPages]);
+        return $this->render('recent', ['posts' => $result]);
     }
-
 
     public function actionViewByCategory($id): string
     {
@@ -182,7 +156,6 @@ class PostController extends Controller
                 ]
             ]
         );
-
         return $this->render('category', ['posts' => $posts]);
     }
 
@@ -200,12 +173,26 @@ class PostController extends Controller
         return $this->render('myPosts', ['myPost' => $myPost]);
     }
 
-
+    /**
+     * @throws Exception
+     */
     public function actionSearch($term = ''): string
     {
-        $query = post::search($term);
-        $posts = new ActiveDataProvider([
-                'query' => $query,
+        $posts_id = post::searchBySolr($term);
+        $posts = [];
+
+        foreach ($posts_id as $postArray) {
+//            $tmpPost = post::find()->where(['id' => $id->id])->andWhere(['status' => 10])->one();
+            $post = \app\models\solr\Post::getPost($postArray);
+            $tmpPost = new \app\models\solr\Post();
+            $tmpPost->load((array)$postArray, '');
+            $posts[] = $tmpPost;
+
+        }
+        dd($tmpPost);
+
+        $posts = new ArrayDataProvider([
+                'allModels' => $posts,
                 'pagination' => [
                     'pageSize' => 4
                 ]
@@ -214,46 +201,28 @@ class PostController extends Controller
         return $this->render('category', ['posts' => $posts]);
     }
 
-
     /**
-     * @throws Exception
      * @throws \Exception
      */
 
     public function actionGetDoc()
     {
-//        $fields = [
-//            "author_s" => "hello",
-//            "ggg" => "fff"
-//        ];
-//        $data = [
-//            "id" => "book1",
-//            "ggg" => "fff"
-//        ];
-
-        // {"id"         : "book1",
-//  "author_s"   : {"set":"Neal Stephenson"},
-//  "copies_i"   : {"inc":3},
-//  "cat_ss"     : {"add":"Cyberpunk"}
-// }
-//        $doc = Solr::find('core_docs')->useDocument()->from(1)->set(['author_s' => 'NealLn', 'cat_ss' => 'hello'])->update();
-//        var_dump($doc);
+        $data=rawurlencode(" : ") ;
+        dd($data);
+        die;
+//        605
+        $docs = Solr::find('posts_core')->useDocument()->delete(['id'=> 605]);
+//        var_dump($docs);
 //        die;
-//        $data = [
-//            "id" => 410,
-//            "title_post_s" => "Hello world!",
-//        ];
-
-        $docs = Solr::find('test_dynamic')->useQuery()->page(3)->getStart();
-        var_dump($docs);
-        die;
-
-//        Document::delete($data);
-//        $docs = Solr::core('test_dynamic')->get();
+        $docs = Solr::find('test_dynamic')->useQuery()->query(['id_post_i' => 176])->get();
 
         var_dump($docs);
         die;
-
+////        Document::delete($data);
+////        $docs = Solr::core('test_dynamic')->get();
+//
+//        var_dump($docs);
+//        die;
     }
 
 

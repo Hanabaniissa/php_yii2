@@ -40,7 +40,6 @@ class City extends ActiveRecord{
         ];
     }
 
-
     public function attributeLabels()
     {
         return [
@@ -55,7 +54,6 @@ class City extends ActiveRecord{
             'updated_by' => Yii::t('app', 'Updated By'),
         ];
     }
-
 
     const CACHE_KEY_CITY= 'cities';
 

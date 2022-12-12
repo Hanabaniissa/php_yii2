@@ -3,11 +3,13 @@
 namespace app\models;
 
 
+use app\components\solr\Solr;
 use yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 use yii\db\BaseActiveRecord;
+use yii\db\Exception;
 
 
 /** @property integer $id
@@ -56,42 +58,6 @@ class post extends ActiveRecord
         ];
     }
 
-
-
-//    public function afterSave($insert, $changedAttributes)
-//    {
-
-//$postFields = [
-//            self::class => $id,
-//            'app\models\Country' => $post->country_id,
-//            'app\models\City' => $post->city_id,
-//            'app\models\Neighborhood' => $post->neighborhood_id,
-//            'app\models\Category' => $post->category_id,
-//            'app\models\SubCategories' => $post->subCategory_id,
-//
-//        ];
-//$temp_post['id']=$id;
-//
-//        foreach ($postFields as $model=>$id_model){
-//            $modelName = str_replace('app\models\\', '', strtolower($model));
-//
-//            $temp_post[$modelName]=Solr::getPostKeys($model,$id_model,$modelName);
-//        }
-//
-////        $modelName = str_replace('app\models\\', '', strtolower(self::class));
-////
-////        $dataConfigParams = [
-////            'id' => $id,
-////            'model' => self::class,
-////            'core' => $core,
-////            'modelName' => $modelName,
-////        ];
-////         Documents::create($dataConfigParams);
-//
-//       $post= $this;
-//    }
-
-
     public function behaviors(): array
     {
         return [
@@ -111,7 +77,6 @@ class post extends ActiveRecord
 
         ];
     }
-
 
     public function attributeLabels(): array
     {
@@ -136,7 +101,6 @@ class post extends ActiveRecord
         ];
     }
 
-
     public static function findPostByCategoryIdQuery($id): ActiveQuery
     {
         return self::find()
@@ -151,7 +115,9 @@ class post extends ActiveRecord
 
     public function getValue(): ActiveQuery
     {
-        return $this->hasMany(PostValue::class, ['post_id' => 'id']);
+        $this->populateRelation('value', ['jkhii']);
+        return $this->hasMany(PostValue::class, ['post_id' => 'id'])
+            ->where(['post_value.status'=>1]);
     }
 
 
@@ -166,18 +132,15 @@ class post extends ActiveRecord
         return $this->hasOne(SubCategories::class, ['id' => 'subCategory_id']);
     }
 
-
     public function getCity(): ActiveQuery
     {
         return $this->hasOne(City::class, ['id' => 'city_id']);
     }
 
-
     public function getNeighborhood(): ActiveQuery
     {
         return $this->hasOne(Neighborhood::class, ['id' => 'neighborhood_id']);
     }
-
 
     public static function findOne($id)
     {
@@ -185,7 +148,6 @@ class post extends ActiveRecord
             ->where(['id' => $id])
             ->one();
     }
-
 
     public static function findMyPostQuery()
     {
@@ -204,7 +166,6 @@ class post extends ActiveRecord
 
     public function delete()
     {
-
         $this->status = self::DELETED;
         $this->save(false);
 //        \app\components\solr\Solr::coreDocument('test_dynamic')->from($postId)->update();
@@ -218,15 +179,28 @@ class post extends ActiveRecord
 //        $core = 'test_dynamic';
     }
 
+//    public static function search($term): ActiveQuery
+//    {
+//        return self::find()
+//            ->select(['title', 'description', 'phone', 'id', 'created_at', 'post_image'])
+//            ->orWhere('MATCH(title, description) AGAINST(:term)', ['term' => $term])
+//            ->params(['term' => $term]);
+//    }
 
-    public static function search($term): ActiveQuery
-    {
+    /**
+     * @throws Exception
+     * @throws \Exception
+     */
 
-        return self::find()
-            ->select(['title', 'description', 'phone', 'id', 'created_at', 'post_image'])
-            ->orWhere('MATCH(title, description) AGAINST(:term)', ['term' => $term])
-            ->params(['term' => $term]);
+    public static function searchBySolr($term){
 
+
+
+        return Solr::find('posts_core')->
+        useQuery()->
+        query(['post.title_s' => "*$term*"])
+//            ->select(['id'])
+            ->get();
     }
 
 }

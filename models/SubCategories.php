@@ -20,20 +20,20 @@ use yii\helpers\Url;
  * @property int $created_by
  * @property int|null $updated_by
  */
-
-class SubCategories extends ActiveRecord{
+class SubCategories extends ActiveRecord
+{
 
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 2;
     const STATUS_ACTIVE = 1;
 
 
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'subCategories';
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['label_ar', 'label_en', 'country_id', 'category_id', 'created_by'], 'required'],
@@ -43,7 +43,7 @@ class SubCategories extends ActiveRecord{
         ];
     }
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -59,26 +59,20 @@ class SubCategories extends ActiveRecord{
         ];
     }
 
-    const CACHE_KEY_SUBCAT= 'subCategories';
+    const CACHE_KEY_SUBCAT = 'subCategories';
 
-
-
-
-    public static function getSubCategories($countryId,$categoryId,$useCache=true):array
+    public static function getSubCategories($countryId, $categoryId, $useCache = true): array
     {
 
-        if($useCache){
-            $subCategories=Yii::$app->redis->get(self::CACHE_KEY_SUBCAT.'.'.$countryId.'.'.$categoryId);
-            if($subCategories)return unserialize($subCategories);
+        if ($useCache) {
+            $subCategories = Yii::$app->redis->get(self::CACHE_KEY_SUBCAT . '.' . $countryId . '.' . $categoryId);
+            if ($subCategories) return unserialize($subCategories);
         }
-        $subCategories= self::find()->where(['country_id'=>$countryId,'category_id'=>$categoryId,'status'=>self::STATUS_ACTIVE])->all();
-        Yii::$app->redis->set(self::CACHE_KEY_SUBCAT.'.'.$countryId.'.'.$categoryId,serialize($subCategories));
+        $subCategories = self::find()->where(['country_id' => $countryId, 'category_id' => $categoryId, 'status' => self::STATUS_ACTIVE])->all();
+        Yii::$app->redis->set(self::CACHE_KEY_SUBCAT . '.' . $countryId . '.' . $categoryId, serialize($subCategories));
         return $subCategories;
 
     }
-
-
-
 
 
 }

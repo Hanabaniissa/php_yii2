@@ -18,20 +18,19 @@ use Yii;
  * @property int $created_by
  * @property int|null $updated_by
  */
-
-class Field extends ActiveRecord{
+class Field extends ActiveRecord
+{
 
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 2;
     const STATUS_ACTIVE = 1;
 
-
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'fields';
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['label_ar', 'label_en', 'type', 'created_by'], 'required'],
@@ -41,7 +40,7 @@ class Field extends ActiveRecord{
         ];
     }
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -55,7 +54,6 @@ class Field extends ActiveRecord{
             'updated_by' => Yii::t('app', 'Updated By'),
         ];
     }
-
 
 
 }

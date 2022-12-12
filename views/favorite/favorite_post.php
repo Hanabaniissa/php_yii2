@@ -1,7 +1,5 @@
 <?php
 /** @var app\models\favorite $models */
-/** @var app\models\Favorite $pagesFav */
-
 /** @var yii\web\View $this */
 
 use yii\helpers\Url;
@@ -38,7 +36,7 @@ use yii\helpers\Url;
 
 <div style="margin-top: 100px; margin-left: 200px;  " class="pagination">
     <?= \yii\bootstrap5\LinkPager::widget([
-        'pagination' => $pagesFav,
+        'pagination' => $models->getPagination(),
 
     ]) ?>
 

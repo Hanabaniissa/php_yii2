@@ -1,13 +1,20 @@
 <?php
 
+use app\models\Assign;
 use app\models\Category;
+use app\models\City;
+use app\models\Country;
+use yii\bootstrap5\ActiveForm;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
+use yii\web\View;
 
 /** @var app\models\post $post */
 /** @var app\models\Category $categories */
 /** @var yii\web\View $this */
-/** @var  \app\models\Country $country */
+/** @var  Country $country */
 /** @var integer $country_id */
-/** @var \app\models\Assign[] $assigns */
+/** @var Assign[] $assigns */
 
 
 $this->title = 'Create post';
@@ -43,16 +50,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
     <div class="container body-content">
-        <?php $form = \yii\bootstrap5\ActiveForm::begin(
+        <?php $form = ActiveForm::begin(
             ['options' => ['enctype' => 'multipart/form-data']]); ?>
-
 
         <h3>
             <span class="number">1. </span>Choose section</h3>
         <br>
         <div class="row">
             <div class="col-md-3 form-groub">
-                <?= $form->field($post, 'city_id')->dropDownList(\yii\helpers\ArrayHelper::map(\app\models\City::getCities($country_id, true), 'id', 'label_en'), ['class' => 'form-control', 'id' => 'city', 'prompt' => 'Select City...']); ?>
+                <?= $form->field($post, 'city_id')->dropDownList(ArrayHelper::map(City::getCities($country_id, true), 'id', 'label_en'), ['class' => 'form-control', 'id' => 'city', 'prompt' => 'Select City...']); ?>
             </div>
 
             <div class="col-md-3 form-groub">
@@ -62,10 +68,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <hr class="marg">
 
-
         <div class="row">
             <div class="col-md-3 form-groub">
-                <?= $form->field($post, 'category_id')->dropDownList(\yii\helpers\ArrayHelper::map(Category::getCategoriesBy($country_id, true), 'id', 'label_en'), ['class' => 'form-control', 'id' => 'category', 'prompt' => 'Select Category...']); ?>
+                <?= $form->field($post, 'category_id')->dropDownList(ArrayHelper::map(Category::getCategoriesBy($country_id, true), 'id', 'label_en'), ['class' => 'form-control', 'id' => 'category', 'prompt' => 'Select Category...']); ?>
             </div>
 
             <div class="col-md-3 form-groub">
@@ -75,20 +80,12 @@ $this->params['breadcrumbs'][] = $this->title;
 
 
         <hr class="marg">
-
         <h3>
             <span class="number">2. </span>Post details</h3>
         <br>
-
-
         <div id="fields">
-
         </div>
-
-
-        <br>
-        <br>
-
+        <br><br>
         <div class="row">
             <div class="for-control">
                 <div class="col-lg-5">
@@ -153,9 +150,9 @@ $this->params['breadcrumbs'][] = $this->title;
         <br>
         <br>
 
-        <?= \yii\helpers\Html::submitButton("Post", ['class' => 'btn btn-lg btn-warning', ' style' => 'color: #ffffff']) ?>
+        <?= Html::submitButton("Post", ['class' => 'btn btn-lg btn-warning', ' style' => 'color: #ffffff']) ?>
 
-        <?php \yii\bootstrap5\ActiveForm::end(); ?>
+        <?php ActiveForm::end(); ?>
     </div>
 
 </div>
@@ -189,7 +186,7 @@ $this->registerJs(<<<JS
             }) 
       }) 
       JS
-    , \yii\web\View::POS_END);
+    , View::POS_END);
 
 ?>
 
@@ -218,7 +215,7 @@ $this->registerJs(<<<JS
             }) 
       }) 
       JS
-    , \yii\web\View::POS_END);
+    , View::POS_END);
 
 ?>
 

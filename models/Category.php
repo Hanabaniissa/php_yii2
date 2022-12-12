@@ -25,12 +25,12 @@ class Category extends ActiveRecord
     const STATUS_ACTIVE = 10;
 
 
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'categories';
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['label_ar', 'label_en', 'created_by', 'country_id'], 'required'],
@@ -43,7 +43,7 @@ class Category extends ActiveRecord
         ];
     }
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -59,18 +59,7 @@ class Category extends ActiveRecord
 
     const CACHE_KEY_CATEGORY = 'categories';
 
-    /* public static function getCategories($useCache = true): array
-    {
-        if ($useCache) {
-            $categories = Yii::$app->redis->get(self::CACHE_KEY);
-            if ($categories) return unserialize($categories);
-        }
 
-        $categories = self::find()->all();
-        Yii::$app->redis->set(self::CACHE_KEY, serialize($categories));
-        return $categories;
-    }
-*/
 
     //If you want to update the redis data, set false then true
 
@@ -87,18 +76,6 @@ class Category extends ActiveRecord
         return $categories;
     }
 
-
-    public static function getsubByCat($countryId){
-        return (new Query())
-            ->select('*')
-            ->from(self::tableName())
-            ->innerJoin(SubCategories::tableName(), 'categories.id = subCategories.category_id')
-            ->where([ 'categories.status' => self::STATUS_ACTIVE,
-                'subCategories.country_id'=>$countryId,
-                'subCategories.status' => 1])
-            ->all();
-
-    }
 }
 
 

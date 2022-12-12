@@ -8,12 +8,11 @@ use yii\helpers\Html;
 
 ?>
 
-
 <div class="row">
     <?php foreach ($assigns as $assign):
         $options = Option::getOptionByFieldQuery($assign['field_id'])->all(); ?>
         <div class="col-md-3" style="margin-bottom: 10px;">
-            <label for="flieldSelect" style="margin-bottom: 4px"><?= $assign['label_en'] ?></label>
+            <label for="fieldSelect" style="margin-bottom: 4px"><?= $assign['label_en'] ?></label>
             <?= Html::dropDownList("PostField[{$assign['field_id']}]", null, ArrayHelper::map($options, 'id', 'label_en'), ['class' => 'form-select form-control options', 'prompt' => 'Select...', 'data-role' => "field", 'data-field' => $assign['field_id']]) ?>
         </div>
 

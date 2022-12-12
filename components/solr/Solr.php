@@ -21,49 +21,39 @@ class Solr extends Component
     public string $path;
 
 
-    public function getUrl($subUrl): string
+    public function getUrl($action): string
     {
         return $this->protocol . "://" . $this->host . ":" . $this->port .
-            $this->path . $this->core . $subUrl;
+            $this->path . $this->core . $action;
     }
 
-    public function configWithCurl($method, $subUrl, $documents = [])
+    public function configWithCurl($method, $action, $documents = [])
     {
-
-        $url = self::getUrl($subUrl);
+        $url = self::getUrl($action);
         $ch = curl_init();
-        $header = array('Content-Type: application/json');
-//        echo Json::encode($this->documents);die;
-
+        $header = ['Content-Type: application/json'];
 
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
         switch ($method) {
-
             case 'post':
                 curl_setopt($ch, CURLOPT_POST, 1);
                 $data_json = Json::encode($documents);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_json);
                 break;
-
             case 'get':
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
                 break;
-
             default:
                 return die('null');
         }
-
         curl_setopt($ch, CURLOPT_HEADER, 0);
         curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
         curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
-
         $data = curl_exec($ch);
         $return = 0;
         if (!curl_errno($ch)) {
-            echo '<pre>';
             $return = $data;
         }
         curl_close($ch);
@@ -92,6 +82,13 @@ class Solr extends Component
         return new Document();
     }
 
+
+    public function useSchema(): Schema
+    {
+        return new Schema();
+    }
+
+
     /**
      * @throws Exception
      */
@@ -107,6 +104,4 @@ class Solr extends Component
 //        return new self;
 //    }
 
-
-//curl http://localhost:8983/solr/test_dynamic/schema?wt=json
 }

@@ -18,12 +18,12 @@ class Favorite extends ActiveRecord
     const ACTIVE_STATUS = 1;
     const DISABLED_STATUS = 0;
 
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'favorite';
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['user_id', 'post_id'], 'required'],
@@ -32,7 +32,7 @@ class Favorite extends ActiveRecord
         ];
     }
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -43,12 +43,7 @@ class Favorite extends ActiveRecord
         ];
     }
 
-//    public function getPost()
-//    {
-//        return $this->hasOne(post::class, ['id' => 'post_id']);
-//    }
-
-    public static function getFavorite()
+    public static function getFavorite(): array
     {
         $userId = Yii::$app->user->id;
         return self::find()
@@ -57,8 +52,7 @@ class Favorite extends ActiveRecord
 
     }
 
-
-    public static function getFavoritePostQuery()
+    public static function getFavoritePostQuery(): Query
     {
         $userId = Yii::$app->user->id;
         return (new Query())
@@ -70,4 +64,6 @@ class Favorite extends ActiveRecord
                 'posts.status' => 10])
             ->orderBy(['favorite.id' => SORT_DESC]);
     }
+
+
 }

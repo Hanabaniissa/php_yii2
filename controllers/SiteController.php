@@ -70,13 +70,8 @@ class SiteController extends Controller
         } else {
             $this->setPreferredCountry($countryId);
         }
-
-        $subCategoriesModels = SubCategories::getSubCategories($countryId, true);
-
-
         $countriesModels = Country::find()->where(['id' => $countryId])->one();
         $categoryModels = Category::getCategoriesBy($countryId, true);
-        //   $subCategoriesModels = SubCategories::getSubCategories($countryId,true);
         return $this->render('home', ['categories' => $categoryModels, 'country' => $countriesModels]);
     }
 
@@ -174,7 +169,6 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
-
 
     public function actionSignUp()
     {

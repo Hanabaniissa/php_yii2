@@ -3,18 +3,19 @@
 namespace app\models;
 
 use Yii;
+use yii\base\Exception;
 use yii\base\Model;
 use yii\helpers\VarDumper;
 
 class SignupForm extends Model
 {
 
-    public $username;
-    public $password;
-    public $password_repeat;
+    public string $username;
+    public string $password;
+    public string $password_repeat;
 
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['username', 'password', 'password_repeat'], 'required'],
@@ -24,7 +25,7 @@ class SignupForm extends Model
     }
 
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         {
             return [
@@ -36,7 +37,10 @@ class SignupForm extends Model
         }
     }
 
-    public function signup()
+    /**
+     * @throws Exception
+     */
+    public function signup(): bool
     {
         $user = new User();
         $user->username = $this->username;

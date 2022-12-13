@@ -117,7 +117,7 @@ class post extends ActiveRecord
     {
         $this->populateRelation('value', ['jkhii']);
         return $this->hasMany(PostValue::class, ['post_id' => 'id'])
-            ->where(['post_value.status'=>1]);
+            ->where(['post_value.status' => 1]);
     }
 
 
@@ -192,14 +192,11 @@ class post extends ActiveRecord
      * @throws \Exception
      */
 
-    public static function searchBySolr($term){
-
-
-
-        return Solr::find('posts_core')->
-        useQuery()->
-        query(['post.title_s' => "*$term*"])
-//            ->select(['id'])
+    public static function searchBySolr($term)
+    {
+        return Solr::find('posts_new')
+            ->useQuery()
+            ->query(['post.title_s' => "*$term*"])
             ->get();
     }
 

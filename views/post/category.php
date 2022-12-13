@@ -5,6 +5,8 @@
 
 /** @var app\models\post $pagesPost */
 
+/** @var app\models\post $facetFields */
+
 use yii\helpers\Url;
 
 /*foreach ($categories as $category):
@@ -14,7 +16,24 @@ $this->params['breadcrumbs'][] = ['label'=>$category->label_en ,'url'=>['home']]
 $this->params['breadcrumbs'][] = $this->title;
 endforeach;*/
 
+dd($facetFields);
 ?>
+
+
+<div style="margin:50px 200px 20px 100px; text-align: center">
+    <hr>
+    <div class="row g-0">
+        <?php foreach ($facetFields as $field): ?>
+            <div class="col-md-1">
+                <h6><?php  ?></h6>
+            </div>
+        <?php endforeach; ?>
+    </div>
+    <hr>
+
+</div>
+
+
 <div style="margin-top: 50px;"></div>
 <?php foreach ($posts->models as $post): ?>
     <div class="card-mb-3" style="max-width: 540px;">

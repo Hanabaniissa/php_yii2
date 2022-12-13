@@ -2,8 +2,10 @@
 
 namespace app\models\solr;
 
+use app\components\solr\Solr;
 use Yii;
 use yii\base\Model;
+use yii\db\Exception;
 
 class Post extends Model
 {
@@ -13,6 +15,7 @@ class Post extends Model
     public $phone;
     public $user_id;
     public $price;
+    public $post_image;
     public $category_id;
     public $subcategory_id;
     public $city_id;
@@ -28,8 +31,8 @@ class Post extends Model
     public function rules(): array
     {
         return [
-            ['id', 'safe'],
-            [['title', 'description', 'phone', 'category_id', 'country_id', 'subCategory_id', 'city_id', 'neighborhood_id', 'price'], 'required'],
+            [['id', 'created_at', 'updated_at'], 'safe'],
+            [['title', 'description', 'phone', 'category_id', 'country_id', 'subcategory_id', 'city_id', 'neighborhood_id', 'price'], 'required'],
             ['user_id', 'default', 'value' => \Yii::$app->user->id],
             [['status', 'created_by', 'updated_by', 'phone'], 'integer'],
 
@@ -74,40 +77,32 @@ class Post extends Model
             $item = preg_replace('/^([A-z0-9]*)\./', '', $item);
             $item = preg_replace('/_([^_]*)$/', '', $item);
             $attributes[$key][$item] = $value;
-//            $attributes[]=str_replace('post.','',preg_replace('_i_', '', $item));
         }
-        dd($attributes);
         return $attributes;
     }
 
     public static function getPost($postArray): Post
     {
-
-
         $post = (array)$postArray;
         $postAttributes = self::prepareArray($post);
-        $attributes = [];
-        unset($post['id']);
-
-//        $s = preg_replace('/^([a-z0-9]*)\./', '', 'post.title_s');
-//        dd($s);
-//
-//        foreach ($post as $item=>$value){
-//            $item = preg_replace('/^([a-z0-9]*)\./', '', $item);
-//            $attributes[$item]=$value;
-////            dd($s);
-////            $attributes[]=str_replace('post.','',preg_replace('_i_', '', $item));
-//        }
-        dd($attributes);
-        dd($post);
         $tempPost = new self();
-
-        $tempPost->load($post, '');
-//        $tmpPost->id = $post['id'];
-        dd($tempPost->attributes);
-        $posts[] = $tempPost;
-
+        $tempPost->load($postAttributes['post'], '');
         return $tempPost;
+    }
+
+    /**
+     * @throws Exception
+     * @throws \Exception
+     */
+    public static function getFacetFields()
+    {
+        $facetFields = Solr::find('posts_new')->useFacet()->field('subcategories.label_en_s')->facet('true');
+        $fields = [];
+        foreach ($facetFields as $field){
+//            $fields = $field[];
+        }
+        dd($facetFields);
+
     }
 
 }

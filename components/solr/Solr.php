@@ -29,7 +29,14 @@ class Solr extends Component
 
     public function configWithCurl($method, $action, $documents = [])
     {
+//        $action = "/select?q=id_post_i%20:%20176%20&q.op=OR&rows=10&start=0&indent=true&wt=json&debugQuery=false&fq=&sort=score%20desc&fl=*&defType=lucene&";
+//        $action =rawurlencode($action);
+//        dd($action);
+//        dd($action);
+
         $url = self::getUrl($action);
+//        dd($url);
+
         $ch = curl_init();
         $header = ['Content-Type: application/json'];
 
@@ -54,7 +61,9 @@ class Solr extends Component
         $data = curl_exec($ch);
         $return = 0;
         if (!curl_errno($ch)) {
+//            dd($data);
             $return = $data;
+
         }
         curl_close($ch);
         return $return;
@@ -88,6 +97,9 @@ class Solr extends Component
         return new Schema();
     }
 
+    public function useFacet(){
+        return new Facet();
+    }
 
     /**
      * @throws Exception

@@ -72,7 +72,7 @@ class PostController extends Controller
                     'app\models\SubCategories' => $post->subCategory_id,
                 ];
                 $temp_model['id'] = $post->id;
-                Solr::find('posts_core')->useDocument()->save($models, $temp_model);
+                Solr::find('posts_new')->useDocument()->save($models, $temp_model);
                 return $this->redirect(['post/view-one', 'id' => $postID]);
             } else {
                 var_dump($post->errors);
@@ -146,6 +146,10 @@ class PostController extends Controller
         return $this->render('recent', ['posts' => $result]);
     }
 
+    /**
+     * @throws Exception
+     * @throws \Exception
+     */
     public function actionViewByCategory($id): string
     {
         $query = post::findPostByCategoryIdQuery($id);
@@ -156,7 +160,12 @@ class PostController extends Controller
                 ]
             ]
         );
-        return $this->render('category', ['posts' => $posts]);
+        $facetFields = \app\models\solr\Post::getFacetFields();
+        $facetFields= Solr::find('posts_new')->useFacet()->query(['post.title_s'=>'*ion*'])->field('city.label_ar_s')->facet('true');
+
+
+
+        return $this->render('category', ['posts' => $posts,'facetFields'=>$facetFields]);
     }
 
 
@@ -180,17 +189,9 @@ class PostController extends Controller
     {
         $posts_id = post::searchBySolr($term);
         $posts = [];
-
         foreach ($posts_id as $postArray) {
-//            $tmpPost = post::find()->where(['id' => $id->id])->andWhere(['status' => 10])->one();
-            $post = \app\models\solr\Post::getPost($postArray);
-            $tmpPost = new \app\models\solr\Post();
-            $tmpPost->load((array)$postArray, '');
-            $posts[] = $tmpPost;
-
+            $posts[] = \app\models\solr\Post::getPost($postArray);
         }
-        dd($tmpPost);
-
         $posts = new ArrayDataProvider([
                 'allModels' => $posts,
                 'pagination' => [
@@ -207,22 +208,23 @@ class PostController extends Controller
 
     public function actionGetDoc()
     {
-        $data=rawurlencode(" : ") ;
-        dd($data);
-        die;
-//        605
-        $docs = Solr::find('posts_core')->useDocument()->delete(['id'=> 605]);
-//        var_dump($docs);
-//        die;
-        $docs = Solr::find('test_dynamic')->useQuery()->query(['id_post_i' => 176])->get();
 
-        var_dump($docs);
-        die;
-////        Document::delete($data);
-////        $docs = Solr::core('test_dynamic')->get();
-//
-//        var_dump($docs);
+        $docs= Solr::find('posts_new')->useFacet()->query(['post.title_s'=>'*ion*'])->field('city.label_ar_s')->facet('true');
+        dd($docs);
+
+
+//        $docs = Solr::find('test_dynamic')->useQuery()->query(['id_post_i' => 176])->get();
+//        dd($docs);
+//        $data = rawurlencode(" : ");
+//        dd($data);
 //        die;
+////        605
+//        $docs = Solr::find('posts_core')->useDocument()->delete(['id' => 605]);
+////        var_dump($docs);
+////        die;
+//        $docs = Solr::find('test_dynamic')->useQuery()->query(['id_post_i' => 176])->get();
+//
+//
     }
 
 

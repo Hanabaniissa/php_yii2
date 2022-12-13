@@ -43,6 +43,11 @@ class Query extends Solr
     private int $start = 0;
 
     private array $queryUrl = [];
+    public string $facet = 'false';
+    public string $field = '';
+    public string $prefix = '';
+    public int $minCount = 0;
+
 
     public function get()
     {
@@ -50,20 +55,21 @@ class Query extends Solr
         return $this->prepareDocs($action);
     }
 
+
     public function prepareDocs($action)
     {
         $data = json_decode(Yii::$app->solr->configWithCurl('get', $action));
-//        dd($data);
         return $data->response->docs;
     }
 
-    public function getAction(): string
+    public function getAction($queryUrl = ''): string
     {
         $this->setQueryUrl();
         $action = $this->requestHandler;
         foreach ($this->queryUrl as $item => $value) {
             $action .= $item . '=' . $value . '&';
         }
+        $action .= $queryUrl;
         return $action;
     }
 
@@ -81,7 +87,7 @@ class Query extends Solr
             'sort' => $this->sort,
             'fl' => $this->fieldList,
             'defType' => $this->defType,
-//            'df' => $this->defaultField,
+//            'facet' => 'false'
         ];
         return $this->queryUrl;
     }
@@ -108,7 +114,7 @@ class Query extends Solr
      */
     public function query(array $fields = []): Query
     {
-     $q = '';
+        $q = '';
         foreach ($fields as $field => $value) {
             $q .= $field . "%20:%20" . $value . "%20";
         }
@@ -145,7 +151,6 @@ class Query extends Solr
                 $count++;
             }
         }
-
         $this->sort = $sort;
         return $this;
     }
@@ -157,13 +162,10 @@ class Query extends Solr
             foreach ($fieldList as $item) {
                 $field .= $item . '%20';
             }
-
             $this->fieldList = $field;
-
             return $this;
         }
         $this->fieldList = str_replace(' ', '%20', $fieldList [0]);
-
         return $this;
     }
 
@@ -173,7 +175,6 @@ class Query extends Solr
         foreach ($fl as $item => $value) {
             $q .= $item . "%20:%20" . $value . "%20";
         }
-
         $this->filterQuery = $q;
         return $this;
     }

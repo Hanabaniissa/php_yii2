@@ -27,15 +27,14 @@ class Solr extends Component
             $this->path . $this->core . $action;
     }
 
-    public function configWithCurl($method, $action, $documents = [])
+    public function configWithCurl($method, $action, $body = [])
     {
 //        $action = "/select?q=id_post_i%20:%20176%20&q.op=OR&rows=10&start=0&indent=true&wt=json&debugQuery=false&fq=&sort=score%20desc&fl=*&defType=lucene&";
 //        $action =rawurlencode($action);
 //        dd($action);
-//        dd($action);
 
         $url = self::getUrl($action);
-//        dd($url);
+//        var_dump(Json::encode($body));die;
 
         $ch = curl_init();
         $header = ['Content-Type: application/json'];
@@ -46,12 +45,19 @@ class Solr extends Component
         switch ($method) {
             case 'post':
                 curl_setopt($ch, CURLOPT_POST, 1);
-                $data_json = Json::encode($documents);
+                $data_json = Json::encode($body);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_json);
                 break;
             case 'get':
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
                 break;
+            case 'getFacet':
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+                $data_json = Json::encode($body);
+
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $data_json);
+                break;
+
             default:
                 return die('null');
         }
@@ -61,9 +67,7 @@ class Solr extends Component
         $data = curl_exec($ch);
         $return = 0;
         if (!curl_errno($ch)) {
-//            dd($data);
             $return = $data;
-
         }
         curl_close($ch);
         return $return;
@@ -97,7 +101,8 @@ class Solr extends Component
         return new Schema();
     }
 
-    public function useFacet(){
+    public function useFacet(): Facet
+    {
         return new Facet();
     }
 

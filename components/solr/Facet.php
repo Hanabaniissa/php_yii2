@@ -4,83 +4,102 @@ namespace app\components\solr;
 
 use Yii;
 
-class Facet extends Query
+class Facet extends Solr
 {
-    public string $facet = 'false';
-    public string $queryFacet = '';
-    public string $field = '';
-    public string $prefix = '';
-    public int $limit = 100;
-    public string $sortFacet = 'count';
-    public int $minCount = 0;
+    //TODO
+    public array $bodyFacets = [];
 
-    public function facet(bool $boolean)
+    public function setQuery(array $query, string $operation): Facet
     {
-        $this->facet = !$boolean == 0 ? 'true' : 'false';
-        $action = [
-            'facet' => $this->facet,
-            'facet.field' => $this->field,
-            'facet.sort' => $this->sortFacet,
-            'facet.mincount' => $this->minCount,
-        ];
-        return $this->getFacet($action);
+        if (!empty($query)) {
+            $this->bodyFacets['query'] = $this->prepareQuery($query, $operation);
+        } else $this->bodyFacets['query'] = '*:*';
+        return $this;
     }
 
-    public function getFacet($queryUrl)
+    private function prepareQuery(array $query, string $operation): string
     {
-        $action = '';
-        foreach ($queryUrl as $item => $value) {
-            $action .= $item . '=' . $value . '&';
+        $facetQuery = '';
+        $count = 1;
+        foreach ($query as $field => $value) {
+            $facetQuery .= $field . ':' . $value . ' ';
+            if ($count != count($query)) {
+                $facetQuery .= $operation . ' ';
+                $count++;
+            }
         }
-        $action = $this->getAction($action);
-        return $this->prepareFacetFields($action);
+        return $facetQuery;
     }
 
-    public function prepareFacetFields($action)
+    public function withFilter(array $query, string $operation): Facet
     {
-        $data = json_decode(Yii::$app->solr->configWithCurl('get', $action));
-        return $data->facet_counts->facet_fields;
-    }
-
-    public function queryFacet(string $query): Facet
-    {
-        $this->queryFacet = $query;
+        $this->bodyFacets['filter'] = $this->prepareQuery($query, $operation);
         return $this;
     }
 
-    public function field(string $field): Facet
+    public function termFacet(string $name, string $field, int $limit): Facet
     {
-        $this->field = $field;
+        $param = $this->prepareFacetParams($name, $field, $limit);
+        $this->bodyFacets['facet'] = $param;
         return $this;
     }
 
-    public function prefix(string $terms): Facet
+    public function nestedTermFacet(string $name, string $field, int $limit): Facet
     {
-        $this->prefix = $terms;
+//        foreach ($this->bodyFacets as $facet) {
+//            }
+        $this->bodyFacets['facet']['categories']['facet'] = $this->prepareFacetParams($name, $field, $limit);
         return $this;
     }
 
-    public function limit(int $limit): Facet
+    private function prepareFacetParams(string $name, string $field, int $limit): array
     {
-        $this->limit = $limit;
-        return $this;
+        $limit = !empty($limit) ? $limit : 100;
+        $facetParams[$name] = [
+            'type' => 'terms',
+            'field' => $field,
+            'limit' => $limit
+        ];
+        return $facetParams;
     }
 
-    public function sortFacet(string $sortFacet): Facet
+    public function getFacet()
     {
-        $this->sortFacet = $sortFacet;
-        return $this;
-    }
-
-    public function minCount(int $minCount): Facet
-    {
-        $this->minCount = $minCount;
-        return $this;
+        $action = '/query';
+        return json_decode(Yii::$app->solr->configWithCurl('getFacet', $action, $this->bodyFacets));
     }
 
 
 
-    
+
+
+
+
+
+
+
+
+
+//    public function setSort(string $sort): Facet
+//    {
+//        return $this;
+//    }
+//
+
+//
+//    public function setLimit(int $limit): Facet
+//    {
+//        $this->nameFacet['limit'] = $limit;
+//        return $this;
+//    }
+//
+//    public function prepareData($data)
+//    {
+//        $docs = $data->response->docs;
+//        $fieldsFacet= $data->
+//        return $data;
+//    }
+
 
 //
 //curl http://localhost:8983/solr/posts_new/query -d '
@@ -93,5 +112,40 @@ class Facet extends Query
 //}
 //}
 //}'
+
+
+//
+//'{
+//  "query": "*:*",
+//  "facet": {
+//    "categories": {
+//      "type": "terms",
+//      "field": "post.subcategory_id_i",
+//      "facet": {
+//        "top_manufacturer": {
+//          "type": "terms",
+//          "field": "subcategories.label_en_s",
+//        }
+//      }
+//    }
+//  }
+//}'
+
+
+//"query": "post.title_s: *ion*",
+//"facet": {
+//"categories": {
+//"type": "terms",
+//"field": "category.label_en_s",
+//"facet": {
+//"top_manufacturer": {
+//"type": "terms",
+//"field": "category.id_i"
+//}
+//}
+//}
+//}
+//}'
+
 
 }

@@ -2,8 +2,6 @@
 
 namespace app\models;
 
-
-use app\components\solr\Solr;
 use yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
@@ -109,6 +107,14 @@ class post extends ActiveRecord
             ->orderBy(['id' => SORT_DESC]);
     }
 
+    public static function findPostBySubCategoryIdQuery($id): ActiveQuery
+    {
+        return self::find()
+            ->select(['title', 'description', 'phone', 'id', 'created_at', 'post_image'])
+            ->where(['subCategory_id' => $id, 'status' => 10])
+            ->orderBy(['id' => SORT_DESC]);
+    }
+
     /**
      * @return ActiveQuery
      */
@@ -191,13 +197,13 @@ class post extends ActiveRecord
      * @throws Exception
      * @throws \Exception
      */
+//    public static function searchBySolr($term)
+//    {
+//        return Solr::find('posts_new')
+//            ->useQuery()
+//            ->query(['post.title_s' => "*$term*"])
+//            ->get();
+//    }
 
-    public static function searchBySolr($term)
-    {
-        return Solr::find('posts_new')
-            ->useQuery()
-            ->query(['post.title_s' => "*$term*"])
-            ->get();
-    }
 
 }

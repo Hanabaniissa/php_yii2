@@ -15,7 +15,6 @@ class JwtValidationData extends \sizeg\jwt\JwtValidationData
         $this->validationData->setAudience($jwtParams['audience']);
         $this->validationData->setId($jwtParams['id']);
         parent::init();
-
     }
 
 }

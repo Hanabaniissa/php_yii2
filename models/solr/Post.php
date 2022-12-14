@@ -31,19 +31,14 @@ class Post extends Model
     public function rules(): array
     {
         return [
-            [['id', 'created_at', 'updated_at'], 'safe'],
+            [['id', 'created_at', 'updated_at', 'user_id', 'created_by'], 'safe'],
             [['title', 'description', 'phone', 'category_id', 'country_id', 'subcategory_id', 'city_id', 'neighborhood_id', 'price'], 'required'],
-            ['user_id', 'default', 'value' => \Yii::$app->user->id],
             [['status', 'created_by', 'updated_by', 'phone'], 'integer'],
-
             [['title', 'description'], 'string', 'max' => 300],
-            ['created_by', 'default', 'value' => \Yii::$app->user->id],
             ['post_image', 'string', 'max' => 255],
             [['post_image'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg'],
-
         ];
     }
-
 
     public function attributeLabels(): array
     {
@@ -64,7 +59,6 @@ class Post extends Model
             'subCategory_id' => Yii::t('app', 'Sub Category'),
             'neighborhood_id' => Yii::t('app', 'Neighborhood'),
             'price' => Yii::t('app', 'Price')
-
         ];
     }
 
@@ -81,6 +75,7 @@ class Post extends Model
         return $attributes;
     }
 
+
     public static function getPost($postArray): Post
     {
         $post = (array)$postArray;
@@ -92,17 +87,80 @@ class Post extends Model
 
     /**
      * @throws Exception
+     */
+//    public static function getFacetFieldsSearch($term)
+//    {
+//        $facetFields = Solr::find('posts_new')->useFacet()->queryFacet(['post.title_s' => "*$term*"])->name('categories', 'terms', 'category.label_en_s')->getFacet();
+//        return self::prepareFacetFields($facetFields);
+//    }
+
+    //TODO
+//    public static function prepareFacetFieldSearch($data)
+//    {
+//        if (!empty($data->facets->count)) {
+//            $field = [];
+//            $dataFacet = $data->facets->categories->buckets;
+//            foreach ($dataFacet as $item) {
+//                $id = $item->id->buckets[0]->val;
+//                $field[$id] = $item->val;
+//            }
+//            return $field;
+//        } else return 0;
+//    }
+    /**
+     * @throws Exception
      * @throws \Exception
      */
-    public static function getFacetFields()
+    public static function getFacetFields($category_id)
     {
-        $facetFields = Solr::find('posts_new')->useFacet()->field('subcategories.label_en_s')->facet('true');
-        $fields = [];
-        foreach ($facetFields as $field){
-//            $fields = $field[];
-        }
-        dd($facetFields);
-
+        $facetFields = Solr::find('posts_new')
+            ->useFacet()
+            ->setQuery(['category.id_i' => $category_id], 'AND')
+            ->withFilter(['post.status_i' => 10], 'AND')
+            ->termFacet('categories', 'subcategories.label_en_s', 0)
+            ->nestedTermFacet('categoryId', 'subcategories.id_i', 0)
+            ->getFacet();
+        return self::prepareFacetFields($facetFields);
     }
 
+    public static function prepareFacetFields($data)
+    {
+        if (!empty($data->facets->count)) {
+            $field = [];
+            $dataFacet = $data->facets->categories->buckets;
+            foreach ($dataFacet as $item) {
+                $id = $item->categoryId->buckets[0]->val;
+                $field[$id] = $item->val;
+            }
+            return $field;
+        } else return 0;
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function withFacet($term)
+    {
+        return Solr::find('posts_new')
+            ->useFacet()
+            ->setQuery(['post.title_s' => "*$term*"], 'And')
+            ->withFilter(['post.status_i' => 10], 'AND')
+            ->termFacet('categories', 'category.label_en_s', 0)
+            ->nestedTermFacet('categoryId', 'category.id_i', 0)
+            ->getFacet();
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function findByCategory($id)
+    {
+        return Solr::find('posts_new')
+            ->useFacet()
+            ->setQuery([], 'ANd')
+            ->withFilter(['post.status_i' => 10,'post.category_id_i'=>$id], 'AND')
+            ->termFacet('categories', 'subcategories.label_en_s', 0)
+            ->nestedTermFacet('categoryId', 'subcategories.id_i', 0)
+            ->getFacet();
+    }
 }

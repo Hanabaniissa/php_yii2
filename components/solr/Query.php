@@ -43,7 +43,6 @@ class Query extends Solr
     private int $start = 0;
 
     private array $queryUrl = [];
-    public string $facet = 'false';
     public string $field = '';
     public string $prefix = '';
     public int $minCount = 0;
@@ -56,7 +55,7 @@ class Query extends Solr
     }
 
 
-    public function prepareDocs($action)
+    private function prepareDocs($action)
     {
         $data = json_decode(Yii::$app->solr->configWithCurl('get', $action));
         return $data->response->docs;

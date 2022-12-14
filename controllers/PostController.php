@@ -135,7 +135,6 @@ class PostController extends Controller
         foreach ($postsIds as $postsId) {
             $posts[] = post::findOne($postsId);
         }
-        dd($posts);
 
         $result = new ArrayDataProvider([
             'allModels' => $posts,
@@ -150,8 +149,23 @@ class PostController extends Controller
      * @throws Exception
      * @throws \Exception
      */
+
+    //TODO
     public function actionViewByCategory($id): string
     {
+//        $solrData = \app\models\solr\Post::findPostByCategoryId($id);
+//        $posts = [];
+//        $facetFields = \app\models\solr\Post::prepareFacetFields($solrData);
+//        foreach ($solrData->response->docs as $postArray) {
+//            $posts[] = \app\models\solr\Post::getPost($postArray);
+//        }
+//        $posts = new ArrayDataProvider([
+//            'allModels' => $posts,
+//            'pagination' => [
+//                'pageSize' => 4
+//            ]
+//        ]);
+
         $query = post::findPostByCategoryIdQuery($id);
         $posts = new ActiveDataProvider([
                 'query' => $query,
@@ -160,14 +174,47 @@ class PostController extends Controller
                 ]
             ]
         );
-        $facetFields = \app\models\solr\Post::getFacetFields();
-        $facetFields= Solr::find('posts_new')->useFacet()->query(['post.title_s'=>'*ion*'])->field('city.label_ar_s')->facet('true');
+        $facetFields = \app\models\solr\Post::getFacetFields($id);
+        $route = 'post/view-by-sub-category';
 
-
-
-        return $this->render('category', ['posts' => $posts,'facetFields'=>$facetFields]);
+        return $this->render('category', ['posts' => $posts, 'facetFields' => $facetFields, 'route' => $route]);
     }
 
+    /**
+     * @throws Exception
+     */
+    public function actionViewSearchByCategory($id)
+    {
+        $solrData = \app\models\solr\Post::findByCategory($id);
+        $posts = [];
+        $facetFields = \app\models\solr\Post::prepareFacetFields($solrData);
+        foreach ($solrData->response->docs as $postArray) {
+            $posts[] = \app\models\solr\Post::getPost($postArray);
+        }
+        $posts = new ArrayDataProvider([
+            'allModels' => $posts,
+            'pagination' => [
+                'pageSize' => 4
+            ]
+        ]);
+        $route = 'post/view-by-sub-category';
+        return $this->render('category', ['posts' => $posts, 'facetFields' => $facetFields, 'route' => $route]);
+    }
+
+    //TODO
+    public function actionViewBySubCategory($id): string
+    {
+//        $queryBySolr =
+        $query = post::findPostBySubCategoryIdQuery($id);
+        $posts = new ActiveDataProvider([
+                'query' => $query,
+                'pagination' => [
+                    'pageSize' => 4
+                ]
+            ]
+        );
+        return $this->render('subCategory', ['posts' => $posts]);
+    }
 
     public function actionViewMyPost(): string
     {
@@ -185,21 +232,26 @@ class PostController extends Controller
     /**
      * @throws Exception
      */
+
+    //TODO
     public function actionSearch($term = ''): string
     {
-        $posts_id = post::searchBySolr($term);
+        $solrData = \app\models\solr\Post::withFacet($term);
         $posts = [];
-        foreach ($posts_id as $postArray) {
+        $facetFields = \app\models\solr\Post::prepareFacetFields($solrData);
+
+        foreach ($solrData->response->docs as $postArray) {
             $posts[] = \app\models\solr\Post::getPost($postArray);
         }
         $posts = new ArrayDataProvider([
-                'allModels' => $posts,
-                'pagination' => [
-                    'pageSize' => 4
-                ]
+            'allModels' => $posts,
+            'pagination' => [
+                'pageSize' => 4
             ]
-        );
-        return $this->render('category', ['posts' => $posts]);
+        ]);
+//        $facetFields = \app\models\solr\Post::getFacetFieldsSearch($term);
+        $route = 'post/view-search-by-category';
+        return $this->render('category', ['posts' => $posts, 'facetFields' => $facetFields, 'route' => $route]);
     }
 
     /**
@@ -208,8 +260,12 @@ class PostController extends Controller
 
     public function actionGetDoc()
     {
-
-        $docs= Solr::find('posts_new')->useFacet()->query(['post.title_s'=>'*ion*'])->field('city.label_ar_s')->facet('true');
+        $docs = Solr::find('posts_new')->useFacet()
+            ->setQuery(['country.label_en_s' => 'Jordan', 'city.label_en_s' => 'Irbid'], 'AND')
+            ->withFilter(['country.label_en_s' => 'Jordan', 'city.label_en_s' => 'Irbid'], 'OR')
+            ->termFacet('hana', 'city.label_en_s', 4)
+            ->nestedTermFacet('city', 'ff', 2)
+            ->getFacet();
         dd($docs);
 
 
@@ -218,13 +274,6 @@ class PostController extends Controller
 //        $data = rawurlencode(" : ");
 //        dd($data);
 //        die;
-////        605
-//        $docs = Solr::find('posts_core')->useDocument()->delete(['id' => 605]);
-////        var_dump($docs);
-////        die;
-//        $docs = Solr::find('test_dynamic')->useQuery()->query(['id_post_i' => 176])->get();
-//
-//
     }
 
 

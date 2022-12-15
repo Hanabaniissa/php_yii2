@@ -6,6 +6,7 @@ use app\components\solr\Solr;
 use app\helpers\CountryUtils;
 use app\models\post;
 use app\models\PostValue;
+use app\models\Redis;
 use Psy\Util\Json;
 use Throwable;
 use Yii;
@@ -22,7 +23,6 @@ use yii\web\UploadedFile;
 
 class PostController extends Controller
 {
-
     const RECENTLY_VIEWED_COOKIE = 'recentlyViewed';
 
     /**
@@ -40,7 +40,6 @@ class PostController extends Controller
             }
         }
         $post->country_id = CountryUtils::getPreferredCountry();
-
         if (Yii::$app->request->isPost) {
             $postFields = Yii::$app->request->post('PostField') ?? [];
             $post->load(Yii::$app->request->post());
@@ -72,6 +71,12 @@ class PostController extends Controller
                     'app\models\SubCategories' => $post->subCategory_id,
                 ];
                 $temp_model['id'] = $post->id;
+                $message = [
+                    'temp_model' => $temp_model,
+                    'models' => $models
+                ];
+//                Redis::publish('postSolr', serialize($message));
+//                Redis::subscribe('postSolr');
                 Solr::find('posts_new')->useDocument()->save($models, $temp_model);
                 return $this->redirect(['post/view-one', 'id' => $postID]);
             } else {
@@ -91,7 +96,7 @@ class PostController extends Controller
         $post = post::find()->where(['id' => $postId])->one();
         $categoryId = $post->category_id;
         $post->delete();
-        Solr::find('test_dynamic')->useDocument()->from($postId)->update();
+        Solr::find('posts_new')->useDocument()->from($postId)->set(['status'])->update();
         return $this->redirect(['post/view-by-category', 'id' => $categoryId]);
     }
 

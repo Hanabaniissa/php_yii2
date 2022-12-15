@@ -24,6 +24,8 @@ class PostController extends Controller
 {
 
     const RECENTLY_VIEWED_COOKIE = 'recentlyViewed';
+    const CHANNEL_REDIS = 'posts_solr';
+
 
     /**
      * @throws Exception
@@ -72,7 +74,12 @@ class PostController extends Controller
                     'app\models\SubCategories' => $post->subCategory_id,
                 ];
                 $temp_model['id'] = $post->id;
-                Solr::find('posts_new')->useDocument()->save($models, $temp_model);
+                $message = [
+                    'models' => $models,
+                    'temp_model' => $temp_model
+                ];
+                Yii::$app->redis->publish(self::CHANNEL_REDIS, serialize($message));
+//                Solr::find('posts_new')->useDocument()->save($models, $temp_model);
                 return $this->redirect(['post/view-one', 'id' => $postID]);
             } else {
                 var_dump($post->errors);
@@ -90,8 +97,8 @@ class PostController extends Controller
     {
         $post = post::find()->where(['id' => $postId])->one();
         $categoryId = $post->category_id;
+        Solr::find('posts_new')->useDocument()->from($postId)->set(["post.status_i" => 0])->update();
         $post->delete();
-        Solr::find('test_dynamic')->useDocument()->from($postId)->update();
         return $this->redirect(['post/view-by-category', 'id' => $categoryId]);
     }
 

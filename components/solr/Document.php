@@ -132,4 +132,8 @@ class Document extends Field
         return $this;
     }
 
+
+//curl -X POST -H 'Content-Type:application/json' 'http://localhost:8983/solr/posts_new/update?commitWithin=100'
+// --data-binary '[{"id":641,"post.status_i":{"set":0}}]'
+
 }

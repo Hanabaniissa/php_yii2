@@ -35,7 +35,6 @@ class Solr extends Component
 
         $url = self::getUrl($action);
 //        var_dump(Json::encode($body));die;
-
         $ch = curl_init();
         $header = ['Content-Type: application/json'];
 

@@ -65,8 +65,7 @@ class Facet extends Solr
 
     public function getFacet()
     {
-        $action = '/query';
-        return json_decode(Yii::$app->solr->configWithCurl('getFacet', $action, $this->bodyFacets));
+        return json_decode(Yii::$app->solr->configWithCurl('getFacet', '/query', $this->bodyFacets));
     }
 
 

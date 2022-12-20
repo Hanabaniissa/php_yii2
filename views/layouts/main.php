@@ -6,6 +6,7 @@
 
 
 use app\assets\AppAsset;
+use app\models\solr\Post;
 use app\widgets\Alert;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
@@ -73,7 +74,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
         'method' => 'GET'
     ]);
     echo "<div class='d-flex justify-content-center gap-2'>";
-    echo Html::input('search', 'term', '', ['placeholder' => 'Search', 'class' => 'form-control mr-sm-2']);
+    echo Html::input('search', 'PostSearch[title]', '', ['placeholder' => 'Search', 'class' => 'form-control mr-sm-2']);
     echo Html::submitButton('<i class="fa-solid fa-magnifying-glass"></i>', ['class' => 'btn my-2 my-sm-0', 'style'=>'background-color: #40CCFFFF; color:#ffffff']);
     echo "</div>";
     ActiveForm::end();

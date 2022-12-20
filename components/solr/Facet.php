@@ -37,6 +37,27 @@ class Facet extends Solr
         return $this;
     }
 
+    public function sort(string $field): Facet
+    {
+
+        $sort = '';
+        $count = 1;
+        $this->bodyFacets['sort'] = $field;
+
+//
+//        foreach ($fields as $field => $sortOperation) {
+//            $sort .= $field . "%20" . $sortOperation;
+//            if ($count != count($fields)) {
+//                $sort .= ',%20';
+//                $count++;
+//            }
+//        }
+//        $this->bodyFacets['sort'] = ;
+
+//        $this->sort = $sort;
+        return $this;
+    }
+
     public function termFacet(string $name, string $field, int $limit): Facet
     {
         $param = $this->prepareFacetParams($name, $field, $limit);

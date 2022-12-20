@@ -4,6 +4,7 @@ namespace app\components\solr;
 
 use Yii;
 use ReflectionClass;
+use yii\base\Action;
 use yii\db\Exception;
 use yii\base\InvalidConfigException;
 
@@ -12,6 +13,7 @@ class Document extends Field
     public string $documentType = 'json';
     public string $overwrite = 'true';
     public array $documents = [];
+    public string $action = '/update/';
     public int $commitWithin = 1000;
 
     /**
@@ -21,10 +23,7 @@ class Document extends Field
     public function save($models, $temp_model)
     {
         $this->prepare($models, $temp_model);
-
-        $action = '/update/' . $this->documentType . '/docs';
-        $action = $this->getAction($action);
-
+        $action = $this->getAction($this->action .= $this->documentType . '/docs');
         return Yii::$app->solr->configWithCurl('post', $action, $this->documents);
     }
 
@@ -39,7 +38,6 @@ class Document extends Field
             $reflect = new ReflectionClass(Yii::createObject($model));
             $modelName = $reflect->getShortName();
             $modelName = strtolower($modelName);
-
             $this->documents[$modelName] = Field::getFieldsWithoutRelationModel($model, $id_model, $modelName);
             if ($modelName === 'post') {
                 $this->documents['field'] = Field::getFieldsWithRelationModel($model, $id_model, $modelName);
@@ -49,15 +47,14 @@ class Document extends Field
 
     public function update()
     {
-        $url = '/update/' . $this->documentType;
-        $action = $this->getAction($url);
+        $action = $this->getAction($this->action .= $this->documentType);
         $documents[] = $this->documents;
         return Yii::$app->solr->configWithCurl('post', $action, $documents);
     }
 
-    private function getAction($url): string
+    private function getAction($action): string
     {
-        return $url . '?commitWithin=' . $this->commitWithin . '&overwrite=' . $this->overwrite;
+        return $action . '?commitWithin=' . $this->commitWithin . '&overwrite=' . $this->overwrite;
     }
 
     public function from(int $docID): Document
@@ -66,28 +63,30 @@ class Document extends Field
         return $this;
     }
 
-    public function add($fields): Document
+    public function add(array $fields): Document
     {
-        foreach ($fields as $item => $value) {
-            $this->documents[$item] = ["add" => $value];
-        }
+        $this->prepareUpdateAction($fields, 'get');
         return $this;
     }
 
     public function set(array $fields): Document
     {
-        foreach ($fields as $item => $value) {
-            $this->documents[$item] = ["set" => $value];
-        }
+        $this->prepareUpdateAction($fields, 'set');
         return $this;
     }
 
+    private function prepareUpdateAction(array $fields, string $action): void
+    {
+        foreach ($fields as $item => $value) {
+            $this->documents[$item] = [$action => $value];
+        }
+    }
 
 //TODO :: Create Schema Class
     public function copyingFields(array $source, string $dest)
     {
         $this->addField($dest);
-        $action = '/schema?CommitWithin=' . $this->commitWithin;
+        $action = $this->prepareSchemaAction();
         foreach ($source as $item) {
             $this->documents = [
                 "add-copy-field" => [
@@ -101,7 +100,7 @@ class Document extends Field
 
     protected function addField(string $name)
     {
-        $action = '/schema?CommitWithin=' . $this->commitWithin;
+        $action = $this->prepareSchemaAction();
         $this->documents = [
             "add-field" => [
                 "name" => $name,
@@ -113,8 +112,11 @@ class Document extends Field
         return Yii::$app->solr->configWithCurl('post', $action, $this->documents);
     }
 
-//curl -X POST -H 'Content-Type: application/json' 'http://localhost:8983/solr/core_docs/schema?CommitWithin=1000' --data-binary '{
-//            "add-field":{"name":"catch_all","type":"text_en","indexed":true,"stored":false,"multiValued":true}}'
+    private function prepareSchemaAction(): string
+    {
+        return '/schema?CommitWithin=' . $this->commitWithin;
+
+    }
 
 
 //TODO
@@ -131,9 +133,5 @@ class Document extends Field
         $this->overwrite = $trueOrFalse;
         return $this;
     }
-
-
-//curl -X POST -H 'Content-Type:application/json' 'http://localhost:8983/solr/posts_new/update?commitWithin=100'
-// --data-binary '[{"id":641,"post.status_i":{"set":0}}]'
 
 }

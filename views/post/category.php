@@ -2,19 +2,23 @@
 /** @var ActiveDataProvider $posts */
 /** @var yii\web\View $this */
 /** @var app\models\post $pagesPost */
-/** @var string $route */
+/** @var string $key */
 /** @var app\models\post $facetFields */
 /** @var  app\models\post $term */
+/** @var array $params */
+//** @var string $route */
 
 
-
-
+//dd($params);
+//dd($key);
 use yii\bootstrap5\LinkPager;
 use yii\data\ActiveDataProvider;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\StringHelper;
 use yii\helpers\Url;
 
+//dd($key);
 ?>
 <?php if (!empty($facetFields)): ?>
     <div style="margin:50px 200px 20px 100px; text-align: center">
@@ -23,7 +27,7 @@ use yii\helpers\Url;
             <?php foreach ($facetFields as $id => $value): ?>
                 <div class="col-md-2">
                     <a style="--bs-link-hover-color: #2192ff; text-decoration: none"
-                       href="<?= Url::to(["$route", 'id' => $id]) ?>">
+                       href="<?= Url::to(['post/search', 'PostSearch' => ArrayHelper::merge($params, [$key => $id])]) ?>">
                         <h6><?php echo $value ?></h6>
                     </a>
                 </div>

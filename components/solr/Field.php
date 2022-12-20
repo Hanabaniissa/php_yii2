@@ -76,6 +76,22 @@ class Field extends Solr
 
     }
 
+    public static function getValueTypeForSolr($value): string
+    {
+        $type = gettype($value);
+        if (is_numeric($value)) $type = 'integer';
+        switch ($type) {
+            case 'Int':
+            case 'integer':
+                return 'i';
+            case 'string':
+            case 'String':
+                return 's';
+            default:
+                return 'str';
+        }
+    }
+
     private static function getDynamicFieldType($fieldTypeParams): string
     {
         $type = gettype($fieldTypeParams['value']);
@@ -102,7 +118,6 @@ class Field extends Solr
     }
 
 // TODO::THIS FUNCTION
-
 
 
 }

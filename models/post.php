@@ -47,7 +47,6 @@ class post extends ActiveRecord
             [['title', 'description', 'phone', 'category_id', 'country_id', 'subCategory_id', 'city_id', 'neighborhood_id', 'price'], 'required'],
             ['user_id', 'default', 'value' => \Yii::$app->user->id],
             [['status', 'created_by', 'updated_by', 'phone'], 'integer'],
-
             [['title', 'description'], 'string', 'max' => 300],
             ['created_by', 'default', 'value' => \Yii::$app->user->id],
             ['post_image', 'string', 'max' => 255],

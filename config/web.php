@@ -1,9 +1,11 @@
 <?php
 
 use app\components\JwtValidationData;
+use yii\helpers\ArrayHelper;
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
+$commonConfig = require __DIR__ . '/common_config.php';
 
 $config = [
     'id' => 'basic',
@@ -14,7 +16,7 @@ $config = [
         '@npm' => '@vendor/npm-asset',
         '@upload' => "/web/upload/"
     ],
-    'components' => [
+    'components' => ArrayHelper::merge($commonConfig, [
         'request' => [
             'cookieValidationKey' => 'aofmaqfomadsofmafomom',
         ],
@@ -22,27 +24,6 @@ $config = [
             'class' => \sizeg\jwt\Jwt::class,
             'key' => 'HANA',
             'jwtValidationData' => JwtValidationData::class,
-
-        ],
-
-        'solr' => [
-            'class' => \app\components\solr\Solr::class,
-            'protocol' => 'http',
-            'host' => 'localhost',
-            'port' => '8983',
-            'path' => '/solr/',
-
-        ],
-
-        'redis' => [
-            'class' => 'yii\redis\Connection',
-            'hostname' => 'localhost',
-            'port' => 6379,
-            'database' => 0,
-        ],
-
-        'cache' => [
-            'class' => 'yii\caching\FileCache',
         ],
         'user' => [
             'identityClass' => 'app\models\User',
@@ -51,28 +32,13 @@ $config = [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        'mailer' => [
-            'class' => \yii\symfonymailer\Mailer::class,
-            'viewPath' => '@app/mail',
-            // send all mails to a file by default.
-            'useFileTransport' => true,
-        ],
-        'log' => [
-            'traceLevel' => YII_DEBUG ? 3 : 0,
-            'targets' => [
-                [
-                    'class' => \yii\log\FileTarget::class,
-                    'levels' => ['error', 'warning'],
-                ],
-            ],
-        ],
         'db' => $db,
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'enableStrictParsing' => false,
         ],
-    ],
+    ]),
     'modules' => [
         'api' => [
             'class' => 'app\\modules\\api\\Module',

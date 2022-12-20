@@ -6,6 +6,7 @@ use Yii;
 use yii\base\Component;
 use yii\db\Exception;
 use yii\helpers\Json;
+use function PHPUnit\Framework\classHasAttribute;
 
 /**
  * @property Query $query
@@ -71,7 +72,6 @@ class Solr extends Component
         curl_close($ch);
         return $return;
     }
-
     /**
      * @throws Exception
      */
@@ -82,6 +82,14 @@ class Solr extends Component
         }
         Yii::$app->solr->core = $core;
         return new self();
+    }
+
+    public function load(array $data) {
+        foreach ($data as $attribute => $value) {
+            if (!classHasAttribute(self::class, $attribute)) continue;
+            $this->{$attribute} = $value;
+        }
+        return $this;
     }
 
     public function useQuery(): Query

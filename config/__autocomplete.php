@@ -24,7 +24,7 @@ class Yii {
  * @property \yii\redis\Connection $redis
  * @property \sizeg\jwt\Jwt $jwt
  * @property \app\components\solr\Solr $solr
- *
+ * @property \yii\queue\Queue  $queue
  */
 class __Application {
 }

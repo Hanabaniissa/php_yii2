@@ -55,6 +55,10 @@ class City extends ActiveRecord{
         ];
     }
 
+    public function getLabel() {
+        $lang = Yii::$app->language;
+        return $this->{"label_{$lang}"};
+    }
     const CACHE_KEY_CITY= 'cities';
 
     public static function getCities($countryId,$useCache=true) :array{

@@ -7,7 +7,7 @@ use yii\base\InvalidConfigException;
 use yii\console\Controller;
 use yii\db\Exception;
 
-class QueueController extends Controller
+class PubSubController extends Controller
 {
     const CHANNEL_REDIS = 'posts_solr';
 

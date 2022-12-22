@@ -19,6 +19,9 @@ use app\models\ContactForm;
 
 class SiteController extends Controller
 {
+
+    const lANGUAGE_COOKIE = 'language';
+
     /**
      * {@inheritdoc}
      */
@@ -61,8 +64,12 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex($countryId = null)
+    public function actionIndex($countryId = null, $language = 'en'): string
     {
+        Yii::$app->language = 'ar';
+//        dd(Yii::$app->language);
+//        dd( Yii::$app->urlManager->createUrl(['site/index', 'language' => 'ar']));
+
         if (empty($countryId)) {
             $countryId = $this->getPreferredCountry();
             if (empty($countryId))
@@ -88,7 +95,6 @@ class SiteController extends Controller
         Yii::$app->response->format = 'json';
         if (isset($_GET['category'])) {
             $categoryId = $_GET['category'];
-
             return SubCategories::getSubCategories($countryId, $categoryId, true);
         }
         return null;
@@ -178,5 +184,37 @@ class SiteController extends Controller
         }
         return $this->render('signup',
             ['model' => $model]);
+    }
+
+
+    public function actionDo()
+    {
+        $language = 'en';
+
+        \Yii::$app->language = $language;
+        $languageCookies = Yii::$app->response->cookies;
+        $languageCookies->add(new Cookie([
+            'name' => self::lANGUAGE_COOKIE,
+            'value' => $language,
+            'httpOnly' => true,
+            'expire' => time() + 60 * 60 * 24,
+//            'sameSite' => Cookie::SAME_SITE_STRICT
+        ]));
+        return $this->redirect('post/view-by-category');
+    }
+
+    public function actionChangeLanguage($language,$current_url)
+    {
+//        $language = 'en';
+        \Yii::$app->language = $language;
+        $languageCookies = Yii::$app->response->cookies;
+        $languageCookies->add(new Cookie([
+            'name' => self::lANGUAGE_COOKIE,
+            'value' => $language,
+            'httpOnly' => true,
+            'expire' => time() + 60 * 60 * 24,
+//            'sameSite' => Cookie::SAME_SITE_STRICT
+        ]));
+        return $this->redirect($current_url);
     }
 }

@@ -78,6 +78,11 @@ class Country extends ActiveRecord
         ];
     }
 
+    public function getLabel() {
+        $lang = Yii::$app->language;
+        return $this->{"label_{$lang}"};
+    }
+
     const CACHE_KEY_COUNTRY = 'country';
 
     public static function getCountry($useCache = true): array

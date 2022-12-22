@@ -18,18 +18,18 @@ use Yii;
  * @property int $created_by
  * @property int|null $updated_by
  */
-class Neighborhood extends ActiveRecord{
-
+class Neighborhood extends ActiveRecord
+{
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 2;
     const STATUS_ACTIVE = 1;
 
-    public static function tableName()
+    public static function tableName(): string
     {
         return 'neighborhood';
     }
 
-    public function rules()
+    public function rules(): array
     {
         return [
             [['label_ar', 'label_en', 'city_id', 'created_by'], 'required'],
@@ -39,7 +39,7 @@ class Neighborhood extends ActiveRecord{
         ];
     }
 
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             'id' => Yii::t('app', 'ID'),
@@ -53,6 +53,10 @@ class Neighborhood extends ActiveRecord{
             'updated_by' => Yii::t('app', 'Updated By'),
         ];
     }
-
+    public function getLabel()
+    {
+        $lang = Yii::$app->language;
+        return $this->{"label_{$lang}"};
+    }
 
 }

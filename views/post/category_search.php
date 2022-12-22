@@ -27,7 +27,7 @@ use yii\helpers\Url;
             <?php foreach ($facetFields as $id => $value): ?>
                 <div class="col-md-2">
                     <a style="--bs-link-hover-color: #2192ff; text-decoration: none"
-                       href="<?= Url::to(['post/view-by-sub-category', 'id'=>$id]) ?>">
+                       href="<?= Url::to(['post/search', 'PostSearch' => ArrayHelper::merge($params, [$key => $id])]) ?>">
                         <h6><?php echo $value ?></h6>
                     </a>
                 </div>
@@ -70,3 +70,5 @@ use yii\helpers\Url;
     ]) ?>
 
 </div>
+
+

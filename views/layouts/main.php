@@ -4,9 +4,7 @@
 
 /** @var string $content */
 
-
 use app\assets\AppAsset;
-use app\models\solr\Post;
 use app\widgets\Alert;
 use yii\bootstrap5\Breadcrumbs;
 use yii\bootstrap5\Html;
@@ -43,7 +41,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
     NavBar::begin([
         'brandLabel' => 'Abuyz',
         'brandUrl' => Yii::$app->homeUrl,
-        'options' => ['class' => 'navbar-expand-md navbar-dark fixed-top', 'style'=>'background-color: #000000']
+        'options' => ['class' => 'navbar-expand-md navbar-dark fixed-top', 'style' => 'background-color: #000000']
     ]);
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav',],
@@ -56,18 +54,19 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
                 : '',
             Yii::$app->user->isGuest
                 ? ['label' => 'Signup', 'url' => ['/site/sign-up']] : '',
-            ['label' => 'English', 'url' => ['/site/about']],
-            Yii::$app->user->isGuest ? '' : ['label' => 'My Account', 'items' => [
-                ['label' => Yii::$app->user->identity->username, 'url' => '#'],
-                ['label' => 'My posts', 'url' => '/post/view-my-post'],
-                ['label' => 'Favorite posts', 'url' => '/favorite/get'],
-                ['label' => 'Recently viewed posts', 'url' => '/post/recently-viewed'],
-                ['label' => 'Logout (' . Yii::$app->user->identity->username . ')', 'url' => Url::to(['site/logout'])],
+//            ['label' => Yii::t('app', 'English'), 'url' => ['/site/about']],
+            ['label' => 'language', 'items' => [
+                ['label' => 'English', 'url' => ['/site/change-language','language'=>'en','current_url'=>Yii::$app->request->url]],
+                ['label' => 'Arabic', 'url' => ['/site/change-language','language'=>'ar','current_url'=>Yii::$app->request->url]],
             ]],
-
-
-        ]]);
-
+                Yii::$app->user->isGuest ? '' : ['label' => 'My Account', 'items' => [
+                    ['label' => Yii::$app->user->identity->username, 'url' => '#'],
+                    ['label' => 'My posts', 'url' => '/post/view-my-post'],
+                    ['label' => 'Favorite posts', 'url' => '/favorite/get'],
+                    ['label' => 'Recently viewed posts', 'url' => '/post/recently-viewed'],
+                    ['label' => 'Logout (' . Yii::$app->user->identity->username . ')', 'url' => Url::to(['site/logout'])],
+                ]],
+            ]]);
     $form = ActiveForm::begin([
         'options' => ['class' => 'form-inline my-2 my-lg-0', 'style' => 'margin-left: 550px'],
         'action' => Url::to(['post/search']),
@@ -75,12 +74,10 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => '@w
     ]);
     echo "<div class='d-flex justify-content-center gap-2'>";
     echo Html::input('search', 'PostSearch[title]', '', ['placeholder' => 'Search', 'class' => 'form-control mr-sm-2']);
-    echo Html::submitButton('<i class="fa-solid fa-magnifying-glass"></i>', ['class' => 'btn my-2 my-sm-0', 'style'=>'background-color: #40CCFFFF; color:#ffffff']);
+    echo Html::submitButton('<i class="fa-solid fa-magnifying-glass"></i>', ['class' => 'btn my-2 my-sm-0', 'style' => 'background-color: #40CCFFFF; color:#ffffff']);
     echo "</div>";
     ActiveForm::end();
     NavBar::end();
-
-
     ?>
 </header>
 

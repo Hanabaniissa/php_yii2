@@ -121,11 +121,6 @@ class Query extends Solr
         return $this;
     }
 
-//    public function defaultField(string $df)
-//    {
-//
-//    }
-
     public function responseWriter(string $wt): Query
     {
         $this->responseWriter = $wt;
@@ -195,5 +190,11 @@ class Query extends Solr
         $this->defType = $defType;
         return $this;
     }
+
+
+    //    public function defaultField(string $df)
+//    {
+//
+//    }
 
 }

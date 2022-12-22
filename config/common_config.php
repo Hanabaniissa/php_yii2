@@ -16,6 +16,8 @@ return [
         'hostname' => 'localhost',
         'port' => 6379,
         'database' => 0,
+        'retries' => 1,
+
     ],
     'cache' => [
         'class' => 'yii\caching\FileCache',
@@ -24,6 +26,15 @@ return [
         'class' => Mailer::class,
         'viewPath' => '@app/mail',
         'useFileTransport' => true,
+    ],
+    'queue' => [
+        'class' => \yii\queue\redis\Queue::class,
+        'redis' => 'redis', // Redis connection component or its config
+        'channel' => 'queue', // Queue channel key
+    ],
+    'support-language' => [
+        'class' => 'app\messages\SelectLanguage',
+        'supported_languages' => ['en', 'ar']
     ],
     'log' => [
         'traceLevel' => YII_DEBUG ? 3 : 0,

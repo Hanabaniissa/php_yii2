@@ -15,11 +15,11 @@ use yii\db\Query;
  * @property int $updated_by
  * @property int $status
  * @property int $country_id
+// * @property-read string $label
 
  */
-class Category extends ActiveRecord
+class Category extends \app\models\ActiveRecord
 {
-
     const STATUS_DELETED = 0;
     const STATUS_INACTIVE = 9;
     const STATUS_ACTIVE = 10;
@@ -43,6 +43,11 @@ class Category extends ActiveRecord
         ];
     }
 
+    public function getLabel() {
+        $lang = Yii::$app->language;
+        return $this->{"label_{$lang}"};
+    }
+
     public function attributeLabels(): array
     {
         return [
@@ -57,7 +62,7 @@ class Category extends ActiveRecord
         ];
     }
 
-    const CACHE_KEY_CATEGORY = 'categories';
+    const CACHE_KEY_CATEGORY = 'categories_v3';
 
 
 

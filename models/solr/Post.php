@@ -5,10 +5,12 @@ namespace app\models\solr;
 use app\components\solr\Field;
 use app\components\solr\Solr;
 use Symfony\Component\DomCrawler\Field\InputFormField;
+use Symfony\Component\VarDumper\Dumper\DataDumperInterface;
 use Yii;
 use yii\base\Model;
 use yii\db\Exception;
 use yii\web\ForbiddenHttpException;
+use function PHPUnit\Framework\objectEquals;
 use function PHPUnit\Framework\throwException;
 
 class Post extends Model
@@ -170,15 +172,18 @@ class Post extends Model
      * @throws Exception
      * @throws ForbiddenHttpException
      */
-    public function withFacet()
+    public function withFacet($postSearchModel)
     {
+//        dd($post);
         $solrQuery = $this->convertModelToSolrQuery();
-        $count = count($solrQuery);
         $query = Solr::find('posts_new')
             ->useFacet()
             ->setQuery($solrQuery, 'AND')
+            ->sort(['id' => 'desc', 'post.category_id_i' => 'desc'])
             ->withFilter(['post.status_i' => 10], 'AND');
-        return $this->prepare($query, $solrQuery);
+        $count = count($solrQuery);
+        return $this->prepareQuery($count, $query);
+//        return $this->prepare($query, $postSearchModel);
     }
 
     /**
@@ -202,35 +207,46 @@ class Post extends Model
                 throw new ForbiddenHttpException("not found the page");
         }
     }
-    public function prepare($query, $solrQuery)
+
+    public function prepare($query, $postSearchModel)
     {
-        $keys = ['post.subcategory_id_i' => 'subcategories.label_en_s', 'post.category_id_i' => 'category.label_en_s'];
+        $keys = [
+            'post.subcategory_id_i' => 'subcategories.label_en_s',
+            'post.category_id_i' => 'category.label_en_s',
+        ];
         $key = '';
         $keyValue = '';
-        dd($solrQuery);
-
-//        foreach ($keys as $item => $value) {
-//            if (dd(empty($solrQuery)) {
-//                $key = $item;
-//                $keyValue = $value;
-//            }}
-//        dd($solrQuery->item);
-//            return $query->termFacet('categories', $keyValue, 0)
-//                ->nestedTermFacet('categoryId', $key, 0)
-//                ->getFacet();
-
-        //        $i=0;
-//        $i++;
-//        $arrayQuery=[0=>['post.subcategory_id_i' => 'subcategories.label_en_s'],1=>['post.category_id_i' => 'category.label_en_s'], 2=>[' '=> ' ']];
-//        dd($arrayQuery[$i][]);
-//        if (!empty($arrayQuery[$i])) {
-//            return $query->termFacet('categories', $arrayQuery[$i++], 0)
-//                ->nestedTermFacet('categoryId', $arrayQuery[$i++], 0)
-//                ->getFacet();
-//        } else {
-//            return $query->getFacet();
-//        }
+//        dd($postSearchModel);
+        foreach ($keys as $item => $value) {
+            if (empty($postSearchModel->$item)) {
+                $key = $item;
+                $keyValue = $value;
+            }
+        }
+        return $query->termFacet('categories', $keyValue, 0)
+            ->nestedTermFacet('categoryId', $key, 0)
+            ->getFacet();
     }
+
+//        $keys = ['0' => ['post.title_s' => ['post.category_id_i', 'category.label_en_s']],
+//            '1' => ['post.subcategory_id_i' => ['post.subcategory_id_i', 'subcategories.label_en_s']]];
+//        $key = '';
+//        $keyValue = '';
+//        $count = 0;
+//        foreach ($keys[$count] as $item => $value) {
+//            if (in_array($item, array_keys($solrQuery))) {
+////                dd($count);
+//                $key = $value[0];
+//                $keyValue = $value[1];
+//            }
+//        }
+//        return $query->termFacet('categories', $keyValue, 0)
+//            ->nestedTermFacet('categoryId', $key, 0)
+//            ->getFacet();
+//            if (dd(in_array($keys[$count]['post.title_s'], array_keys($solrQuery)))) {
+//                $key = $keys[$count][0];
+//                $keyValue = $keys[$count][1];
+//                dd($keyValue);
 
 
 //    public function withFacet()
@@ -274,6 +290,8 @@ class Post extends Model
     {
         $solrQuery = [];
         $attributes = $this->attributes;
+//        dd($attributes);
+
         foreach ($attributes as $attribute => $value) {
             if (empty($value)) continue;
             $type = Field::getValueTypeForSolr($value);
@@ -304,8 +322,8 @@ class Post extends Model
         return Solr::find('posts_new')
             ->useFacet()
             ->setQuery([], 'AND')
+            ->sort(['id' => 'desc', 'post.category_id_i' => 'desc'])
             ->withFilter(['post.status_i' => 10, 'post.category_id_i' => $id], 'AND')
-            ->sort('id desc')
             ->termFacet('categories', 'subcategories.label_en_s', 0)
             ->nestedTermFacet('categoryId', 'subcategories.id_i', 0)
             ->getFacet();

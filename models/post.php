@@ -83,7 +83,7 @@ class post extends ActiveRecord
             'description' => Yii::t('app', 'Description'),
             'phone' => Yii::t('app', 'Phone'),
             'user_id' => Yii::t('app', 'User'),
-            'category_id' => Yii::t('app', 'Category '),
+            'category_id' => Yii::t('app', 'Category'),
             'created_at' => Yii::t('app', 'Created At'),
             'updated_at' => Yii::t('app', 'Updated At'),
             'created_by' => Yii::t('app', 'Created By'),
@@ -94,7 +94,6 @@ class post extends ActiveRecord
             'subCategory_id' => Yii::t('app', 'Sub Category'),
             'neighborhood_id' => Yii::t('app', 'Neighborhood'),
             'price' => Yii::t('app', 'Price')
-
         ];
     }
 

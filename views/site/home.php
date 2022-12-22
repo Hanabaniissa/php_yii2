@@ -22,7 +22,7 @@ $this->registerJsVar('countryId', Yii::$app->request->get('countryId'));
                         <a class="nav-link" data-role="category" data-category="<?= $category->id ?>"
                            href="<?= Url::to(['site/index', 'categoryId' => $category->id]) ?>"  style="color: #ffffff; text-decoration: none"  class="link-dark"
                            id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <?= $category->label_en ?>
+                            <?= $category->label ?>
                         </a>
                         <div class="dropdown-menu subcats-cont" aria-labelledby="navbarDropdownMenuLink"></div>
                     </li>
@@ -35,7 +35,7 @@ $this->registerJsVar('countryId', Yii::$app->request->get('countryId'));
 
 
 <div style="text-align: center;">
-    <h3 style="margin: 120px auto 60px ;color:#47555e;">Select one of these categories</h3>
+    <h3 style="margin: 120px auto 60px ;color:#47555e;"><?=Yii::t('app','Select one of these categories')?></h3>
     <!-- categories -->
 
     <div class="container " style="text-align: center; margin-top: 50px;">
@@ -49,7 +49,7 @@ $this->registerJsVar('countryId', Yii::$app->request->get('countryId'));
                        style="color: #2192ff; text-decoration: none"  class="link-dark">
                         <img style="width: 100px; height: auto; margin-bottom: 10px;"
                              src="<?= '/images/' . $category->label_en . '.png' ?>" alt="">
-                        <h3 style="color:#47555e;"><?= $category->label_en ?></h3>
+                        <h3 style="color:#47555e;"><?= $category->label ?></h3>
                     </a>
                 </div>
             <?php endforeach; ?>
@@ -58,7 +58,7 @@ $this->registerJsVar('countryId', Yii::$app->request->get('countryId'));
     <hr style="border: dotted #38e54d 6px; width: 4%; margin: 40px auto 40px; border-bottom: none;">
     <!-- button -->
     <div class="row">
-        <span style="text-align: center; margin-top: 10px;"><?= Html::a('Create Post', Url::to(['post/post']), ['class' => 'btn btn-warning btn-lg', 'style' => 'color: #ffffff']) ?> </span>
+        <span style="text-align: center; margin-top: 10px;"><?= Html::a(Yii::t('app','Create Post'), Url::to(['post/post']), ['class' => 'btn btn-warning btn-lg', 'style' => 'color: #ffffff']) ?> </span>
     </div>
     <br>
 

@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\commands\SolrPostJob;
 use app\components\solr\Solr;
 use app\helpers\CountryUtils;
 use app\models\post;
@@ -14,13 +15,11 @@ use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
 use yii\db\Exception;
 use yii\db\StaleObjectException;
-use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\Cookie;
 use yii\web\ForbiddenHttpException;
 use yii\web\Response;
 use yii\web\UploadedFile;
-use function PHPUnit\Framework\isFalse;
 
 
 class PostController extends Controller
@@ -75,12 +74,16 @@ class PostController extends Controller
                     'app\models\SubCategories' => $post->subCategory_id,
                 ];
                 $temp_model['id'] = $post->id;
+                $id = Yii::$app->queue->push(new SolrPostJob([
+                    'models' => $models,
+                    'temp_model' => $temp_model
+                ]));
+
                 $message = [
                     'models' => $models,
                     'temp_model' => $temp_model
                 ];
-                Yii::$app->redis->publish(self::CHANNEL_REDIS, serialize($message));
-//                Solr::find('posts_new')->useDocument()->save($models, $temp_model);
+//                Yii::$app->redis->publish(self::CHANNEL_REDIS, serialize($message));
                 return $this->redirect(['post/view-one', 'id' => $postID]);
             } else {
                 var_dump($post->errors);
@@ -158,62 +161,39 @@ class PostController extends Controller
      * @throws \Exception
      */
 
-    //TODO
-//    public function actionViewByCategory($id): string
-//    {
-//        $solrData = \app\models\solr\Post::findPostByCategoryId($id);
-//        $posts = [];
-//        $facetFields = \app\models\solr\Post::prepareFacetFields($solrData);
-//        foreach ($solrData->response->docs as $postArray) {
-//            $posts[] = \app\models\solr\Post::getPost($postArray);
-//        }
-//        $posts = new ArrayDataProvider([
-//            'allModels' => $posts,
-//            'pagination' => [
-//                'pageSize' => 4
-//            ]]);
-//
-////        $query = post::findPostByCategoryIdQuery($id);
-////        $posts = new ActiveDataProvider([
-////                'query' => $query,
-////                'pagination' => [
-////                    'pageSize' => 4
-////                ]
-////            ]
-////        );
-////        $facetFields = \app\models\solr\Post::getFacetFields($id);
+
+    public function actionViewByCategory($id): string
+    {
+        $solrData = \app\models\solr\Post::findPostByCategoryId($id);
+        $posts = [];
+        $facetFields = \app\models\solr\Post::prepareFacetFields($solrData);
+        foreach ($solrData->response->docs as $postArray) {
+            $posts[] = \app\models\solr\Post::getPost($postArray);
+        }
+        $posts = new ArrayDataProvider([
+            'allModels' => $posts,
+            'pagination' => [
+                'pageSize' => 4
+            ]]);
+//        $query = post::findPostByCategoryIdQuery($id);
+//        $posts = new ActiveDataProvider([
+//                'query' => $query,
+//                'pagination' => [
+//                    'pageSize' => 4
+//                ]
+//            ]
+//        );
+//        $facetFields = \app\models\solr\Post::getFacetFields($id);
 //        $route = 'post/view-by-sub-category';
-//        return $this->render('category', [
-//            'posts' => $posts,
-//            'facetFields' => $facetFields,
-//            'key' => $key,
-//            'params' => $postSearch,
-//            'route' => $route
-//        ]);
-//    }
+        return $this->render('category', [
+            'posts' => $posts,
+            'facetFields' => $facetFields,
+        ]);
+    }
 
     /**
      * @throws Exception
      */
-//    public function actionViewSearchByCategory($id)
-//    {
-//        $solrData = \app\models\solr\Post::findByCategorySearch($id);
-//        $posts = [];
-//        $facetFields = \app\models\solr\Post::prepareFacetFields($solrData);
-//        foreach ($solrData->response->docs as $postArray) {
-//            $posts[] = \app\models\solr\Post::getPost($postArray);
-//        }
-//        $posts = new ArrayDataProvider([
-//            'allModels' => $posts,
-//            'pagination' => [
-//                'pageSize' => 4
-//            ]
-//        ]);
-//        $route = 'post/search';
-//        return $this->render('category', ['posts' => $posts, 'facetFields' => $facetFields, 'route' => $route]);
-//    }
-
-    //TODO
     public function actionViewBySubCategory($id): string
     {
 //        $queryBySolr =
@@ -248,13 +228,11 @@ class PostController extends Controller
     public function actionSearch(): string
     {
         $postSearch = Yii::$app->request->get('PostSearch');
-//        dd($postSearch);
-
         $postSearchModel = new \app\models\solr\Post();
         $postSearchModel->setScenario(\app\models\solr\Post::SCENARIO_SEARCH);
         $postSearchModel->load($postSearch, '');
         $postSearchModel->validate();
-        $solrData = $postSearchModel->withFacet();
+        $solrData = $postSearchModel->withFacet($postSearchModel);
         if (empty($solrData->response->docs)) {
             return throw new ForbiddenHttpException("not found the page");
         }
@@ -269,7 +247,7 @@ class PostController extends Controller
                 'pageSize' => 4
             ]
         ]);
-//        $route = 'post/search';
+        $route = 'post/search';
         $keys = ['subcategory_id', 'category_id'];
         $key = '';
         foreach ($keys as $item) {
@@ -277,15 +255,22 @@ class PostController extends Controller
                 $key = $item;
             }
         }
-        return $this->render('category', [
+        return $this->render('category_search', [
             'posts' => $posts,
             'facetFields' => $facetFields,
             'key' => $key,
             'params' => $postSearch,
         ]);
-
     }
 
+    public function actionDo()
+    {
+//        $message = 'ar';
+//        $id = Yii::$app->queue->push(new SolrPostJob(
+//            serialize($message)));
+//        dd($id);
+//        dd(Yii::$app->queue->isWaiting($id));
+    }
 
 
 
@@ -332,7 +317,6 @@ class PostController extends Controller
 //        curl_close($ch);
 //        return $return;
 //    }
-
 
 
 //curl_setopt($ch, CURLOPT_HEADER,'host: apiv.sooqdev2.com');

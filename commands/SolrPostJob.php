@@ -12,7 +12,6 @@ class SolrPostJob extends BaseObject implements JobInterface
 {
     public $models;
     public $temp_model;
-
     /**
      * @throws Exception
      * @throws InvalidConfigException

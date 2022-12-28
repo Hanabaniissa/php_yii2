@@ -107,7 +107,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <div class="row">
                 <div class="for-control">
                     <div class="col-lg-5">
-                        <?= $form->field($post, 'price')->textInput(['placeholder' => "price"]); ?>
+                        <?= $form->field($post, 'price')->textInput(['placeholder' => Yii::t('app',"Price")]); ?>
                     </div>
                 </div>
             </div>
@@ -116,7 +116,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <hr class="marg">
             <h3>
-                <span class="number">3. </span>Add Image</h3>
+                <span class="number">3. </span><?=Yii::t('app','Add Image')?></h3>
 
             <br>
 
@@ -131,7 +131,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <hr class="marg">
             <h3>
-                <span class="number">4. </span>Contact information</h3>
+                <span class="number">4. </span><?=Yii::t('app','Contact information')?></h3>
             <br>
 
             <div class="row">

@@ -17,5 +17,7 @@ return[
     'Price' => 'السعر',
     'Create post'=>"انشاء اعلان",
     'Create Post'=>"انشاء اعلان",
-    'Select one of these categories'=>'اختر واحدة من هذه الفئات'
+    'Select one of these categories'=>'اختر واحدة من هذه الفئات',
+    'Add Image'=>'اضافة صورة',
+    'Contact information'=>'معلومات الاتصال'
 ];

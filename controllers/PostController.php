@@ -74,16 +74,10 @@ class PostController extends Controller
                     'app\models\SubCategories' => $post->subCategory_id,
                 ];
                 $temp_model['id'] = $post->id;
-                $id = Yii::$app->queue->push(new SolrPostJob([
+                Yii::$app->queue->push(new SolrPostJob([
                     'models' => $models,
                     'temp_model' => $temp_model
                 ]));
-
-                $message = [
-                    'models' => $models,
-                    'temp_model' => $temp_model
-                ];
-//                Yii::$app->redis->publish(self::CHANNEL_REDIS, serialize($message));
                 return $this->redirect(['post/view-one', 'id' => $postID]);
             } else {
                 var_dump($post->errors);

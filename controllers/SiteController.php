@@ -64,7 +64,7 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex($countryId = null, $language = 'en'): string
+    public function actionIndex($countryId = null, $language = 'en')
     {
         Yii::$app->language = 'ar';
 //        dd(Yii::$app->language);
@@ -186,26 +186,8 @@ class SiteController extends Controller
             ['model' => $model]);
     }
 
-
-    public function actionDo()
-    {
-        $language = 'en';
-
-        \Yii::$app->language = $language;
-        $languageCookies = Yii::$app->response->cookies;
-        $languageCookies->add(new Cookie([
-            'name' => self::lANGUAGE_COOKIE,
-            'value' => $language,
-            'httpOnly' => true,
-            'expire' => time() + 60 * 60 * 24,
-//            'sameSite' => Cookie::SAME_SITE_STRICT
-        ]));
-        return $this->redirect('post/view-by-category');
-    }
-
     public function actionChangeLanguage($language,$current_url)
     {
-//        $language = 'en';
         \Yii::$app->language = $language;
         $languageCookies = Yii::$app->response->cookies;
         $languageCookies->add(new Cookie([
@@ -213,7 +195,6 @@ class SiteController extends Controller
             'value' => $language,
             'httpOnly' => true,
             'expire' => time() + 60 * 60 * 24,
-//            'sameSite' => Cookie::SAME_SITE_STRICT
         ]));
         return $this->redirect($current_url);
     }

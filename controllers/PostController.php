@@ -99,7 +99,6 @@ class PostController extends Controller
         $post->delete();
         return $this->redirect(['post/view-by-category', 'id' => $categoryId]);
     }
-
     public function actionViewOne($id)
     {
         $cookies = Yii::$app->response->cookies;
@@ -108,8 +107,6 @@ class PostController extends Controller
         if (!empty($currentCookies[self::RECENTLY_VIEWED_COOKIE]))
             $recentlyViewedPosts = $currentCookies[self::RECENTLY_VIEWED_COOKIE]->value;
         if (!is_array($recentlyViewedPosts)) $recentlyViewedPosts = [$recentlyViewedPosts];
-
-        // Remove from Array
         $key = array_search($id, $recentlyViewedPosts);
         if (false !== $key) {
             unset($recentlyViewedPosts[$key]);
@@ -169,16 +166,7 @@ class PostController extends Controller
             'pagination' => [
                 'pageSize' => 4
             ]]);
-//        $query = post::findPostByCategoryIdQuery($id);
-//        $posts = new ActiveDataProvider([
-//                'query' => $query,
-//                'pagination' => [
-//                    'pageSize' => 4
-//                ]
-//            ]
-//        );
-//        $facetFields = \app\models\solr\Post::getFacetFields($id);
-//        $route = 'post/view-by-sub-category';
+
         return $this->render('category', [
             'posts' => $posts,
             'facetFields' => $facetFields,
@@ -257,90 +245,13 @@ class PostController extends Controller
         ]);
     }
 
-    public function actionDo()
-    {
-//        $message = 'ar';
-//        $id = Yii::$app->queue->push(new SolrPostJob(
-//            serialize($message)));
-//        dd($id);
-//        dd(Yii::$app->queue->isWaiting($id));
-    }
 
 
 
-//    public function actionGetDoc()
-//    {
-//        $url = "https://apiv.sooqdev2.com/vertical/forms/v1/add-post/normal/1?expand=remaining_edit_counter%2Cmedia&abBucket=3";
-//        $ch = curl_init();
-//        curl_setopt($ch, CURLOPT_URL, $url);
-//        $username = '0700110022';
-//        $password = '123456';
-//        $header = [
-//            'host: apiv.sooqdev2.com',
-//            'x-real-ip: 194.165.141.170',
-//            'connection: close',
-////            'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYzODI2MDYyLCJhdDAiOjE2NzEzNDc0MjcsImV4cCI6MTY3MTM2NTM4NSwiYXVkIjoiYW5kcm9pZCIsInJuZCI6IjY3MTE5ODA2In0.6UzAYWw3piTpSfRIDH-4-lnvDRLa5m5zfTnITFg7XdY',
-//            'abbucket: 3',
-//            'source: android',
-//            'appversion: 355',
-//            'always-200: 1',
-//            'uuid: b0e89b32-954d-4462-a7c5-0aea9aa9cdb9',
-//            'x-tracking-uuid: _dced576a-3407-4f8f-bfe8-61638e3c0526',
-//            'connectiontype: WIFI',
-//            'user-agent: OpenSooq/355/v2.1/3 (Android-10/HUAWEI,STK-L21)',
-//            'country: jo',
-//            'accept-language: ar',
-//            'display-mode: normal',
-//            'release-version: 9.4.00',
-//            'accept-encoding: gzip',
-//            'if-modified-since: Sun, 18 Dec 2022 11:35:54 GMT',
-//            'session-id: 23a308f9-86c3-4cb3-aa91-5d3a85a76cb4'
-//        ];
-//        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-//        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-//        curl_setopt($ch, CURLOPT_USERPWD, $username . ":" . $password);
-//        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-//        $data = curl_exec($ch);
-//        $return = 0;
-//        if (!curl_errno($ch)) {
-//            print_r($data);
-//            die;
-//            $return = $data;
-//        }
-//        curl_close($ch);
-//        return $return;
-//    }
 
 
-//curl_setopt($ch, CURLOPT_HEADER,'host: apiv.sooqdev2.com');
-//        curl_setopt($ch, CURLOPT_HEADER,'x-real-ip: 194.165.141.170');
-//        curl_setopt($ch, CURLOPT_HEADER,'connection: close');
-//        curl_setopt($ch, CURLOPT_HEADER,'content-length: 535');
-//        curl_setopt($ch, CURLOPT_HEADER,'authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjYzODI2MDYyLCJhdDAiOjE2NzEzNDc0MjcsImV4cCI6MTY3MTM1NzgzMywiYXVkIjoiYW5kcm9pZCIsInJuZCI6IjQzNjI3OTIwIn0.l1SkIMUvwr_JS-eZH7xJdJHZrlHVhJHiJcnV8TiQkpI');
-//        curl_setopt($ch, CURLOPT_HEADER,'abbucket: 3');
-//        curl_setopt($ch, CURLOPT_HEADER,'source: android');
-//        curl_setopt($ch, CURLOPT_HEADER,'appversion: 355');
-//        curl_setopt($ch, CURLOPT_HEADER,'always-200: 1');
-
-////
-//curl_setopt($ch, CURLOPT_HEADER,'uuid: b0e89b32-954d-4462-a7c5-0aea9aa9cdb9');
-//curl_setopt($ch, CURLOPT_HEADER,'x-tracking-uuid: _dced576a-3407-4f8f-bfe8-61638e3c0526');
-//curl_setopt($ch, CURLOPT_HEADER,'connectiontype: WIFI');
-//curl_setopt($ch, CURLOPT_HEADER,'user-agent: OpenSooq/355/v2.1/3 (Android-10/HUAWEI,STK-L21)');
-//curl_setopt($ch, CURLOPT_HEADER,'country: jo');
-//curl_setopt($ch, CURLOPT_HEADER,'accept-language: ar');
-//curl_setopt($ch, CURLOPT_HEADER,'session-id: 23a308f9-86c3-4cb3-aa91-5d3a85a76cb4');
-//curl_setopt($ch, CURLOPT_HEADER,'display-mode: normal');
-//curl_setopt($ch, CURLOPT_HEADER,'release-version: 9.4.00');
-////        curl_setopt($ch, CURLOPT_HEADER,'content-type: application/x-www-form-urlencoded');
-//curl_setopt($ch, CURLOPT_HEADER,'accept-encoding: gzip');
-//curl_setopt($ch, CURLOPT_HEADER,'if-modified-since: Sun, 18 Dec 2022 11:35:54 GMT');
 
 
-//https://sy.opensooq.com/ar/find?
-//PostSearch[categoryId]=13179&PostSearch[subCategoryId]=2331&
-//PostSearch[dynamicAttributes][Make_Motorbike][0]=4531&
-//PostSearch[dynamicAttributes][Make_Motorbike_child][0]=8690&
-//PostSearch[dynamicAttributes][Kilometers_Cars][0]=4601
+
+
 }

@@ -21,7 +21,9 @@
         "sizeg/yii2-jwt": "^2.0",
       "ext-curl": "*",
         "ext-json": "*",
-        "yiisoft/yii2-queue": "*"
+        "yiisoft/yii2-queue": "*",
+        "react/event-loop": "^1.3",
+        "react/http": "^1.8"
     },
     "require-dev": {
         "yiisoft/yii2-debug": "~2.1.0",

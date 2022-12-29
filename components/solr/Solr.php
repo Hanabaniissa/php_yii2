@@ -117,15 +117,4 @@ class Solr extends Component
      * @throws Exception
      */
 
-
-//    public static function core($core): Solr
-//    {
-//        if (!$core) {
-//            throw new Exception("Null");
-//        }
-//
-//        Yii::$app->solr->core = $core;
-//        return new self;
-//    }
-
 }

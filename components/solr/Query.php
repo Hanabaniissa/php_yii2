@@ -191,10 +191,4 @@ class Query extends Solr
         return $this;
     }
 
-
-    //    public function defaultField(string $df)
-//    {
-//
-//    }
-
 }

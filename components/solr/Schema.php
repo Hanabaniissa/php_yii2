@@ -42,8 +42,4 @@ class Schema extends Solr
     }
 
 
-//curl -X POST -H 'Content-Type: application/json' 'http://localhost:8983/solr/core_docs/schema?CommitWithin=1000' --data-binary '{
-//            "add-field":{"name":"catch_all","type":"text_en","indexed":true,"stored":false,"multiValued":true}}'
-
-
 }

@@ -111,13 +111,7 @@ class Field extends Solr
             default:
                 return 'str';
         }
-
         return $field . "_" . $charType;
-//        return $field . "_" . $fieldTypeParams['model'] . "_" . $charType;
-
     }
-
-// TODO::THIS FUNCTION
-
 
 }

@@ -19,7 +19,6 @@ use app\models\ContactForm;
 
 class SiteController extends Controller
 {
-
     const lANGUAGE_COOKIE = 'language';
 
     /**
@@ -58,7 +57,6 @@ class SiteController extends Controller
             ],
         ];
     }
-
     /**
      * Displays homepage.
      *
@@ -175,7 +173,6 @@ class SiteController extends Controller
     {
         return $this->render('about');
     }
-
     public function actionSignUp()
     {
         $model = new SignupForm();
@@ -185,7 +182,6 @@ class SiteController extends Controller
         return $this->render('signup',
             ['model' => $model]);
     }
-
     public function actionChangeLanguage($language,$current_url)
     {
         \Yii::$app->language = $language;

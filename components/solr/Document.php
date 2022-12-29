@@ -117,8 +117,6 @@ class Document extends Field
         return '/schema?CommitWithin=' . $this->commitWithin;
 
     }
-
-
 //TODO
     public function delete($da)
     {

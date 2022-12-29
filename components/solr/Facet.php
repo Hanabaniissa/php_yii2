@@ -6,7 +6,6 @@ use Yii;
 
 class Facet extends Solr
 {
-    //TODO
     public array $bodyFacets = [];
 
     public function setQuery(array $query, string $operation): Facet
@@ -41,8 +40,6 @@ class Facet extends Solr
     {
         $sort = '';
         $count = 1;
-//        $this->bodyFacets['sort'] = $field . " " . $sort;
-
         foreach ($fields as $field => $sortOperation) {
             $sort .= $field . " " . $sortOperation;
             if ($count != count($fields)) {
@@ -51,8 +48,6 @@ class Facet extends Solr
             }
         }
         $this->bodyFacets['sort'] =  $sort;
-
-//        $this->sort = $sort;
         return $this;
     }
 
@@ -65,8 +60,6 @@ class Facet extends Solr
 
     public function nestedTermFacet(string $name, string $field, int $limit): Facet
     {
-//        foreach ($this->bodyFacets as $facet) {
-//            }
         $this->bodyFacets['facet']['categories']['facet'] = $this->prepareFacetParams($name, $field, $limit);
         return $this;
     }
@@ -86,84 +79,5 @@ class Facet extends Solr
     {
         return json_decode(Yii::$app->solr->configWithCurl('getFacet', '/query', $this->bodyFacets));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-//    public function setSort(string $sort): Facet
-//    {
-//        return $this;
-//    }
-//
-
-//
-//    public function setLimit(int $limit): Facet
-//    {
-//        $this->nameFacet['limit'] = $limit;
-//        return $this;
-//    }
-//
-//    public function prepareData($data)
-//    {
-//        $docs = $data->response->docs;
-//        $fieldsFacet= $data->
-//        return $data;
-//    }
-
-
-//
-//curl http://localhost:8983/solr/posts_new/query -d '
-//{
-//"query": "*:*",
-//"facet": {
-//"prices": {
-//"type": "terms",
-//"field": "post.price_i","limit":3
-//}
-//}
-//}'
-
-
-//
-//'{
-//  "query": "*:*",
-//  "facet": {
-//    "categories": {
-//      "type": "terms",
-//      "field": "post.subcategory_id_i",
-//      "facet": {
-//        "top_manufacturer": {
-//          "type": "terms",
-//          "field": "subcategories.label_en_s",
-//        }
-//      }
-//    }
-//  }
-//}'
-
-
-//"query": "post.title_s: *ion*",
-//"facet": {
-//"categories": {
-//"type": "terms",
-//"field": "category.label_en_s",
-//"facet": {
-//"top_manufacturer": {
-//"type": "terms",
-//"field": "category.id_i"
-//}
-//}
-//}
-//}
-//}'
-
 
 }
